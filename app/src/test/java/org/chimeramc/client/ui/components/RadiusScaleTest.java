@@ -57,8 +57,8 @@ public class RadiusScaleTest {
         String[] surfaces = {
                 "glass_card",
                 "bg_instance_card", "bg_modal_card",
-                "bg_vip_surface", "bg_launch_dock", "bg_search_field", "bg_edit_text",
-                "bg_popup_menu_rounded", "bg_launch_quickdock",
+                "bg_search_field", "bg_edit_text",
+                "bg_popup_menu_rounded",
         };
         List<String> offenders = new ArrayList<>();
         for (String name : surfaces) {

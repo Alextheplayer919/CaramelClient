@@ -409,7 +409,6 @@ public class PersonalizationManager {
 
         if (accent != 0) {
             applyAccentColorRecursive(rootView, accent, activity);
-            applyNavBarAccent(activity, accent);
         }
 
         applyFontFamilyToActivity(activity, rootView);
@@ -443,19 +442,6 @@ public class PersonalizationManager {
         LauncherFonts.applyRecursive(rootView, typeface);
     }
 
-    private void applyNavBarAccent(Activity activity, int accent) {
-        TextView appName = activity.findViewById(R.id.nav_app_name);
-        if (appName != null) {
-            applySolidAccentText(appName, accent);
-        }
-
-        View signInBtn = activity.findViewById(R.id.nav_sign_in_button);
-        if (signInBtn instanceof Button) {
-            Button btn = (Button) signInBtn;
-            btn.setBackgroundTintList(ColorStateList.valueOf(accent));
-            btn.setTextColor(Color.WHITE);
-        }
-    }
 
     public void applySolidAccentText(TextView textView, int accentColor) {
         textView.getPaint().setShader(null);

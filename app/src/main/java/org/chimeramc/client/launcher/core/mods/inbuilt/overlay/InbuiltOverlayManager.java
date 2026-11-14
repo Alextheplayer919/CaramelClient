@@ -18,7 +18,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import org.chimeramc.client.launcher.core.mods.inbuilt.overlay.InGameMenuController;
 
 public class InbuiltOverlayManager {
     public interface HudEditorSelectionListener {
@@ -40,7 +39,6 @@ public class InbuiltOverlayManager {
     private final Map<String, ExternalButtonOverlay> externalButtonOverlayMap = new HashMap<>();
     private final Map<String, MoreButtonOverlay> moreButtonOverlayMap = new HashMap<>();
     private final Map<Integer, HotbarSlotOverlay> hotbarSlotOverlayMap = new HashMap<>();
-    private boolean moreButtonsEditorOpen;
     private final Map<String, Integer> modPositionMap = new HashMap<>();
     private ChickPetOverlay chickPetOverlay;
     private AutoSprintOverlay autoSprintOverlay;
@@ -64,8 +62,6 @@ public class InbuiltOverlayManager {
     private VoiceNametagOverlay voiceNametagOverlay;
     private CatalogModuleRuntime catalogRuntime;
     private org.chimeramc.client.core.cosmetics.CosmeticSyncModule cosmeticSyncModule;
-    private ModMenuButton modMenuButton;
-    private PauseMenuRow pauseMenuRow;
     private HudOverlay hudOverlay;
     private BaseOverlayButton selectedHudEditorOverlay;
     private String selectedDisplayModId;
@@ -210,14 +206,6 @@ public class InbuiltOverlayManager {
         restorePersistedInbuiltModState(manager, ModIds.KILL_EFFECTS);
         restorePersistedInbuiltModState(manager, ModIds.VOICE_CHAT);
 
-        modMenuButton = new ModMenuButton(activity);
-        modMenuButton.show(START_X, nextY);
-        // The pause-menu button row attaches with the session and is shown only while
-        // the game's pause menu is open, so it never competes with gameplay.
-        if (pauseMenuRow == null) {
-            pauseMenuRow = new PauseMenuRow(activity);
-        }
-        pauseMenuRow.show();
         // A catalogue module that was on when the last session ended comes back with this one. The
         // shipped modules are restored by the calls above; the catalogue ones are restored here so
         // a saved readout does not silently vanish on the next launch.
@@ -695,7 +683,7 @@ public class InbuiltOverlayManager {
     }
 
     public void refreshMoreButtons() {
-        if (moreButtonsEditorOpen || !modActiveStates.getOrDefault(ModIds.MORE_BUTTONS, false)) return;
+        if (!modActiveStates.getOrDefault(ModIds.MORE_BUTTONS, false)) return;
 
         MoreButtonsManager buttonsManager = MoreButtonsManager.getInstance(activity);
         InbuiltModManager manager = InbuiltModManager.getInstance(activity);
@@ -736,13 +724,6 @@ public class InbuiltOverlayManager {
             if (!validIds.contains(entry.getKey())) stale.add(entry.getValue());
         }
         for (MoreButtonOverlay overlay : stale) removeMoreButtonOverlay(overlay);
-    }
-
-    public void setMoreButtonsEditorOpen(boolean open) {
-        if (moreButtonsEditorOpen == open) return;
-        moreButtonsEditorOpen = open;
-        if (open) hideMoreButtons();
-        else refreshMoreButtons();
     }
 
     private void hideMoreButtons() {
@@ -1039,14 +1020,6 @@ public class InbuiltOverlayManager {
             voiceNametagOverlay = null;
         }
         VoiceNametagMod.setEnabled(false, null);
-        if (modMenuButton != null) {
-            modMenuButton.hide();
-            modMenuButton = null;
-        }
-        if (pauseMenuRow != null) {
-            pauseMenuRow.hide();
-            pauseMenuRow = null;
-        }
         if (hudOverlay != null) {
             hudOverlay.hide();
             hudOverlay = null;
@@ -1233,21 +1206,6 @@ public class InbuiltOverlayManager {
         // The open Mod Menu takes controller navigation before anything else. Its root is
         // unfocusable by design (so the platform stops painting a focus wash), so the menu cannot
         // be driven by the framework's focus system and is driven here instead.
-        if (handleMenuControllerKey(rawKeyCode, action)) return true;
-
-        // Mod Menu open bind. Honoured for both the keyboard and controller codes. In hold-to-open
-        // mode (the default) the press opens the wheel and the release commits the highlighted
-        // sector, so the whole gesture is one press-hold-release; in toggle mode only the press is
-        // used, matching the previous behaviour.
-        if (modMenuButton != null) {
-            boolean matchesBind = InbuiltModManager.matchesModMenuBind(
-                    manager.getModMenuKeybind(), manager.getModMenuControllerBind(),
-                    keyCode, rawKeyCode);
-            if (matchesBind && action == android.view.KeyEvent.ACTION_DOWN) {
-                modMenuButton.toggleMenuFromBind();
-                return true;
-            }
-        }
 
         boolean zoomEnabled = modActiveStates.getOrDefault(ModIds.ZOOM, false);
         
@@ -1302,13 +1260,9 @@ public class InbuiltOverlayManager {
      * would otherwise be consumed by the game first.
      */
     public boolean handleMenuControllerKey(int rawKeyCode, int action) {
-        // The menu is drawn natively, so a controller key is translated to a menu action here and
-        // pushed into the native input queue rather than routed to an Android view. Only the back
-        // button is handled for now; the native menu's own nav flags cover the rest once it is open.
-        if (action != android.view.KeyEvent.ACTION_DOWN) return false;
-        if (rawKeyCode != android.view.KeyEvent.KEYCODE_BACK) return false;
-        InGameMenuController menu = InGameMenuController.getInstance();
-        return menu != null && menu.handleBack();
+        // The in-game Mod Menu UI was removed with the legacy shell; nothing consumes controller
+        // navigation here until a new menu is dropped in.
+        return false;
     }
 
     /** Hands analogue stick movement to the open Mod Menu, so the stick can move the selection. */
@@ -1548,15 +1502,6 @@ public class InbuiltOverlayManager {
             hudOverlay.setHudEditorMode(active);
         }
 
-        if (modMenuButton != null) {
-            if (active) {
-                modMenuButton.setVisibility(android.view.View.GONE);
-            } else {
-                int savedX = InbuiltModManager.getInstance(activity).getOverlayPositionX(ModIds.MOD_MENU, START_X);
-                int savedY = InbuiltModManager.getInstance(activity).getOverlayPositionY(ModIds.MOD_MENU, baseY);
-                modMenuButton.show(savedX, savedY);
-            }
-        }
         refreshRuntimeVisibility();
 
         if (active) {
@@ -1957,26 +1902,11 @@ public class InbuiltOverlayManager {
         stateHash = 31L * stateHash + (fpsDisplayOverlay == null ? 0L : System.identityHashCode(fpsDisplayOverlay));
         stateHash = 31L * stateHash + (cpsDisplayOverlay == null ? 0L : System.identityHashCode(cpsDisplayOverlay));
         stateHash = 31L * stateHash + (chickPetOverlay == null ? 0L : System.identityHashCode(chickPetOverlay));
-        stateHash = 31L * stateHash + (modMenuButton == null ? 0L : System.identityHashCode(modMenuButton));
         stateHash = 31L * stateHash + (hudOverlay == null ? 0L : System.identityHashCode(hudOverlay));
         if (stateHash == lastVisibilityStateHash) return;
         lastVisibilityStateHash = stateHash;
 
-        if (pauseMenuRow != null) {
-            pauseMenuRow.setPauseMenuOpen(isPauseOpen, isShowingMenu);
-        }
-
         activity.runOnUiThread(() -> {
-            if (modMenuButton != null) {
-                int visibility = !hudEditorMode && (!isPauseOnly || (isPauseOpen && isShowingMenu))
-                        ? android.view.View.VISIBLE
-                        : android.view.View.GONE;
-                modMenuButton.setVisibility(visibility);
-                if (!hudEditorMode && visibility == android.view.View.GONE && modMenuButton.isMenuShowing()) {
-                    modMenuButton.hideMenu();
-                }
-            }
-
             if (hudOverlay != null) {
                 int visibility = hudOverlay.isHudEditorMode()
                         || (showGameOverlays && !overlaysHiddenForScreenshot)
