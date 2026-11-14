@@ -339,11 +339,15 @@ class MinecraftActivity : MainActivity(), PojavControlsHost {
     private fun startInbuiltModServices() {
         overlayManager = InbuiltOverlayManager(this)
         overlayManager?.showEnabledOverlays()
+        // The in-game Mod Menu is drawn natively on the game's GL context; the controller builds its
+        // catalogue and forwards input into it for as long as the session lives.
+        org.chimeramc.client.launcher.core.mods.inbuilt.overlay.InGameMenuController.install(this)
     }
 
     private fun stopInbuiltModServices() {
         overlayManager?.hideAllOverlays()
         overlayManager = null
+        org.chimeramc.client.launcher.core.mods.inbuilt.overlay.InGameMenuController.release(this)
     }
 
     override fun onNewIntent(intent: Intent) {
@@ -575,6 +579,13 @@ class MinecraftActivity : MainActivity(), PojavControlsHost {
     }
 
     override fun dispatchTouchEvent(event: MotionEvent): Boolean {
+        // An open Mod Menu owns every touch: it is a full-screen overlay drawn into the game's
+        // back buffer, so the game must not also receive the tap.
+        if (org.chimeramc.client.launcher.core.mods.inbuilt.overlay.InGameMenuController.getInstance()
+                ?.handleTouch(event) == true) {
+            return true
+        }
+
         if (shouldConsumeMouseMotion(event)) {
             return true
         }
@@ -861,6 +872,10 @@ class MinecraftActivity : MainActivity(), PojavControlsHost {
         flushLookDelta()
         super.tick()
         overlayManager?.tick()
+        // Apply whatever the native menu raised this frame (a toggle, a config change, a favourite)
+        // on the main thread, where the launcher's own module changes also happen.
+        org.chimeramc.client.launcher.core.mods.inbuilt.overlay.InGameMenuController.getInstance()
+            ?.drainAndApply()
     }
 
     override fun getDataDir(): File {
