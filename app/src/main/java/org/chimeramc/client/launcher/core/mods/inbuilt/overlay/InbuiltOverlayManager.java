@@ -11,6 +11,7 @@ import org.chimeramc.client.core.mods.inbuilt.manager.MoreButtonsManager;
 import org.chimeramc.client.core.mods.inbuilt.model.MoreButtonConfig;
 import org.chimeramc.client.core.mods.inbuilt.model.ModIds;
 import org.chimeramc.client.launcher.core.mods.inbuilt.nativemod.PojavControlsMod;
+import org.chimeramc.client.launcher.core.mods.inbuilt.overlay.InGameMenuController;
 import org.chimeramc.pojavcontrols.PojavControls;
 import org.chimeramc.pojavcontrols.PojavControlsHost;
 
@@ -1206,9 +1207,22 @@ public class InbuiltOverlayManager {
         // The open Mod Menu takes controller navigation before anything else. Its root is
         // unfocusable by design (so the platform stops painting a focus wash), so the menu cannot
         // be driven by the framework's focus system and is driven here instead.
+        if (handleMenuControllerKey(rawKeyCode, action)) return true;
+
+        // Mod Menu open bind. Honoured for both the keyboard and controller codes, so a pad button a
+        // profile remapped still opens the menu. The native menu has no Android view to focus, so
+        // the press opens it directly.
+        InGameMenuController menu = InGameMenuController.getInstance();
+        if (menu != null && action == android.view.KeyEvent.ACTION_DOWN
+                && InbuiltModManager.matchesModMenuBind(
+                        manager.getModMenuKeybind(), manager.getModMenuControllerBind(),
+                        keyCode, rawKeyCode)) {
+            menu.toggle();
+            return true;
+        }
 
         boolean zoomEnabled = modActiveStates.getOrDefault(ModIds.ZOOM, false);
-        
+
         int zoomKeybind = manager.getZoomKeybind();
         if (zoomEnabled && keyCode == zoomKeybind) {
             if (zoomOverlay != null) {
@@ -1260,9 +1274,13 @@ public class InbuiltOverlayManager {
      * would otherwise be consumed by the game first.
      */
     public boolean handleMenuControllerKey(int rawKeyCode, int action) {
-        // The in-game Mod Menu UI was removed with the legacy shell; nothing consumes controller
-        // navigation here until a new menu is dropped in.
-        return false;
+        // The menu is drawn natively, so a controller key is translated to a menu action here and
+        // pushed into the native input queue rather than routed to an Android view. Only the back
+        // button is handled for now; the native menu's own nav flags cover the rest once it is open.
+        if (action != android.view.KeyEvent.ACTION_DOWN) return false;
+        if (rawKeyCode != android.view.KeyEvent.KEYCODE_BACK) return false;
+        InGameMenuController menu = InGameMenuController.getInstance();
+        return menu != null && menu.handleBack();
     }
 
     /** Hands analogue stick movement to the open Mod Menu, so the stick can move the selection. */

@@ -1,0 +1,174 @@
+package org.chimeramc.client.ui.compose.caramel.launcher
+
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
+import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.offset
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.rounded.AccountCircle
+import androidx.compose.material.icons.rounded.Article
+import androidx.compose.material.icons.rounded.Extension
+import androidx.compose.material.icons.rounded.KeyboardArrowDown
+import androidx.compose.material.icons.rounded.KeyboardArrowUp
+import androidx.compose.material.icons.rounded.Public
+import androidx.compose.material.icons.rounded.RocketLaunch
+import androidx.compose.material.icons.rounded.Settings
+import androidx.compose.material.icons.rounded.ShoppingCart
+import androidx.compose.material.icons.rounded.SportsEsports
+import androidx.compose.material.icons.rounded.ViewInAr
+import androidx.compose.material3.Icon
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.unit.dp
+import org.chimeramc.client.R
+import org.chimeramc.client.ui.compose.caramel.C
+import org.chimeramc.client.ui.compose.caramel.CaramelBackdrop
+import org.chimeramc.client.ui.compose.caramel.CaramelLauncherState
+import org.chimeramc.client.ui.compose.caramel.CaramelPill
+import org.chimeramc.client.ui.compose.caramel.CaramelTab
+import org.chimeramc.client.ui.compose.caramel.GlassPanel
+import org.chimeramc.client.ui.compose.caramel.ServerIcon
+import org.chimeramc.client.ui.compose.caramel.T
+import org.chimeramc.client.ui.compose.caramel.sp_
+
+/**
+ * The launcher frame, ported from the pack's `launcher/Shell.kt`.
+ *
+ * <p>The pack mounts its frame inside a desktop `Window` with a `WindowDraggableArea`. On Android
+ * the window is the activity, so the drag area is dropped and the title bar is a plain row. The
+ * backdrop, the glass title bar and the 56dp sidebar rail are the pack's.
+ */
+@Composable
+fun CaramelLauncherFrame(
+    state: CaramelLauncherState,
+    content: @Composable (Modifier) -> Unit,
+) {
+    Box(Modifier.fillMaxSize().background(C.Abyss)) {
+        CaramelBackdrop()
+        Column(Modifier.fillMaxSize()) {
+            CaramelTitleBar(state)
+            Row(
+                Modifier.fillMaxSize().padding(start = 14.dp, end = 14.dp, bottom = 14.dp),
+                horizontalArrangement = Arrangement.spacedBy(16.dp),
+            ) {
+                CaramelSidebar(state)
+                Box(Modifier.weight(1f).fillMaxHeight()) { content(Modifier.fillMaxSize()) }
+            }
+        }
+    }
+}
+
+@Composable
+private fun CaramelTitleBar(state: CaramelLauncherState) {
+    Row(
+        Modifier.fillMaxWidth().height(44.dp).padding(horizontal = 14.dp),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(10.dp),
+    ) {
+        Image(painterResource(R.drawable.ic_caramel_logo), null, Modifier.size(30.dp))
+        Text("Caramel Client", style = T.Subtitle)
+        val menuShape = RoundedCornerShape(8.dp)
+        Box(
+            Modifier.size(22.dp).clip(menuShape)
+                .background(Color.White.copy(if (state.appMenu) 0.14f else 0.06f))
+                .border(1.dp, Color.White.copy(0.18f), menuShape)
+                .clickable(remember { MutableInteractionSource() }, null) { state.appMenu = !state.appMenu },
+            Alignment.Center,
+        ) {
+            Icon(
+                if (state.appMenu) Icons.Rounded.KeyboardArrowUp else Icons.Rounded.KeyboardArrowDown,
+                null, Modifier.size(15.dp), C.Text2,
+            )
+        }
+        CaramelPill {
+            Icon(Icons.Rounded.RocketLaunch, null, Modifier.size(13.dp), C.Text2)
+            Text("Launchpad", style = T.Label.copy(fontSize = 11.5.sp_, color = C.Text2))
+        }
+        Spacer(Modifier.width(12.dp))
+        Text("Quick play", style = T.Caption)
+        // Quick play tiles: one per saved server, capped so the row never overflows.
+        state.servers.take(8).forEachIndexed { i, _ -> ServerIcon(quickPlayAccent(i), 26) }
+        Spacer(Modifier.weight(1f))
+        Text("${state.runningInstances} instances", style = T.Caption)
+        CaramelPill(onClick = { state.accountMenu = !state.accountMenu }) {
+            if (state.signedIn) {
+                Icon(Icons.Rounded.AccountCircle, null, Modifier.size(18.dp), C.Text2)
+                Text(state.accountName, style = T.Label.copy(fontSize = 11.5.sp_))
+            } else {
+                Text("Sign in", style = T.Label.copy(fontSize = 11.5.sp_))
+            }
+            Icon(Icons.Rounded.KeyboardArrowDown, null, Modifier.size(14.dp), C.Text3)
+        }
+    }
+}
+
+/** The eight quick-play accents, in order, so a tile keeps its colour as servers are added. */
+private fun quickPlayAccent(i: Int): Color = listOf(
+    C.Caramel, C.Blue, C.Green, C.Red,
+    Color(0xFF966EFF), Color(0xFF4AC8E6), Color(0xFFFF8C3C), Color(0xFF7882FF),
+)[i % 8]
+
+private val nav = listOf(
+    CaramelTab.Home to Icons.Rounded.SportsEsports,
+    CaramelTab.Mods to Icons.Rounded.Extension,
+    CaramelTab.Servers to Icons.Rounded.Public,
+    CaramelTab.Cosmetics to Icons.Rounded.ViewInAr,
+    CaramelTab.News to Icons.Rounded.Article,
+    CaramelTab.Store to Icons.Rounded.ShoppingCart,
+)
+
+@Composable
+private fun CaramelSidebar(state: CaramelLauncherState) {
+    GlassPanel(Modifier.width(56.dp).fillMaxHeight(), RoundedCornerShape(18.dp), elevation = 12.dp) {
+        Column(
+            Modifier.fillMaxSize().padding(vertical = 14.dp),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.spacedBy(10.dp),
+        ) {
+            nav.forEach { (tab, icon) -> CaramelNavItem(icon, state.tab == tab) { state.tab = tab } }
+            Spacer(Modifier.weight(1f))
+            CaramelNavItem(Icons.Rounded.Settings, state.launcherSettings) { state.launcherSettings = true }
+        }
+    }
+}
+
+@Composable
+private fun CaramelNavItem(icon: ImageVector, active: Boolean, onClick: () -> Unit) {
+    Box(Modifier.size(44.dp), Alignment.Center) {
+        Box(
+            Modifier.size(44.dp).clip(RoundedCornerShape(13.dp))
+                .background(if (active) Color.White.copy(0.12f) else Color.Transparent)
+                .then(if (active) Modifier.border(1.dp, Color.White.copy(0.2f), RoundedCornerShape(13.dp)) else Modifier)
+                .clickable(remember { MutableInteractionSource() }, null, onClick = onClick),
+            Alignment.Center,
+        ) { Icon(icon, null, Modifier.size(22.dp), if (active) C.Text else C.Text3) }
+        if (active) {
+            Box(
+                Modifier.align(Alignment.CenterStart).offset((-14).dp).size(3.dp, 22.dp)
+                    .background(C.Caramel, RoundedCornerShape(2.dp)),
+            )
+        }
+    }
+}
