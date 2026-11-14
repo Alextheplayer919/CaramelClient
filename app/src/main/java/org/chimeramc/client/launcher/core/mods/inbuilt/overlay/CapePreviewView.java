@@ -270,9 +270,6 @@ public class CapePreviewView extends View {
 
     /**
      * XML constructor, so the preview can be declared in a layout rather than only built in code.
-     *
-     * <p>The Launch-tab hero panel hosts a preview, and inflating it from XML keeps that layout
-     * declarative; the code path in {@code CosmeticsPanel} keeps the one-argument constructor.
      */
     public CapePreviewView(Context context, android.util.AttributeSet attrs) {
         super(context, attrs);

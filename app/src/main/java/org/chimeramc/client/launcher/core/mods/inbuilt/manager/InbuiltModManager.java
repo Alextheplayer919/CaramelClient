@@ -399,53 +399,6 @@ public class InbuiltModManager {
         prefs.edit().putBoolean(KEY_MOD_MENU_COMPACT, compact).apply();
     }
 
-    // --- Mod Menu appearance settings (M6) ----------------------------------------------------
-
-    /**
-     * The menu's appearance settings, read as one value.
-     *
-     * <p>Stored as individual prefs rather than a serialized blob: a blob has to be versioned and
-     * migrated, and a field added to the settings class would silently reset every other field for
-     * a user whose blob predates it. Unknown enum names fall back to the default, so a downgrade
-     * cannot leave the menu unopenable.
-     */
-    public org.chimeramc.client.core.mods.inbuilt.overlay.ModMenuSettings getModMenuSettings() {
-        org.chimeramc.client.core.mods.inbuilt.overlay.ModMenuSettings defaults =
-                org.chimeramc.client.core.mods.inbuilt.overlay.ModMenuSettings.defaults();
-        return new org.chimeramc.client.core.mods.inbuilt.overlay.ModMenuSettings(
-                enumOf(org.chimeramc.client.core.mods.inbuilt.overlay.ModMenuSettings.Theme.class,
-                        prefs.getString(KEY_MENU_THEME, null), defaults.theme()),
-                enumOf(org.chimeramc.client.core.mods.inbuilt.overlay.ModMenuSettings.GlassIntensity.class,
-                        prefs.getString(KEY_MENU_GLASS, null), defaults.glassIntensity()),
-                prefs.getInt(KEY_MENU_RADIUS, defaults.cornerRadiusDp()),
-                enumOf(org.chimeramc.client.core.mods.inbuilt.overlay.ModMenuSettings.Density.class,
-                        prefs.getString(KEY_MENU_DENSITY, null), defaults.density()),
-                enumOf(org.chimeramc.client.core.mods.inbuilt.overlay.ModMenuSettings.ToggleStyle.class,
-                        prefs.getString(KEY_MENU_TOGGLE_STYLE, null), defaults.toggleStyle()),
-                enumOf(org.chimeramc.client.core.mods.inbuilt.overlay.ModMenuSettings.Motion.class,
-                        prefs.getString(KEY_MENU_MOTION, null), defaults.motion()),
-                prefs.getInt(KEY_MENU_BLUR_FPS, defaults.blurFps()),
-                prefs.getInt(KEY_MENU_HUD_OPACITY, defaults.hudOpacity()),
-                prefs.getInt(KEY_MENU_ACCENT, defaults.accentIndex()));
-    }
-
-    /** Writes the menu's appearance settings. */
-    public void setModMenuSettings(
-            org.chimeramc.client.core.mods.inbuilt.overlay.ModMenuSettings settings) {
-        if (settings == null) return;
-        prefs.edit()
-                .putString(KEY_MENU_THEME, settings.theme().name())
-                .putString(KEY_MENU_GLASS, settings.glassIntensity().name())
-                .putInt(KEY_MENU_RADIUS, settings.cornerRadiusDp())
-                .putString(KEY_MENU_DENSITY, settings.density().name())
-                .putString(KEY_MENU_TOGGLE_STYLE, settings.toggleStyle().name())
-                .putString(KEY_MENU_MOTION, settings.motion().name())
-                .putInt(KEY_MENU_BLUR_FPS, settings.blurFps())
-                .putInt(KEY_MENU_HUD_OPACITY, settings.hudOpacity())
-                .putInt(KEY_MENU_ACCENT, settings.accentIndex())
-                .apply();
-    }
-
     /**
      * The user's saved order for one section, or an empty list for the shipped order (M9).
      *

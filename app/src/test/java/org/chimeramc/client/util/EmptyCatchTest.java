@@ -46,8 +46,7 @@ public class EmptyCatchTest {
             "ModNotificationManager.java",
             "InstanceBackupManager.java",
             "LogcatOverlay.java",
-            "CustomAlertDialog.java",
-            "AboutActivity.java");
+            "CustomAlertDialog.java");
 
     @Test
     public void theNamedFilesAllExist() throws IOException {

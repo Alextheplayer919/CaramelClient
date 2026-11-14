@@ -10,6 +10,28 @@ Index only. Detail and session notes live in the daily logs (`YYYY-MM-DD.md`).
 
 The repo was called **GlowberryClient** before; the package is `org.chimeramc.client` either way.
 
+### UI skeleton state (2026-11-14: the whole legacy UI was deleted for a new one)
+The launcher UI + the in-game Mod Menu UI were removed in one sweep, keeping every system. Do not
+re-add the old UI; a new one is being dropped in. See the 2026-11-14 daily log for the full list.
+- **`ui.activities` files live under `launcher/ui/activities/`** (dir ≠ package for the whole
+  `launcher/ui` tree — package decls are `org.chimeramc.client.ui.*`). Operate on FILES, not dirs.
+- 7 placeholder Activities remain (`BaseActivity` + `MainActivity`/`SplashActivity`/`LibraryActivity`/
+  `SettingsActivity`/`ModsFullscreenActivity`/`CrashActivity`); they draw nothing but are manifest
+  targets. `MainActivity.setTextMinecraftVersion()` and `LibraryActivity.EXTRA_INITIAL_TAB`/`TAB_*`
+  are kept no-op API other code still calls. Layouts 94→20; the kept 20 are the game-host/HUD ones.
+- **The in-game menu was 3 layers, all cut**: native ImGui (`sweetloader/src/pl/menu/` + vendored
+  `third_party/imgui/`, consumed only by `PresentFrameEffect.cpp`), the Java bridge
+  (`PreloaderMenu`/`InGameMenuController`), and the launcher overlay widgets (`MoreButtonsEditor`,
+  `VoicePanel`/`VoiceUiKit`, `CosmeticsPanel`). `DebugMenuOverlay` is the F3 overlay MOD — keep it.
+- **Kept (a new UI will reuse them)**: `UiTokens`, `Widget.Caramel.Card*`, `TextAppearance.Caramel.*`,
+  `GlowDimens`, generic `bg_*`/`ic_*` drawables, `PersonalizationManager`, all `core.*` systems.
+  Removed only the dead legacy chrome (`splash_bg_*`, `launch_bg_*`, dock/nav drawables + styles).
+- Gate that catches dead drawables: `LayoutResourceTest` (unreferenced layout) fails the build —
+  delete the layout. Hygiene: `scripts/check_ui_hygiene.py --update` retires stale findViewById
+  baseline rows and shrinks the baseline when a file is deleted.
+- **Trap**: a regex `<style name="X".*?</style>` over-matches a self-closing `<style …/>` and eats
+  the next real style. Match `/>` explicitly.
+
 ### Native engine (git submodule `app/src/main/cpp/sweetloader`)
 - Submodule repo is `ChimeraAnt-DEV/SweetLoader` (the old `preloader-android` name 301-redirects).
   **The parent must pin a commit that is on the submodule's `main`** — a `feat/*` tip can be

@@ -90,13 +90,6 @@
             only when the launcher has no installed instance, so an existing user never sees it.
         -->
         <activity
-            android:name="org.chimeramc.client.ui.activities.SetupWizardActivity"
-            android:exported="false"
-            android:label="@string/setup_step_import_title"
-            android:screenOrientation="sensorLandscape"
-            android:theme="@style/SetupWizardTheme" />
-
-        <activity
             android:name="org.chimeramc.client.ui.activities.MainActivity"
             android:exported="true"
             android:screenOrientation="sensorLandscape"
@@ -113,13 +106,6 @@
                 <data android:mimeType="text/plain" />
             </intent-filter>
         </activity>
-
-        <activity
-            android:name="org.chimeramc.client.ui.activities.ContentManagementActivity"
-            android:exported="false"
-            android:screenOrientation="sensorLandscape"
-            android:configChanges="fontScale|density|smallestScreenSize|screenSize|uiMode|screenLayout|orientation|navigation|keyboardHidden|keyboard|touchscreen|locale|mnc|mcc"
-            tools:ignore="DiscouragedApi" />
 
         <!-- A Quick Settings tile that cycles the performance preset. TileService is
              API 24, so at minSdk 28 no fallback is needed. BIND_QUICK_SETTINGS_TILE is the
@@ -170,44 +156,6 @@
             </intent-filter>
         </receiver>
 
-        <activity
-            android:name="org.chimeramc.client.ui.activities.ContentListActivity"
-            android:exported="false"
-            android:screenOrientation="sensorLandscape"
-            android:configChanges="fontScale|density|smallestScreenSize|screenSize|uiMode|screenLayout|orientation|navigation|keyboardHidden|keyboard|touchscreen|locale|mnc|mcc"
-            tools:ignore="DiscouragedApi" />
-
-        <activity
-            android:name="org.chimeramc.client.ui.activities.WorldEditorActivity"
-            android:exported="false"
-            android:screenOrientation="sensorLandscape"
-            android:configChanges="fontScale|density|smallestScreenSize|screenSize|uiMode|screenLayout|orientation|navigation|keyboardHidden|keyboard|touchscreen|locale|mnc|mcc"
-            tools:ignore="DiscouragedApi"
-            android:label="@string/edit_world" />
-
-        <activity
-            android:name="org.chimeramc.client.ui.activities.OptionsEditorActivity"
-            android:exported="false"
-            android:screenOrientation="sensorLandscape"
-            android:configChanges="fontScale|density|smallestScreenSize|screenSize|uiMode|screenLayout|orientation|navigation|keyboardHidden|keyboard|touchscreen|locale|mnc|mcc"
-            tools:ignore="DiscouragedApi"
-            android:label="@string/edit_options" />
-
-        <activity
-            android:name="org.chimeramc.client.ui.activities.CustomFlatWorldActivity"
-            android:exported="false"
-            android:screenOrientation="sensorLandscape"
-            android:configChanges="fontScale|density|smallestScreenSize|screenSize|uiMode|screenLayout|orientation|navigation|keyboardHidden|keyboard|touchscreen|locale|mnc|mcc"
-            tools:ignore="DiscouragedApi"
-            android:label="@string/custom_flat_world" />
-
-        <activity
-            android:name="org.chimeramc.client.ui.activities.AboutActivity"
-            android:exported="false"
-            android:screenOrientation="sensorLandscape"
-            android:configChanges="fontScale|density|smallestScreenSize|screenSize|uiMode|screenLayout|orientation|navigation|keyboardHidden|keyboard|touchscreen|locale|mnc|mcc"
-            tools:ignore="DiscouragedApi" />
-
         <!-- The Library destination (U1/U3): Instances + Install + Replay behind one host. -->
         <activity
             android:name="org.chimeramc.client.ui.activities.LibraryActivity"
@@ -235,56 +183,8 @@
             android:label="@string/diagnostics_title" />
 
         <!-- The in-app changelog, rendered from the bundled CHANGELOG.md. -->
-        <activity
-            android:name="org.chimeramc.client.launcher.ui.activities.ChangelogActivity"
-            android:exported="false"
-            android:screenOrientation="sensorLandscape"
-            android:configChanges="fontScale|density|smallestScreenSize|screenSize|uiMode|screenLayout|orientation|navigation|keyboardHidden|keyboard|touchscreen|locale|mnc|mcc"
-            tools:ignore="DiscouragedApi"
-            android:label="@string/changelog_screen_title" />
-
         <!-- Hidden UI gallery: reached by tapping the version 7 times in Settings > Updates. -->
-        <activity
-            android:name="org.chimeramc.client.launcher.ui.activities.UiGalleryActivity"
-            android:exported="false"
-            android:screenOrientation="sensorLandscape"
-            android:configChanges="fontScale|density|smallestScreenSize|screenSize|uiMode|screenLayout|orientation|navigation|keyboardHidden|keyboard|touchscreen|locale|mnc|mcc"
-            tools:ignore="DiscouragedApi"
-            android:label="UI gallery" />
-
-        <activity
-            android:name="org.chimeramc.client.ui.activities.CustomizeActivity"
-            android:exported="false"
-            android:screenOrientation="sensorLandscape"
-            android:configChanges="fontScale|density|smallestScreenSize|screenSize|uiMode|screenLayout|orientation|navigation|keyboardHidden|keyboard|touchscreen|locale|mnc|mcc"
-            tools:ignore="DiscouragedApi"
-            android:label="@string/nav_customize" />
-
-
-        <activity
-            android:name="org.chimeramc.client.ui.activities.VoiceChatActivity"
-            android:exported="false"
-            android:screenOrientation="sensorLandscape"
-            android:configChanges="fontScale|density|smallestScreenSize|screenSize|uiMode|screenLayout|orientation|navigation|keyboardHidden|keyboard|touchscreen|locale|mnc|mcc"
-            tools:ignore="DiscouragedApi"
-            android:label="@string/nav_voice" />
-
-        <activity
-            android:name="org.chimeramc.client.ui.activities.InstanceSettingsActivity"
-            android:exported="false"
-            android:screenOrientation="sensorLandscape"
-            android:configChanges="fontScale|density|smallestScreenSize|screenSize|uiMode|screenLayout|orientation|navigation|keyboardHidden|keyboard|touchscreen|locale|mnc|mcc"
-            tools:ignore="DiscouragedApi" />
-
         <!-- Accounts Management -->
-        <activity
-            android:name="org.chimeramc.client.ui.activities.AccountsActivity"
-            android:exported="false"
-            android:screenOrientation="sensorLandscape"
-            android:configChanges="fontScale|density|smallestScreenSize|screenSize|uiMode|screenLayout|orientation|navigation|keyboardHidden|keyboard|touchscreen|locale|mnc|mcc"
-            tools:ignore="DiscouragedApi"
-            android:label="@string/accounts_title" />
-
         <!-- MSAL returns the authorization code to this activity. Its intent-filter is what the
              browser hands the msauth:// reply to; without it Microsoft's response has nowhere to
              land and the interactive flow hangs.
@@ -309,78 +209,11 @@
         </activity>
 
         <activity
-            android:name="org.chimeramc.client.ui.activities.MsftLoginActivity"
-            android:exported="false"
-            android:screenOrientation="sensorLandscape"
-            android:configChanges="fontScale|density|smallestScreenSize|screenSize|uiMode|screenLayout|orientation|navigation|keyboardHidden|keyboard|touchscreen|locale|mnc|mcc"
-            android:windowSoftInputMode="adjustResize"
-            tools:ignore="DiscouragedApi" />
-
-        <activity
             android:name=".ui.activities.ModsFullscreenActivity"
             android:theme="@style/Base.Theme.FullScreen"
             android:screenOrientation="sensorLandscape"
             android:configChanges="fontScale|density|smallestScreenSize|screenSize|uiMode|screenLayout|orientation|navigation|keyboardHidden|keyboard|touchscreen|locale|mnc|mcc"
             android:exported="false"
-            tools:ignore="DiscouragedApi" />
-
-        <activity
-            android:name=".ui.activities.ModDetailActivity"
-            android:theme="@style/Base.Theme.FullScreen"
-            android:screenOrientation="sensorLandscape"
-            android:configChanges="fontScale|density|smallestScreenSize|screenSize|uiMode|screenLayout|orientation|navigation|keyboardHidden|keyboard|touchscreen|locale|mnc|mcc"
-            android:exported="false"
-            tools:ignore="DiscouragedApi" />
-
-        <activity
-            android:name=".ui.activities.ModConfigActivity"
-            android:theme="@style/Base.Theme.FullScreen"
-            android:screenOrientation="sensorLandscape"
-            android:configChanges="fontScale|density|smallestScreenSize|screenSize|uiMode|screenLayout|orientation|navigation|keyboardHidden|keyboard|touchscreen|locale|mnc|mcc"
-            android:exported="false"
-            tools:ignore="DiscouragedApi" />
-
-
-
-        <activity
-            android:name="org.chimeramc.client.ui.activities.CurseForgeActivity"
-            android:theme="@style/Base.Theme.FullScreen"
-            android:screenOrientation="sensorLandscape"
-            android:configChanges="fontScale|density|smallestScreenSize|screenSize|uiMode|screenLayout|orientation|navigation|keyboardHidden|keyboard|touchscreen|locale|mnc|mcc"
-            android:exported="false"
-            tools:ignore="DiscouragedApi" />
-
-        <activity
-            android:name=".ui.activities.ContentDetailsActivity"
-            android:theme="@style/Base.Theme.FullScreen"
-            android:screenOrientation="sensorLandscape"
-            android:configChanges="fontScale|density|smallestScreenSize|screenSize|uiMode|screenLayout|orientation|navigation|keyboardHidden|keyboard|touchscreen|locale|mnc|mcc"
-            android:exported="false"
-            tools:ignore="DiscouragedApi" />
-
-        <activity
-            android:name=".ui.activities.ModHubActivity"
-            android:theme="@style/Base.Theme.FullScreen"
-            android:screenOrientation="sensorLandscape"
-            android:configChanges="fontScale|density|smallestScreenSize|screenSize|uiMode|screenLayout|orientation|navigation|keyboardHidden|keyboard|touchscreen|locale|mnc|mcc"
-            android:exported="false"
-            tools:ignore="DiscouragedApi" />
-
-        <activity
-            android:name=".ui.activities.ModrinthDetailActivity"
-            android:theme="@style/Base.Theme.FullScreen"
-            android:screenOrientation="sensorLandscape"
-            android:configChanges="fontScale|density|smallestScreenSize|screenSize|uiMode|screenLayout|orientation|navigation|keyboardHidden|keyboard|touchscreen|locale|mnc|mcc"
-            android:exported="false"
-            tools:ignore="DiscouragedApi" />
-
-        <activity
-            android:name=".ui.activities.QuickLaunchActivity"
-            android:theme="@style/Base.Theme.FullScreen"
-            android:screenOrientation="sensorLandscape"
-            android:configChanges="fontScale|density|smallestScreenSize|screenSize|uiMode|screenLayout|orientation|navigation|keyboardHidden|keyboard|touchscreen|locale|mnc|mcc"
-            android:exported="false"
-            android:label="@string/quick_launch_title"
             tools:ignore="DiscouragedApi" />
 
         <activity

@@ -205,7 +205,7 @@ public final class ControllerToastView {
     private void openControllerSettings() {
         try {
             activity.startActivity(new android.content.Intent(
-                    activity, org.chimeramc.client.ui.activities.CustomizeActivity.class));
+                    activity, org.chimeramc.client.ui.activities.MainActivity.class));
         } catch (Exception ignored) {
             AppLog.warnOnce("CaramelClient", "ControllerToastView:210", "Ignored a failure at ControllerToastView:210", ignored);
         }

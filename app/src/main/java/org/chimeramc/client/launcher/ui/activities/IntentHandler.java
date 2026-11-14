@@ -15,6 +15,9 @@ import org.chimeramc.client.util.MinecraftUriHandler;
 public class IntentHandler extends BaseActivity {
     private static final String TAG = "IntentHandler";
 
+    /** Key the launcher reads to restore a backup when the library opens. */
+    public static final String EXTRA_RESTORE_BACKUP_ON_OPEN = "restore_backup_on_open";
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -60,7 +63,7 @@ public class IntentHandler extends BaseActivity {
             Intent launcherIntent = new Intent(originalIntent);
             launcherIntent.setClass(this, LibraryActivity.class);
             launcherIntent.putExtra(LibraryActivity.EXTRA_INITIAL_TAB, LibraryActivity.TAB_INSTANCES);
-            launcherIntent.putExtra(org.chimeramc.client.ui.fragments.InstancesFragment.EXTRA_RESTORE_BACKUP_ON_OPEN, true);
+            launcherIntent.putExtra(EXTRA_RESTORE_BACKUP_ON_OPEN, true);
             launcherIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
             startActivity(launcherIntent);
             finish();

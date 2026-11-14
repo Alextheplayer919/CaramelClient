@@ -11,7 +11,6 @@ import org.chimeramc.client.core.mods.inbuilt.manager.InbuiltModManager;
 import org.chimeramc.client.core.mods.inbuilt.model.ModIds;
 import org.chimeramc.client.core.mods.inbuilt.overlay.InbuiltOverlayManager;
 import org.chimeramc.client.core.mods.inbuilt.overlay.HitTimingSolver;
-import org.chimeramc.client.core.mods.inbuilt.overlay.MoreButtonsEditor;
 import org.chimeramc.pojavcontrols.PojavControls;
 
 import java.util.ArrayList;
@@ -311,7 +310,7 @@ public final class InbuiltModuleProvider {
                 (mod, config, value) -> setConfig(manager, mod, config, value),
                 ModIds.POJAV_CONTROLS.equals(id)
                         ? mod -> PojavControls.launchEditor(activity)
-                        : (ModIds.MORE_BUTTONS.equals(id) ? mod -> MoreButtonsEditor.show(activity) : null)
+                        : null
         );
         result.setLocalConfigSchema(ModConfigSchema.createLocalConfigSchema(activity, result));
         return result;
