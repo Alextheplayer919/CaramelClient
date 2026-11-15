@@ -20,7 +20,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.AccountCircle
 import androidx.compose.material.icons.rounded.Article
 import androidx.compose.material.icons.rounded.Extension
 import androidx.compose.material.icons.rounded.KeyboardArrowDown
@@ -45,6 +44,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import org.chimeramc.client.R
 import org.chimeramc.client.ui.compose.caramel.C
+import org.chimeramc.client.ui.compose.caramel.CaramelAvatarPicture
 import org.chimeramc.client.ui.compose.caramel.CaramelBackdrop
 import org.chimeramc.client.ui.compose.caramel.CaramelLauncherState
 import org.chimeramc.client.ui.compose.caramel.CaramelPill
@@ -115,7 +115,7 @@ private fun CaramelTitleBar(state: CaramelLauncherState) {
         Text(stringResource(R.string.caramel_instances_running, state.runningInstances), style = T.Caption)
         CaramelPill(onClick = { state.accountMenu = !state.accountMenu }) {
             if (state.signedIn) {
-                Icon(Icons.Rounded.AccountCircle, null, Modifier.size(18.dp), C.Text2)
+                CaramelAvatarPicture(state.accountAvatarUrl, 20, online = true)
                 Text(state.accountName, style = T.Label.copy(fontSize = 11.5.sp_))
             } else {
                 Text(stringResource(R.string.sign_in), style = T.Label.copy(fontSize = 11.5.sp_))

@@ -66,7 +66,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import org.chimeramc.client.R
 import org.chimeramc.client.ui.compose.caramel.C
-import org.chimeramc.client.ui.compose.caramel.CaramelAvatar
+import org.chimeramc.client.ui.compose.caramel.CaramelAvatarPicture
 import org.chimeramc.client.ui.compose.caramel.CaramelLauncherState
 import org.chimeramc.client.ui.compose.caramel.CaramelModal
 import org.chimeramc.client.ui.compose.caramel.CaramelProfileDropdown
@@ -138,7 +138,7 @@ fun CaramelAccountMenu(state: CaramelLauncherState, actions: CaramelLauncherHost
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.spacedBy(12.dp),
                 ) {
-                    CaramelAvatar(44, online = state.signedIn)
+                    CaramelAvatarPicture(state.accountAvatarUrl, 44, online = state.signedIn)
                     Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
                         Text(
                             if (state.signedIn) state.accountName else stringResource(R.string.not_signed_in),
@@ -468,7 +468,7 @@ fun CaramelAccountSettingsModal(state: CaramelLauncherState, actions: CaramelLau
             CaramelRule()
             Column(Modifier.weight(1f).padding(32.dp), verticalArrangement = Arrangement.spacedBy(22.dp)) {
                 Row(horizontalArrangement = Arrangement.spacedBy(18.dp), verticalAlignment = Alignment.CenterVertically) {
-                    CaramelAvatar(88)
+                    CaramelAvatarPicture(state.accountAvatarUrl, 88, online = state.signedIn)
                     Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(4.dp)) {
                         Text(
                             if (state.signedIn) state.accountName else stringResource(R.string.not_signed_in),

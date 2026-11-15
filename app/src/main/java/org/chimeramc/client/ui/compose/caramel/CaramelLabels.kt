@@ -1,5 +1,7 @@
 package org.chimeramc.client.ui.compose.caramel
 
+import android.graphics.Bitmap
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -20,6 +22,7 @@ import androidx.compose.material.icons.rounded.LockOpen
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.produceState
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -27,10 +30,15 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
+import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import org.chimeramc.client.R
 import androidx.compose.ui.unit.dp
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 
 /**
  * The Caramel label and chip set, ported from the pack's `components/Labels.kt`.
@@ -154,6 +162,39 @@ fun CaramelAvatar(size: Int = 36, online: Boolean = false, modifier: Modifier = 
             .background(Color.White.copy(0.09f), CircleShape)
             .border(if (online) 2.dp else 1.dp, if (online) C.Green else Color.White.copy(0.3f), CircleShape),
     )
+}
+
+/**
+ * The account avatar: the placeholder with the real Xbox (or GitHub) picture drawn over it.
+ *
+ * <p>The picture is fetched off the main thread and cached; until it arrives — or if it never does —
+ * the placeholder ring shows, so the slot is never empty and a network failure is invisible rather
+ * than a broken frame.
+ */
+@Composable
+fun CaramelAvatarPicture(
+    url: String?,
+    size: Int = 36,
+    online: Boolean = false,
+    modifier: Modifier = Modifier,
+) {
+    val context = LocalContext.current
+    val bitmap = produceState<Bitmap?>(initialValue = null, url) {
+        value = if (CaramelAvatarLoader.isLoadable(url)) {
+            withContext(Dispatchers.IO) { CaramelAvatarLoader.load(context, url) }
+        } else null
+    }.value
+    Box(modifier.size(size.dp), Alignment.Center) {
+        CaramelAvatar(size, online)
+        if (bitmap != null) {
+            Image(
+                bitmap = bitmap.asImageBitmap(),
+                contentDescription = null,
+                modifier = Modifier.size(size.dp).clip(CircleShape),
+                contentScale = ContentScale.Crop,
+            )
+        }
+    }
 }
 
 /** The server-icon slot used by Quick play and the Servers list. */

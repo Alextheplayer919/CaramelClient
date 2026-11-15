@@ -111,4 +111,5 @@ file is missing from the index.
 - [The white screen after the launch screen (game window theme)](docs/agents/game-window-white-screen-theme.md)
 - [The Compose launcher's real-data screens (skin preview + cosmetic tiles)](docs/agents/caramel-compose-ui-real-data.md)
 - [The Screenshots entry points (the "Content" button and the blank Library)](docs/agents/screenshot-entry-points-content-button.md)
+- [The signed-in Xbox profile picture (the avatar slot that stayed a ring)](docs/agents/xbox-profile-picture-avatar.md)
 - [Microsoft sign-in: device code, not MSAL](docs/agents/microsoft-sign-in-device-code-not-msal.md)

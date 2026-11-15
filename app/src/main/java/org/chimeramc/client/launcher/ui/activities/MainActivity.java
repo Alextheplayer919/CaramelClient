@@ -159,6 +159,7 @@ public class MainActivity extends BaseActivity implements CaramelLauncherHost.Ac
         MsftAccountStore.MsftAccount active = activeAccount();
         s.setSignedIn(active != null);
         s.setAccountName(active != null ? displayName(active) : "");
+        s.setAccountAvatarUrl(active != null && active.xboxAvatarUrl != null ? active.xboxAvatarUrl : "");
         s.setRunningInstances(MinecraftActivityState.isRunning(this) ? 1 : 0);
         s.setLaunchEnabled(selected != null);
         s.setMods(buildMods());

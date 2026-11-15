@@ -112,6 +112,9 @@ class CaramelLauncherState {
     var instanceName by mutableStateOf("")
     var accountName by mutableStateOf("")
     var signedIn by mutableStateOf(false)
+
+    /** The signed-in account's profile picture URL (Xbox), empty when unknown or signed out. */
+    var accountAvatarUrl by mutableStateOf("")
     var runningInstances by mutableStateOf(0)
     var launchEnabled by mutableStateOf(false)
     var launching by mutableStateOf(false)
