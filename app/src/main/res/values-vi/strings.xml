@@ -466,7 +466,7 @@ Quá trình chuyển đổi phải hoàn tất trước khi CaramelClient có th
     <string name="back">Quay về</string>
 
     <!-- Splash -->
-    <string name="splash_logo_desc">Logo chiếc lá</string>
+    <string name="splash_logo_desc">Logo quả táo Caramel</string>
     <string name="minecraft_loading_title">Đang mở Minecraft</string>
     <string name="minecraft_loading_subtitle">Đang chuẩn bị các file trò chơi và bật các bản Mod</string>
     <string name="minecraft_loading_status_preparing">Đang chuẩn bị game</string>

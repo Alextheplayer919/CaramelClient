@@ -400,7 +400,7 @@ La migración debe completarse antes de continuar con CaramelClient.</string>
     <string name="game_version_select_title">Seleccionar Versión del Juego</string>
     <string name="back">Atrás</string>
 
-    <string name="splash_logo_desc">Logo de hoja</string>
+    <string name="splash_logo_desc">Logotipo de la manzana Caramel</string>
     <string name="minecraft_loading_title">Iniciando Minecraft</string>
     <string name="minecraft_loading_subtitle">Preparando bibliotecas nativas y mods habilitados</string>
     <string name="minecraft_loading_status_preparing">Preparando entorno</string>

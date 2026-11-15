@@ -404,7 +404,7 @@
     <string name="back">返回</string>
     
     <!-- 启动页 -->
-    <string name="splash_logo_desc">叶子标志</string>
+    <string name="splash_logo_desc">焦糖苹果标志</string>
     <string name="minecraft_loading_title">正在启动 Minecraft</string>
     <string name="minecraft_loading_subtitle">准备游戏文件与已启用模组</string>
     <string name="minecraft_loading_status_preparing">正在准备运行时</string>

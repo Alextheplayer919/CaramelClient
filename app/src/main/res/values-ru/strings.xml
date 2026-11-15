@@ -360,7 +360,7 @@
     <string name="back">Назад</string>
 
     <!-- Заставка -->
-    <string name="splash_logo_desc">Логотип листа</string>
+    <string name="splash_logo_desc">Логотип яблока Caramel</string>
     <string name="minecraft_loading_title">Запуск Minecraft</string>
     <string name="minecraft_loading_subtitle">Подготовка native-библиотек и включенных модов</string>
     <string name="minecraft_loading_status_preparing">Подготовка runtime</string>

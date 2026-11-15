@@ -480,7 +480,7 @@ CaramelClient\'ın devam edebilmesi için taşımanın tamamlanması gerekiyor.<
     <string name="back">Geri</string>
 
     <!-- Splash -->
-    <string name="splash_logo_desc">Yaprak logosu</string>
+    <string name="splash_logo_desc">Caramel elma logosu</string>
     <string name="minecraft_loading_title">Minecraft Başlatılıyor</string>
     <string name="minecraft_loading_subtitle">Oyun dosyaları ve etkin modlar hazırlanıyor</string>
     <string name="minecraft_loading_status_preparing">Oyun hazırlanıyor</string>

@@ -178,13 +178,13 @@ jobs:
       - name: Check UI hygiene budgets
         run: python3 scripts/check_ui_hygiene.py
 
-      - name: Verify the launcher icon set matches the brand art
-        # The launcher icon is generated from resources/branding/app_icon_512.png by
-        # scripts/gen_launcher_icons.py. A hand-edit to one density is how the four layers drift out
-        # of step, and an adaptive foreground that does not cover the 72dp safe zone lets the
+      - name: Verify the launcher icon and in-app mark match the brand art
+        # The launcher icon and the in-app mark are generated from resources/branding/*.png by
+        # scripts/gen_launcher_icons.py. A hand-edit to one density is how the layers drift out of
+        # step, and an adaptive foreground that does not cover the 72dp safe zone lets the
         # background show through inside the icon on a launcher whose mask is squarer than the art's
-        # corners. This re-derives the set and compares, so the committed PNGs must be the output of
-        # the committed source.
+        # corners. This re-derives both sets and compares, so the committed PNGs must be the output
+        # of the committed sources.
         run: |
           python3 -m pip install --quiet Pillow
           python3 scripts/gen_launcher_icons.py --check

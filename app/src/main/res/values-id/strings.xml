@@ -361,7 +361,7 @@ Migrasi harus selesai sebelum CaramelClient dapat melanjutkan.</string>
     <string name="back">Kembali</string>
 
     <!-- Splash -->
-    <string name="splash_logo_desc">Logo daun</string>
+    <string name="splash_logo_desc">Logo apel Caramel</string>
     <string name="minecraft_loading_title">Memulai Minecraft</string>
     <string name="minecraft_loading_subtitle">Menyiapkan library native dan mod yang aktif</string>
     <string name="minecraft_loading_status_preparing">Menyiapkan runtime</string>

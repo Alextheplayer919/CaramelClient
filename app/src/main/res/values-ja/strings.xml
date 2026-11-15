@@ -400,7 +400,7 @@ CaramelClient を続行するには移行を完了する必要があります。
     <string name="game_version_select_title">ゲームのバージョンを選択</string>
     <string name="back">戻る</string>
 
-    <string name="splash_logo_desc">葉のロゴ</string>
+    <string name="splash_logo_desc">キャラメルりんごのロゴ</string>
     <string name="minecraft_loading_title">Minecraft を起動中</string>
     <string name="minecraft_loading_subtitle">ネイティブライブラリと有効な Mod を準備しています</string>
     <string name="minecraft_loading_status_preparing">ランタイムを準備中</string>
