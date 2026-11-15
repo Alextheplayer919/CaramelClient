@@ -95,6 +95,15 @@ data class CaramelScreenshotInfo(
     val path: String,
 )
 
+/** One Xbox Live friend: the Friends card and modal draw these from PeopleHub. */
+data class CaramelFriendInfo(
+    val xuid: String,
+    val gamertag: String,
+    val avatarUrl: String,
+    val online: Boolean,
+    val presence: String,
+)
+
 /**
  * The launcher's whole mutable state, as the pack's `LauncherState` is.
  *
@@ -124,6 +133,10 @@ class CaramelLauncherState {
     var cosmetics by mutableStateOf<List<CaramelCosmeticInfo>>(emptyList())
     var news by mutableStateOf<List<CaramelNewsInfo>>(emptyList())
     var screenshots by mutableStateOf<List<CaramelScreenshotInfo>>(emptyList())
+    var friends by mutableStateOf<List<CaramelFriendInfo>>(emptyList())
+
+    /** A status line for the friends list: "loading", an error reason, or empty when loaded. */
+    var friendsStatus by mutableStateOf("")
 
     var launchMenu by mutableStateOf(false)
     var instanceSettings by mutableStateOf(false)

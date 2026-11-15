@@ -1447,4 +1447,9 @@
     <string name="caramel_version_range">%1$s \u2013 %2$s</string>
     <string name="caramel_sign_in_idle">尚未登录</string>
     <string name="caramel_device_code_open_failed">无法打开浏览器。请访问 microsoft.com/link 并输入显示的代码。</string>
+    <string name="caramel_friends_loading">正在加载好友…</string>
+    <string name="caramel_friends_unavailable">请重新登录以查看你的好友。</string>
+    <string name="caramel_offline">离线</string>
+    <string name="caramel_no_friends_match">没有匹配的好友</string>
+    <string name="caramel_no_friends_match_body">没有好友名称与你的搜索匹配。</string>
 </resources>

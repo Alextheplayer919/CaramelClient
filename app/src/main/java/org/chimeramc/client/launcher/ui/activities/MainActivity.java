@@ -19,6 +19,8 @@ import org.chimeramc.client.core.auth.MsftAuthManager;
 import org.chimeramc.client.core.content.ContentManager;
 import org.chimeramc.client.core.content.ScreenshotItem;
 import org.chimeramc.client.core.content.ServerItem;
+import org.chimeramc.client.core.xbox.XboxFriendsClient;
+import org.chimeramc.client.core.xbox.XboxPeopleHub;
 import org.chimeramc.client.core.minecraft.MinecraftActivityState;
 import org.chimeramc.client.core.minecraft.MinecraftLauncher;
 import org.chimeramc.client.core.mods.Mod;
@@ -29,6 +31,7 @@ import org.chimeramc.client.settings.FeatureSettings;
 import org.chimeramc.client.util.LauncherStorage;
 import org.chimeramc.client.ui.compose.caramel.CaramelCosmeticInfo;
 import org.chimeramc.client.ui.compose.caramel.CaramelCosmeticKind;
+import org.chimeramc.client.ui.compose.caramel.CaramelFriendInfo;
 import org.chimeramc.client.ui.compose.caramel.CaramelLauncherState;
 import org.chimeramc.client.ui.compose.caramel.CaramelModInfo;
 import org.chimeramc.client.ui.compose.caramel.CaramelNewsInfo;
@@ -69,6 +72,10 @@ public class MainActivity extends BaseActivity implements CaramelLauncherHost.Ac
     private MinecraftLauncher minecraftLauncher;
     private ContentManager contentManager;
     private CosmeticStore cosmeticStore;
+    private XboxFriendsClient friendsClient;
+
+    /** The account id whose friends are already loaded, so a rebuild does not refetch. */
+    private String friendsAccountId = null;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -121,6 +128,51 @@ public class MainActivity extends BaseActivity implements CaramelLauncherHost.Ac
         });
     }
 
+    /**
+     * Loads the signed-in account's real Xbox Live friends.
+     *
+     * <p>PeopleHub is read with the account's own {@code http://xboxlive.com} XSTS token, which the
+     * Bedrock auth chain already mints — no extra consent. The fetch runs on its own executor and
+     * reports into the state, so the Friends card and modal draw real rows. A failure (no token, no
+     * network, a PeopleHub error) becomes a status line rather than an empty list with no reason.
+     */
+    private void loadFriends() {
+        MsftAccountStore.MsftAccount active = activeAccount();
+        if (active == null || active.xuid == null || active.xuid.isEmpty()) {
+            mutateState(s -> {
+                s.setFriends(new ArrayList<>());
+                s.setFriendsStatus("");
+            });
+            return;
+        }
+        if (friendsClient == null) friendsClient = new XboxFriendsClient();
+        mutateState(s -> s.setFriendsStatus(getString(R.string.caramel_friends_loading)));
+        String xuid = active.xuid;
+        AppExecutors.run(AppExecutors.Kind.NETWORK, "caramel-friends", () -> {
+            String[] xsts = MsftAuthManager.xboxLiveXsts(active);
+            if (xsts == null) {
+                runOnUiThread(() -> mutateState(s -> {
+                    s.setFriends(new ArrayList<>());
+                    s.setFriendsStatus(getString(R.string.caramel_friends_unavailable));
+                }));
+                return;
+            }
+            friendsClient.fetch(xuid, xsts[0], xsts[1], (friends, error) -> runOnUiThread(() -> {
+                List<CaramelFriendInfo> rows = new ArrayList<>();
+                if (friends != null) {
+                    for (XboxPeopleHub.Friend f : friends) {
+                        rows.add(new CaramelFriendInfo(
+                                f.xuid, f.gamertag, f.displayPicRaw, f.isOnline(), f.presenceText));
+                    }
+                }
+                mutateState(s -> {
+                    s.setFriends(rows);
+                    s.setFriendsStatus(error == null ? "" : error);
+                });
+            }));
+        });
+    }
+
     /** Points the content manager at the selected instance's folders, then rescans. */
     private void refreshContentDirectories() {
         if (contentManager == null || versionManager == null) return;
@@ -160,6 +212,13 @@ public class MainActivity extends BaseActivity implements CaramelLauncherHost.Ac
         s.setSignedIn(active != null);
         s.setAccountName(active != null ? displayName(active) : "");
         s.setAccountAvatarUrl(active != null && active.xboxAvatarUrl != null ? active.xboxAvatarUrl : "");
+        String accountId = active != null ? active.id : null;
+        if (accountId == null ? friendsAccountId != null : !accountId.equals(friendsAccountId)) {
+            friendsAccountId = accountId;
+            s.setFriends(new ArrayList<>());
+            s.setFriendsStatus("");
+            loadFriends();
+        }
         s.setRunningInstances(MinecraftActivityState.isRunning(this) ? 1 : 0);
         s.setLaunchEnabled(selected != null);
         s.setMods(buildMods());
@@ -653,5 +712,11 @@ public class MainActivity extends BaseActivity implements CaramelLauncherHost.Ac
         super.onResume();
         refreshContentDirectories();
         refreshState();
+    }
+
+    @Override
+    protected void onDestroy() {
+        if (friendsClient != null) friendsClient.close();
+        super.onDestroy();
     }
 }

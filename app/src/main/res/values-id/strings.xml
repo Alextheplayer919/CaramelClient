@@ -1450,4 +1450,9 @@ Migrasi harus selesai sebelum CaramelClient dapat melanjutkan.</string>
     <string name="caramel_version_range">%1$s \u2013 %2$s</string>
     <string name="caramel_sign_in_idle">Belum masuk</string>
     <string name="caramel_device_code_open_failed">Tidak ada peramban yang dapat dibuka. Buka microsoft.com/link dan masukkan kode yang ditampilkan.</string>
+    <string name="caramel_friends_loading">Memuat teman…</string>
+    <string name="caramel_friends_unavailable">Masuk lagi untuk melihat teman Anda.</string>
+    <string name="caramel_offline">Offline</string>
+    <string name="caramel_no_friends_match">Tidak ada teman yang cocok</string>
+    <string name="caramel_no_friends_match_body">Tidak ada nama teman yang cocok dengan pencarian Anda.</string>
 </resources>

@@ -8,8 +8,10 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -210,6 +212,33 @@ fun ServerIcon(color: Color, size: Int = 26, modifier: Modifier = Modifier) {
         Alignment.Center,
     ) {
         Box(Modifier.size((size * 0.4f).dp).background(color, RoundedCornerShape(2.dp)))
+    }
+}
+
+/**
+ * One friend row: the real picture, gamertag and presence, as the Friends card and modal draw it.
+ */
+@Composable
+fun CaramelFriendRow(friend: CaramelFriendInfo, modifier: Modifier = Modifier) {
+    Row(
+        modifier
+            .fillMaxWidth()
+            .clip(RoundedCornerShape(12.dp))
+            .background(Color.White.copy(0.05f))
+            .padding(horizontal = 12.dp, vertical = 8.dp),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(10.dp),
+    ) {
+        CaramelAvatarPicture(friend.avatarUrl, 32, online = friend.online)
+        Column(Modifier.weight(1f)) {
+            Text(friend.gamertag, style = T.Label)
+            val presence = when {
+                friend.online && friend.presence.isNotEmpty() -> friend.presence
+                friend.online -> stringResource(R.string.caramel_account_online)
+                else -> stringResource(R.string.caramel_offline)
+            }
+            Text(presence, style = T.Caption.copy(color = if (friend.online) C.Green else C.Text3))
+        }
     }
 }
 

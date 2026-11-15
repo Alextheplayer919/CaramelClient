@@ -67,6 +67,7 @@ import androidx.compose.ui.unit.dp
 import org.chimeramc.client.R
 import org.chimeramc.client.ui.compose.caramel.C
 import org.chimeramc.client.ui.compose.caramel.CaramelAvatarPicture
+import org.chimeramc.client.ui.compose.caramel.CaramelFriendRow
 import org.chimeramc.client.ui.compose.caramel.CaramelLauncherState
 import org.chimeramc.client.ui.compose.caramel.CaramelModal
 import org.chimeramc.client.ui.compose.caramel.CaramelProfileDropdown
@@ -331,13 +332,37 @@ fun CaramelFriendsModal(state: CaramelLauncherState, actions: CaramelLauncherHos
                     Modifier.fillMaxWidth().weight(1f).padding(horizontal = 24.dp),
                 )
             } else {
-                LazyColumn(Modifier.weight(1f).padding(horizontal = 24.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                    item {
-                        Text(
-                            stringResource(R.string.caramel_no_friends_body),
-                            style = T.Body,
-                            modifier = Modifier.padding(start = 8.dp, top = 6.dp),
-                        )
+                val query = q.trim()
+                val visible = if (query.isEmpty()) state.friends
+                else state.friends.filter { it.gamertag.contains(query, ignoreCase = true) }
+                if (visible.isEmpty()) {
+                    val noneAtAll = state.friends.isEmpty()
+                    val title = stringResource(
+                        if (noneAtAll) R.string.caramel_no_friends_title
+                        else R.string.caramel_no_friends_match
+                    )
+                    val matchBody = stringResource(R.string.caramel_no_friends_match_body)
+                    val body = if (noneAtAll) {
+                        stringResource(R.string.caramel_no_friends_body)
+                    } else {
+                        state.friendsStatus.ifEmpty { matchBody }
+                    }
+                    EmptyState(
+                        title,
+                        body,
+                        Modifier.fillMaxWidth().weight(1f).padding(horizontal = 24.dp),
+                    )
+                } else {
+                    LazyColumn(
+                        Modifier.weight(1f).padding(horizontal = 24.dp),
+                        verticalArrangement = Arrangement.spacedBy(8.dp),
+                    ) {
+                        if (state.friendsStatus.isNotEmpty()) {
+                            item {
+                                Text(state.friendsStatus, style = T.Body, modifier = Modifier.padding(start = 8.dp, top = 6.dp))
+                            }
+                        }
+                        items(visible) { friend -> CaramelFriendRow(friend) }
                     }
                 }
             }

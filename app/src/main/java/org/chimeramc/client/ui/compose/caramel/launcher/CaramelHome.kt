@@ -47,6 +47,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import org.chimeramc.client.R
 import org.chimeramc.client.ui.compose.caramel.C
+import org.chimeramc.client.ui.compose.caramel.CaramelFriendRow
 import org.chimeramc.client.ui.compose.caramel.CaramelLauncherState
 import org.chimeramc.client.ui.compose.caramel.GlassButton
 import org.chimeramc.client.ui.compose.caramel.GlassPanel
@@ -239,19 +240,30 @@ private fun FriendsCard(state: CaramelLauncherState, modifier: Modifier) {
                 verticalArrangement = Arrangement.Center,
                 horizontalAlignment = Alignment.CenterHorizontally,
             ) {
-                Box(
-                    Modifier.size(60.dp).clip(CircleShape).background(Color.White.copy(0.07f))
-                        .border(1.dp, Color.White.copy(0.17f), CircleShape),
-                    Alignment.Center,
-                ) { Icon(Icons.Rounded.Group, null, Modifier.size(28.dp), C.Text2) }
-                Spacer(Modifier.height(16.dp))
-                Text(
-                    stringResource(R.string.caramel_friends_sub),
-                    style = T.Body.copy(fontSize = 12.5.sp_, textAlign = TextAlign.Center),
-                    modifier = Modifier.width(200.dp),
-                )
-                Spacer(Modifier.height(16.dp))
-                GlassButton(stringResource(R.string.caramel_add_first_friend), { state.addFriend = true }, icon = Icons.Rounded.Add)
+                if (state.friends.isNotEmpty()) {
+                    Column(
+                        Modifier.fillMaxWidth(),
+                        verticalArrangement = Arrangement.spacedBy(8.dp),
+                    ) {
+                        state.friends.take(4).forEach { friend ->
+                            CaramelFriendRow(friend)
+                        }
+                    }
+                } else {
+                    Box(
+                        Modifier.size(60.dp).clip(CircleShape).background(Color.White.copy(0.07f))
+                            .border(1.dp, Color.White.copy(0.17f), CircleShape),
+                        Alignment.Center,
+                    ) { Icon(Icons.Rounded.Group, null, Modifier.size(28.dp), C.Text2) }
+                    Spacer(Modifier.height(16.dp))
+                    Text(
+                        stringResource(R.string.caramel_friends_sub),
+                        style = T.Body.copy(fontSize = 12.5.sp_, textAlign = TextAlign.Center),
+                        modifier = Modifier.width(200.dp),
+                    )
+                    Spacer(Modifier.height(16.dp))
+                    GlassButton(stringResource(R.string.caramel_add_first_friend), { state.addFriend = true }, icon = Icons.Rounded.Add)
+                }
             }
         }
     }

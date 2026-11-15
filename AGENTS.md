@@ -112,4 +112,5 @@ file is missing from the index.
 - [The Compose launcher's real-data screens (skin preview + cosmetic tiles)](docs/agents/caramel-compose-ui-real-data.md)
 - [The Screenshots entry points (the "Content" button and the blank Library)](docs/agents/screenshot-entry-points-content-button.md)
 - [The signed-in Xbox profile picture (the avatar slot that stayed a ring)](docs/agents/xbox-profile-picture-avatar.md)
+- [The Xbox friends list (the card and modal that never showed a friend)](docs/agents/xbox-friends-list.md)
 - [Microsoft sign-in: device code, not MSAL](docs/agents/microsoft-sign-in-device-code-not-msal.md)

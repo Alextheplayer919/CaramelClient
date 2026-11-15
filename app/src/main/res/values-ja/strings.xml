@@ -1423,4 +1423,9 @@ CaramelClient を続行するには移行を完了する必要があります。
     <string name="caramel_version_range">%1$s \u2013 %2$s</string>
     <string name="caramel_sign_in_idle">まだサインインしていません</string>
     <string name="caramel_device_code_open_failed">ブラウザーを開けませんでした。microsoft.com/link を開き、表示されたコードを入力してください。</string>
+    <string name="caramel_friends_loading">フレンドを読み込み中…</string>
+    <string name="caramel_friends_unavailable">フレンドを表示するにはもう一度サインインしてください。</string>
+    <string name="caramel_offline">オフライン</string>
+    <string name="caramel_no_friends_match">一致するフレンドなし</string>
+    <string name="caramel_no_friends_match_body">検索に一致するフレンド名はありません。</string>
 </resources>

@@ -1454,4 +1454,9 @@ CaramelClient जारी रखने से पहले माइग्र�
     <string name="caramel_version_range">%1$s \u2013 %2$s</string>
     <string name="caramel_sign_in_idle">अभी साइन इन नहीं है</string>
     <string name="caramel_device_code_open_failed">कोई ब्राउज़र नहीं खोला जा सका। microsoft.com/link पर जाएँ और दिखाया गया कोड डालें।</string>
+    <string name="caramel_friends_loading">मित्र लोड हो रहे हैं…</string>
+    <string name="caramel_friends_unavailable">अपने मित्रों को देखने के लिए फिर से साइन इन करें।</string>
+    <string name="caramel_offline">ऑफ़लाइन</string>
+    <string name="caramel_no_friends_match">कोई मिलता-जुलता मित्र नहीं</string>
+    <string name="caramel_no_friends_match_body">आपकी खोज से कोई मित्र नाम मेल नहीं खाता।</string>
 </resources>

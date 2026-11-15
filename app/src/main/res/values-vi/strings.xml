@@ -1456,4 +1456,9 @@ Quá trình chuyển đổi phải hoàn tất trước khi CaramelClient có th
     <string name="caramel_version_range">%1$s \u2013 %2$s</string>
     <string name="caramel_sign_in_idle">Chưa đăng nhập</string>
     <string name="caramel_device_code_open_failed">Không thể mở trình duyệt nào. Truy cập microsoft.com/link và nhập mã hiển thị.</string>
+    <string name="caramel_friends_loading">Đang tải bạn bè…</string>
+    <string name="caramel_friends_unavailable">Đăng nhập lại để xem bạn bè của bạn.</string>
+    <string name="caramel_offline">Ngoại tuyến</string>
+    <string name="caramel_no_friends_match">Không có bạn bè trùng khớp</string>
+    <string name="caramel_no_friends_match_body">Không có tên bạn bè nào khớp với tìm kiếm của bạn.</string>
 </resources>

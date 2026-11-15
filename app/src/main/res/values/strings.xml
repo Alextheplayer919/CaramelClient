@@ -2885,6 +2885,11 @@ CaramelClient must complete the migration before continuing.</string>
     <string name="caramel_search_friends">Search friends</string>
     <string name="caramel_no_friends_title">No friends yet</string>
     <string name="caramel_no_friends_body">Friends of your signed-in account appear here.</string>
+    <string name="caramel_friends_loading">Loading friends…</string>
+    <string name="caramel_friends_unavailable">Sign in again to see your friends.</string>
+    <string name="caramel_offline">Offline</string>
+    <string name="caramel_no_friends_match">No matching friends</string>
+    <string name="caramel_no_friends_match_body">No friend name matches your search.</string>
     <string name="caramel_add_account_title">Add account</string>
     <string name="caramel_add_account_sub">Sign in with the Microsoft account that owns Minecraft</string>
     <string name="caramel_sign_in_microsoft">Sign in with Microsoft</string>

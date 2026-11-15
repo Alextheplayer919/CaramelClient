@@ -1453,4 +1453,9 @@ CaramelClient\'ın devam edebilmesi için taşımanın tamamlanması gerekiyor.<
     <string name="caramel_version_range">%1$s \u2013 %2$s</string>
     <string name="caramel_sign_in_idle">Henüz giriş yapılmadı</string>
     <string name="caramel_device_code_open_failed">Hiçbir tarayıcı açılamadı. microsoft.com/link adresine gidin ve gösterilen kodu girin.</string>
+    <string name="caramel_friends_loading">Arkadaşlar yükleniyor…</string>
+    <string name="caramel_friends_unavailable">Arkadaşlarını görmek için tekrar giriş yap.</string>
+    <string name="caramel_offline">Çevrimdışı</string>
+    <string name="caramel_no_friends_match">Eşleşen arkadaş yok</string>
+    <string name="caramel_no_friends_match_body">Aramanla eşleşen bir arkadaş adı yok.</string>
 </resources>

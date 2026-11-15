@@ -1426,4 +1426,9 @@ La migración debe completarse antes de continuar con CaramelClient.</string>
     <string name="caramel_version_range">%1$s \u2013 %2$s</string>
     <string name="caramel_sign_in_idle">Aún no has iniciado sesión</string>
     <string name="caramel_device_code_open_failed">No se pudo abrir ningún navegador. Visita microsoft.com/link e introduce el código mostrado.</string>
+    <string name="caramel_friends_loading">Cargando amigos…</string>
+    <string name="caramel_friends_unavailable">Inicia sesión de nuevo para ver tus amigos.</string>
+    <string name="caramel_offline">Sin conexión</string>
+    <string name="caramel_no_friends_match">No hay amigos coincidentes</string>
+    <string name="caramel_no_friends_match_body">Ningún nombre de amigo coincide con tu búsqueda.</string>
 </resources>

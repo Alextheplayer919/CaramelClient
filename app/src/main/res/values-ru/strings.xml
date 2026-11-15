@@ -1465,4 +1465,9 @@
     <string name="caramel_version_range">%1$s \u2013 %2$s</string>
     <string name="caramel_sign_in_idle">Вы ещё не вошли</string>
     <string name="caramel_device_code_open_failed">Не удалось открыть браузер. Откройте microsoft.com/link и введите показанный код.</string>
+    <string name="caramel_friends_loading">Загрузка друзей…</string>
+    <string name="caramel_friends_unavailable">Войдите снова, чтобы увидеть друзей.</string>
+    <string name="caramel_offline">Не в сети</string>
+    <string name="caramel_no_friends_match">Нет подходящих друзей</string>
+    <string name="caramel_no_friends_match_body">Ни одно имя друга не совпадает с поиском.</string>
 </resources>
