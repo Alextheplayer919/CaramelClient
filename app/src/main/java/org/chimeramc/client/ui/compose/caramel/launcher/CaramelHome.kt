@@ -73,7 +73,11 @@ fun CaramelHomeScreen(
             Hero(state, onLaunch, onOpenContent, Modifier.fillMaxWidth().height(320.dp))
             Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
                 Text(stringResource(R.string.caramel_latest_news), style = T.Title, modifier = Modifier.weight(1f))
-                Text(stringResource(R.string.caramel_view_all_news), style = T.Label.copy(color = C.Text2, fontSize = 11.5.sp_))
+                Text(
+                    stringResource(R.string.caramel_view_all_news),
+                    style = T.Label.copy(color = C.Text2, fontSize = 11.5.sp_),
+                    modifier = Modifier.clickable(remember { MutableInteractionSource() }, null) { state.newsAll = true },
+                )
             }
             Row(Modifier.fillMaxWidth().weight(1f), horizontalArrangement = Arrangement.spacedBy(16.dp)) {
                 val cards = state.news.take(3)

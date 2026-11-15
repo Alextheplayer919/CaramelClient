@@ -243,6 +243,67 @@ fun CaramelScreenshotsModal(state: CaramelLauncherState, actions: CaramelLaunche
     }
 }
 
+/**
+ * The "all news" modal.
+ *
+ * <p>"View all news" used to be a label with no click, so the press did nothing. It now opens this
+ * list of every changelog entry the Home row truncates to three; an unreadable feed leaves the list
+ * empty and the modal shows its empty state rather than a fabricated post.
+ */
+@Composable
+fun CaramelNewsModal(state: CaramelLauncherState, actions: CaramelLauncherHost.Actions) {
+    CaramelModal(state.newsAll, { state.newsAll = false }, Modifier.size(760.dp, 700.dp)) {
+        val posts = state.news
+        Column(Modifier.fillMaxSize()) {
+            CaramelModalHeader(
+                stringResource(R.string.caramel_news_title),
+                stringResource(R.string.caramel_news_sub),
+                { state.newsAll = false },
+            ) {
+                GlassButton(
+                    stringResource(R.string.caramel_view_all),
+                    { state.newsAll = false; state.tab = CaramelTab.News },
+                    icon = Icons.Rounded.Article,
+                    height = 32,
+                )
+            }
+            if (posts.isEmpty()) {
+                EmptyState(
+                    stringResource(R.string.caramel_no_news_title),
+                    stringResource(R.string.caramel_no_news_body),
+                    Modifier.fillMaxWidth().weight(1f).padding(horizontal = 32.dp),
+                )
+            } else {
+                val tints = listOf(C.Caramel, C.Blue, C.Green, Color(0xFF966EFF), C.Red, Color(0xFF4AC8E6))
+                LazyColumn(
+                    Modifier.weight(1f).padding(horizontal = 32.dp),
+                    verticalArrangement = Arrangement.spacedBy(12.dp),
+                ) {
+                    items(posts, key = { it.title + it.meta }) { post ->
+                        val tint = tints[(post.title.hashCode() and 0x7fffffff) % tints.size]
+                        GlassPanel(Modifier.fillMaxWidth(), RoundedCornerShape(20.dp), elevation = 6.dp) {
+                            Row(Modifier.padding(12.dp), horizontalArrangement = Arrangement.spacedBy(14.dp)) {
+                                Box(
+                                    Modifier.size(150.dp, 106.dp).background(
+                                        Brush.verticalGradient(listOf(tint.copy(0.5f), tint.copy(0.1f))),
+                                        RoundedCornerShape(12.dp),
+                                    ),
+                                )
+                                Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(6.dp)) {
+                                    if (post.featured) StatusLabel(stringResource(R.string.caramel_featured), C.Caramel)
+                                    Text(post.title, style = T.Subtitle.copy(fontSize = 15.sp_), maxLines = 2)
+                                    Text(post.summary, style = T.Body, maxLines = 3)
+                                    Text(post.meta, style = T.Caption)
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
 /** The Friends modal: the active account's real Xbox Live friends, loaded by the activity. */
 @Composable
 fun CaramelFriendsModal(state: CaramelLauncherState, actions: CaramelLauncherHost.Actions) {

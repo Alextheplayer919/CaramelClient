@@ -130,6 +130,9 @@ class CaramelLauncherState {
     var appMenu by mutableStateOf(false)
     var screenshotsModal by mutableStateOf(false)
     var friendsAll by mutableStateOf(false)
+
+    /** Whether the "View all news" modal is open. */
+    var newsAll by mutableStateOf(false)
     var addAccount by mutableStateOf(false)
     var accountSettings by mutableStateOf(false)
 
