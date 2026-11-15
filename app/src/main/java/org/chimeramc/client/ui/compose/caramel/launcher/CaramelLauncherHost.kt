@@ -6,6 +6,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.platform.ComposeView
 import org.chimeramc.client.ui.compose.caramel.CaramelLauncherState
 import org.chimeramc.client.ui.compose.caramel.CaramelModInfo
+import org.chimeramc.client.ui.compose.caramel.CaramelScreenshotInfo
 import org.chimeramc.client.ui.compose.caramel.CaramelTheme
 import org.chimeramc.client.ui.compose.caramel.CaramelCosmeticInfo
 import org.chimeramc.client.ui.compose.caramel.CaramelServerInfo
@@ -32,10 +33,21 @@ object CaramelLauncherHost {
         fun equipCosmetic(cosmetic: CaramelCosmeticInfo)
         fun toggleFavourite(cosmetic: CaramelCosmeticInfo)
         fun joinServer(server: CaramelServerInfo)
+        fun addServer()
+        fun toggleServerFavourite(server: CaramelServerInfo)
         fun openModsFolder()
         fun openContent()
         fun openSettings()
         fun openAccounts()
+        fun openScreenshots()
+        fun openScreenshot(screenshot: CaramelScreenshotInfo)
+        fun deleteScreenshot(screenshot: CaramelScreenshotInfo)
+        fun startSignIn()
+        fun signOut()
+        fun renameInstance(name: String)
+        fun repairInstance()
+        fun deleteInstance()
+        fun openInstanceFolder()
         fun quit()
     }
 
@@ -66,4 +78,19 @@ object CaramelLauncherHost {
     /** The Cosmetics skin-preview slot; a Kotlin caller may replace it. */
     @JvmStatic
     var skinViewerProvider: (@Composable (androidx.compose.ui.Modifier) -> Unit)? = null
+}
+
+/**
+ * The Java-facing entry point for the cold-start splash.
+ *
+ * <p>Same seam as [CaramelLauncherHost]: a `@Composable` cannot be called from Java, so the activity
+ * passes the plain `preparing` string and this mounts the screen.
+ */
+object CaramelSplashHost {
+    @JvmStatic
+    fun setContent(composeView: ComposeView, preparing: String) {
+        composeView.setContent {
+            CaramelTheme { CaramelSplashScreen(preparing) }
+        }
+    }
 }

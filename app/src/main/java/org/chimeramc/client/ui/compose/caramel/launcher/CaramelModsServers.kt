@@ -42,7 +42,9 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
+import org.chimeramc.client.R
 import androidx.compose.ui.unit.dp
 import org.chimeramc.client.ui.compose.caramel.C
 import org.chimeramc.client.ui.compose.caramel.CaramelLauncherState
@@ -100,24 +102,24 @@ fun CaramelModsScreen(
     var q by remember { mutableStateOf("") }
     var chip by remember { mutableStateOf(0) }
     CaramelPage(
-        "Mods",
-        "Browse, install and toggle mods for this instance",
+        stringResource(R.string.mods_section_title),
+        stringResource(R.string.caramel_mods_sub),
         {
-            SearchField(q, { q = it }, "Search mods", Modifier.width(300.dp))
+            SearchField(q, { q = it }, stringResource(R.string.caramel_search_mods), Modifier.width(300.dp))
             Spacer(Modifier.width(10.dp))
-            GlassButton("Open mods folder", onOpenFolder, icon = Icons.Rounded.Folder)
+            GlassButton(stringResource(R.string.caramel_open_mods_folder), onOpenFolder, icon = Icons.Rounded.Folder)
         },
     ) {
         Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-            listOf("All", "Installed", "Performance", "Visual", "Utility", "Fun").forEachIndexed { i, t ->
-                FilterChip(t, chip == i, { chip = i })
+            listOf(R.string.caramel_filter_all, R.string.caramel_filter_installed, R.string.caramel_filter_performance, R.string.caramel_filter_visual, R.string.caramel_filter_utility, R.string.caramel_filter_fun).forEachIndexed { i, t ->
+                FilterChip(stringResource(t), chip == i, { chip = i })
             }
         }
         val list = remember(q, state.mods) {
             state.mods.filter { q.trim().isEmpty() || it.name.contains(q.trim(), ignoreCase = true) }
         }
         if (list.isEmpty()) {
-            EmptyState("No mods installed", "Mods you add to this instance appear here.", Modifier.fillMaxSize())
+            EmptyState(stringResource(R.string.caramel_no_mods_title), stringResource(R.string.caramel_no_mods_body), Modifier.fillMaxSize())
         } else {
             LazyVerticalGrid(
                 GridCells.Adaptive(270.dp),
@@ -136,14 +138,14 @@ fun CaramelModsScreen(
                                 IconTile(modIcon(m), accents[modIconIndex(m)], 48)
                                 Column {
                                     Text(m.name, style = T.Subtitle)
-                                    Text("by ${m.author}", style = T.Body)
+                                    Text(stringResource(R.string.caramel_mod_by, m.author), style = T.Body)
                                 }
                             }
                             Text(m.description, style = T.Body, maxLines = 3)
-                            StatusLabel(if (m.enabled) "Enabled" else "Disabled", if (m.enabled) C.Green else C.Text2)
+                            StatusLabel(stringResource(if (m.enabled) R.string.caramel_state_enabled else R.string.caramel_state_disabled), if (m.enabled) C.Green else C.Text2)
                             Spacer(Modifier.weight(1f))
                             Row(verticalAlignment = Alignment.CenterVertically) {
-                                Text("v${m.version}", style = T.Caption, modifier = Modifier.weight(1f))
+                                Text(stringResource(R.string.caramel_mod_version, m.version), style = T.Caption, modifier = Modifier.weight(1f))
                                 CaramelToggle(m.enabled, { onToggle(m, it) })
                             }
                         }
@@ -163,7 +165,7 @@ private fun modIconIndex(m: CaramelModInfo): Int = (m.name.hashCode() and 0x7fff
 /** The Servers screen: a featured banner over the saved-server rows. */
 @Composable
 fun CaramelServersScreen(state: CaramelLauncherState, onJoin: (CaramelServerInfo) -> Unit) {
-    CaramelPage("Servers", "Featured and saved servers") {
+    CaramelPage(stringResource(R.string.servers_category), stringResource(R.string.caramel_servers_sub)) {
         val featured = state.servers.firstOrNull()
         if (featured != null) {
             GlassPanel(Modifier.fillMaxWidth().height(180.dp), RoundedCornerShape(24.dp)) {
@@ -173,16 +175,16 @@ fun CaramelServersScreen(state: CaramelLauncherState, onJoin: (CaramelServerInfo
                         Text(featured.name, style = T.Display.copy(fontSize = 26.sp_))
                         Text(featured.address, style = T.Body.copy(fontSize = 13.sp_))
                         Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                            featured.online?.let { StatusLabel("$it playing", C.Green) }
+                            featured.online?.let { StatusLabel(stringResource(R.string.caramel_players_online, it), C.Green) }
                             VersionRangeLabel(featured.minVersion, featured.maxVersion)
                         }
                     }
-                    PrimaryButton("Join server", { onJoin(featured) }, Modifier.width(176.dp), icon = Icons.Rounded.PlayArrow)
+                    PrimaryButton(stringResource(R.string.caramel_join_server), { onJoin(featured) }, Modifier.width(176.dp), icon = Icons.Rounded.PlayArrow)
                 }
             }
         }
         if (state.servers.isEmpty()) {
-            EmptyState("No servers saved", "Add a server and it appears here.", Modifier.fillMaxWidth().weight(1f))
+            EmptyState(stringResource(R.string.caramel_no_servers_title), stringResource(R.string.caramel_no_servers_body), Modifier.fillMaxWidth().weight(1f))
         } else {
             Column(Modifier.fillMaxWidth().weight(1f), verticalArrangement = Arrangement.spacedBy(12.dp)) {
                 state.servers.forEachIndexed { i, s ->
@@ -197,11 +199,11 @@ fun CaramelServersScreen(state: CaramelLauncherState, onJoin: (CaramelServerInfo
                                 Text(s.name, style = T.Subtitle.copy(fontSize = 15.sp_))
                                 Text(s.address, style = T.Body)
                             }
-                            s.online?.let { Text("$it online", style = T.Label) }
+                            s.online?.let { Text(stringResource(R.string.caramel_players_online, it), style = T.Label) }
                             if (s.online != null) Icon(Icons.Rounded.Wifi, null, Modifier.size(18.dp), C.Green)
-                            s.ping?.let { Text("$it ms", style = T.Body) }
+                            s.ping?.let { Text(stringResource(R.string.caramel_ping_ms, it), style = T.Body) }
                             VersionRangeLabel(s.minVersion, s.maxVersion)
-                            GlassButton("Join", { onJoin(s) }, icon = Icons.Rounded.PlayArrow, height = 36)
+                            GlassButton(stringResource(R.string.caramel_join), { onJoin(s) }, icon = Icons.Rounded.PlayArrow, height = 36)
                         }
                     }
                 }

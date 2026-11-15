@@ -41,6 +41,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import org.chimeramc.client.R
 import org.chimeramc.client.ui.compose.caramel.C
@@ -88,7 +89,7 @@ private fun CaramelTitleBar(state: CaramelLauncherState) {
         horizontalArrangement = Arrangement.spacedBy(10.dp),
     ) {
         Image(painterResource(R.drawable.ic_caramel_logo), null, Modifier.size(30.dp))
-        Text("Caramel Client", style = T.Subtitle)
+        Text(stringResource(R.string.caramel_brand), style = T.Subtitle)
         val menuShape = RoundedCornerShape(8.dp)
         Box(
             Modifier.size(22.dp).clip(menuShape)
@@ -104,20 +105,20 @@ private fun CaramelTitleBar(state: CaramelLauncherState) {
         }
         CaramelPill {
             Icon(Icons.Rounded.RocketLaunch, null, Modifier.size(13.dp), C.Text2)
-            Text("Launchpad", style = T.Label.copy(fontSize = 11.5.sp_, color = C.Text2))
+            Text(stringResource(R.string.caramel_launchpad), style = T.Label.copy(fontSize = 11.5.sp_, color = C.Text2))
         }
         Spacer(Modifier.width(12.dp))
-        Text("Quick play", style = T.Caption)
+        Text(stringResource(R.string.caramel_quick_play), style = T.Caption)
         // Quick play tiles: one per saved server, capped so the row never overflows.
         state.servers.take(8).forEachIndexed { i, _ -> ServerIcon(quickPlayAccent(i), 26) }
         Spacer(Modifier.weight(1f))
-        Text("${state.runningInstances} instances", style = T.Caption)
+        Text(stringResource(R.string.caramel_instances_running, state.runningInstances), style = T.Caption)
         CaramelPill(onClick = { state.accountMenu = !state.accountMenu }) {
             if (state.signedIn) {
                 Icon(Icons.Rounded.AccountCircle, null, Modifier.size(18.dp), C.Text2)
                 Text(state.accountName, style = T.Label.copy(fontSize = 11.5.sp_))
             } else {
-                Text("Sign in", style = T.Label.copy(fontSize = 11.5.sp_))
+                Text(stringResource(R.string.sign_in), style = T.Label.copy(fontSize = 11.5.sp_))
             }
             Icon(Icons.Rounded.KeyboardArrowDown, null, Modifier.size(14.dp), C.Text3)
         }

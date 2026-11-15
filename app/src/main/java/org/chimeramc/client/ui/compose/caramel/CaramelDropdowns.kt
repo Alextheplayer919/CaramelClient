@@ -34,7 +34,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.IntOffset
+import org.chimeramc.client.R
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Popup
 import androidx.compose.ui.window.PopupProperties
@@ -151,7 +153,7 @@ fun CaramelVersionDropdown(
                     ChannelLabel(v.channel.label, v.channel.color)
                 }
             }
-            if (list.isEmpty()) item { Text("No versions match", style = T.Body, modifier = Modifier.padding(12.dp)) }
+            if (list.isEmpty()) item { Text(stringResource(R.string.caramel_no_versions_match), style = T.Body, modifier = Modifier.padding(12.dp)) }
         }
     }
 }
@@ -181,7 +183,7 @@ fun CaramelProfileDropdown(
         ) {
             Icon(Icons.Rounded.Folder, null, Modifier.size(17.dp), Color(0xFF50BEFF))
             Text(
-                if (selected == CaramelProfileMode.Open) "Open profile" else "Isolated profile",
+                if (selected == CaramelProfileMode.Open) stringResource(R.string.caramel_profile_open) else stringResource(R.string.caramel_profile_isolated),
                 style = T.Label.copy(fontWeight = FontWeight.Medium),
                 modifier = Modifier.weight(1f),
             )

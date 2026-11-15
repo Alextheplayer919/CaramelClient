@@ -28,6 +28,8 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.res.stringResource
+import org.chimeramc.client.R
 import androidx.compose.ui.unit.dp
 
 /**
@@ -68,7 +70,7 @@ fun ChannelLabel(label: String, color: Color, modifier: Modifier = Modifier) = S
 /** An "Unlocked" (green, open padlock) or "Locked" (red, closed padlock) pill. */
 @Composable
 fun ProfileLabel(locked: Boolean, modifier: Modifier = Modifier) = StatusLabel(
-    if (locked) "Locked" else "Unlocked",
+    if (locked) stringResource(R.string.caramel_locked) else stringResource(R.string.caramel_unlocked),
     if (locked) C.Red else C.Green,
     modifier,
     if (locked) Icons.Rounded.Lock else Icons.Rounded.LockOpen,
@@ -173,4 +175,4 @@ fun ServerIcon(color: Color, size: Int = 26, modifier: Modifier = Modifier) {
 /** A "1.21.132 – 26.62" supported-version label for a server. */
 @Composable
 fun VersionRangeLabel(min: String, max: String, modifier: Modifier = Modifier) =
-    StatusLabel("$min – $max", Color(0xFF78A0FF), modifier)
+    StatusLabel(stringResource(R.string.caramel_version_range, min, max), Color(0xFF78A0FF), modifier)

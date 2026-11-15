@@ -55,16 +55,27 @@ data class CaramelModInfo(
 data class CaramelServerInfo(
     val name: String,
     val address: String,
+    val port: Int,
     val online: Int?,
     val ping: Int?,
     val minVersion: String,
     val maxVersion: String,
+    val favourite: Boolean,
 )
+
+/** What kind of cosmetic a tile is, which is the Cosmetics screen's filter chip. */
+enum class CaramelCosmeticKind(val chip: String) {
+    Cape("Capes"),
+    Wings("Wings"),
+    Hat("Hats"),
+    Pet("Pets"),
+}
 
 /** One cosmetic tile: the Cosmetics grid draws these from the real catalogue. */
 data class CaramelCosmeticInfo(
+    val id: String,
     val name: String,
-    val kind: String,
+    val kind: CaramelCosmeticKind,
     val equipped: Boolean,
     val owned: Boolean,
     val favourite: Boolean,
@@ -76,6 +87,12 @@ data class CaramelNewsInfo(
     val summary: String,
     val meta: String,
     val featured: Boolean,
+)
+
+/** One captured screenshot: the Screenshots modal draws these from the instance's folder. */
+data class CaramelScreenshotInfo(
+    val name: String,
+    val path: String,
 )
 
 /**
@@ -103,6 +120,7 @@ class CaramelLauncherState {
     var servers by mutableStateOf<List<CaramelServerInfo>>(emptyList())
     var cosmetics by mutableStateOf<List<CaramelCosmeticInfo>>(emptyList())
     var news by mutableStateOf<List<CaramelNewsInfo>>(emptyList())
+    var screenshots by mutableStateOf<List<CaramelScreenshotInfo>>(emptyList())
 
     var launchMenu by mutableStateOf(false)
     var instanceSettings by mutableStateOf(false)
@@ -110,11 +128,23 @@ class CaramelLauncherState {
     var addFriend by mutableStateOf(false)
     var launcherSettings by mutableStateOf(false)
     var appMenu by mutableStateOf(false)
-    var screenshots by mutableStateOf(false)
+    var screenshotsModal by mutableStateOf(false)
     var friendsAll by mutableStateOf(false)
     var addAccount by mutableStateOf(false)
     var accountSettings by mutableStateOf(false)
 
     /** The selected mod row, or null when the detail modal is closed. */
     var selectedMod by mutableStateOf<CaramelModInfo?>(null)
+
+    /** The selected screenshot row, or null when the Screenshots modal is closed. */
+    var selectedScreenshot by mutableStateOf<CaramelScreenshotInfo?>(null)
+
+    /** Whether the instance's files can be repaired or deleted; false for the built-in version. */
+    var instanceEditable by mutableStateOf(false)
+
+    /** A status line shown while a long action (sign-in, repair) is running; empty when idle. */
+    var busyMessage by mutableStateOf("")
+
+    /** The Microsoft device code shown in the add-account modal, empty when no sign-in is running. */
+    var deviceCode by mutableStateOf("")
 }

@@ -42,6 +42,7 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import org.chimeramc.client.R
@@ -71,13 +72,13 @@ fun CaramelHomeScreen(
         Column(Modifier.weight(1f).fillMaxHeight(), verticalArrangement = Arrangement.spacedBy(20.dp)) {
             Hero(state, onLaunch, onOpenContent, Modifier.fillMaxWidth().height(320.dp))
             Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
-                Text("Latest news", style = T.Title, modifier = Modifier.weight(1f))
-                Text("View all news", style = T.Label.copy(color = C.Text2, fontSize = 11.5.sp_))
+                Text(stringResource(R.string.caramel_latest_news), style = T.Title, modifier = Modifier.weight(1f))
+                Text(stringResource(R.string.caramel_view_all_news), style = T.Label.copy(color = C.Text2, fontSize = 11.5.sp_))
             }
             Row(Modifier.fillMaxWidth().weight(1f), horizontalArrangement = Arrangement.spacedBy(16.dp)) {
                 val cards = state.news.take(3)
                 if (cards.isEmpty()) {
-                    EmptyCard("No news yet", "New posts appear here once the changelog loads.", Modifier.weight(1f))
+                    EmptyCard(stringResource(R.string.caramel_no_news_title), stringResource(R.string.caramel_no_news_body), Modifier.weight(1f))
                 } else {
                     cards.forEachIndexed { i, n ->
                         NewsCard(n.title, n.meta, newsArt(i), Modifier.weight(1f))
@@ -119,14 +120,14 @@ private fun Hero(state: CaramelLauncherState, onLaunch: () -> Unit, onOpenConten
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.spacedBy(14.dp),
         ) {
-            Text("Ready when you are", style = T.Body)
+            Text(stringResource(R.string.caramel_ready), style = T.Body)
             LaunchSplitButton(state, onLaunch)
             Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                GlassButton("Profiles", { state.launchMenu = true }, icon = Icons.Rounded.Folder, height = 32)
-                GlassButton("Instances", { state.instanceSettings = true }, icon = Icons.Rounded.Tune, height = 32)
-                GlassButton("Content", onOpenContent, icon = Icons.Rounded.PhotoCamera, height = 32)
+                GlassButton(stringResource(R.string.caramel_profiles), { state.launchMenu = true }, icon = Icons.Rounded.Folder, height = 32)
+                GlassButton(stringResource(R.string.caramel_instances), { state.instanceSettings = true }, icon = Icons.Rounded.Tune, height = 32)
+                GlassButton(stringResource(R.string.caramel_content), onOpenContent, icon = Icons.Rounded.PhotoCamera, height = 32)
             }
-            val line = if (state.instanceName.isNotEmpty()) state.instanceName else "No instance selected"
+            val line = state.instanceName.ifEmpty { stringResource(R.string.caramel_no_instance) }
             Text(line, style = T.Caption)
         }
     }
@@ -152,8 +153,8 @@ private fun LaunchSplitButton(state: CaramelLauncherState, onLaunch: () -> Unit)
                 if (state.launching) {
                     CircularProgressIndicator(color = C.OnGreen, strokeWidth = 2.dp, modifier = Modifier.size(22.dp))
                 } else {
-                    Text("LAUNCH GAME", style = T.Display.copy(fontSize = 19.sp_, color = C.OnGreen))
-                    val sub = state.version?.id?.let { "Caramel Client $it" } ?: "No version installed"
+                    Text(stringResource(R.string.caramel_launch_game), style = T.Display.copy(fontSize = 19.sp_, color = C.OnGreen))
+                    val sub = state.version?.id?.let { stringResource(R.string.caramel_instance_launch_sub, it) } ?: stringResource(R.string.caramel_no_version_installed)
                     Text(sub, style = T.Chip.copy(color = C.OnGreen.copy(0.85f)))
                 }
             }
@@ -222,9 +223,9 @@ private fun FriendsCard(state: CaramelLauncherState, modifier: Modifier) {
     GlassPanel(modifier, RoundedCornerShape(24.dp)) {
         Column(Modifier.fillMaxSize().padding(22.dp)) {
             Row(verticalAlignment = Alignment.CenterVertically) {
-                Text("Friends", style = T.Title, modifier = Modifier.weight(1f))
+                Text(stringResource(R.string.caramel_friends), style = T.Title, modifier = Modifier.weight(1f))
                 Text(
-                    "View all",
+                    stringResource(R.string.caramel_view_all),
                     style = T.Label.copy(color = C.Text2, fontSize = 11.5.sp_),
                     modifier = Modifier.clickable(remember { MutableInteractionSource() }, null) { state.friendsAll = true },
                 )
@@ -241,12 +242,12 @@ private fun FriendsCard(state: CaramelLauncherState, modifier: Modifier) {
                 ) { Icon(Icons.Rounded.Group, null, Modifier.size(28.dp), C.Text2) }
                 Spacer(Modifier.height(16.dp))
                 Text(
-                    "Chat with friends, send game invites, and more.",
+                    stringResource(R.string.caramel_friends_sub),
                     style = T.Body.copy(fontSize = 12.5.sp_, textAlign = TextAlign.Center),
                     modifier = Modifier.width(200.dp),
                 )
                 Spacer(Modifier.height(16.dp))
-                GlassButton("Add your first friend", { state.addFriend = true }, icon = Icons.Rounded.Add)
+                GlassButton(stringResource(R.string.caramel_add_first_friend), { state.addFriend = true }, icon = Icons.Rounded.Add)
             }
         }
     }
@@ -261,16 +262,16 @@ private fun PromoCard(modifier: Modifier) {
             horizontalAlignment = Alignment.CenterHorizontally,
         ) {
             Image(painterResource(R.drawable.ic_caramel_logo), null, Modifier.size(130.dp))
-            Text("Become a", style = T.Title.copy(fontSize = 19.sp_))
-            Text("Caramel+", style = T.Display.copy(fontSize = 25.sp_, color = C.Caramel))
+            Text(stringResource(R.string.caramel_become_a), style = T.Title.copy(fontSize = 19.sp_))
+            Text(stringResource(R.string.caramel_plus), style = T.Display.copy(fontSize = 25.sp_, color = C.Caramel))
             Spacer(Modifier.height(8.dp))
             Text(
-                "Support the client and unlock cosmetics, themes and early builds.",
+                stringResource(R.string.caramel_plus_blurb),
                 style = T.Body.copy(fontSize = 12.5.sp_, textAlign = TextAlign.Center),
                 modifier = Modifier.width(310.dp),
             )
             Spacer(Modifier.weight(1f))
-            PrimaryButton("Get Caramel+", {}, Modifier.fillMaxWidth(), Tone.Caramel)
+            PrimaryButton(stringResource(R.string.caramel_get_plus), {}, Modifier.fillMaxWidth(), Tone.Caramel)
         }
     }
 }
