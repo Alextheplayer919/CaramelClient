@@ -1462,4 +1462,6 @@
     <string name="caramel_news_title">Новости</string>
     <string name="caramel_store_title">Магазин</string>
     <string name="caramel_version_range">%1$s \u2013 %2$s</string>
+    <string name="caramel_sign_in_idle">Вы ещё не вошли</string>
+    <string name="caramel_device_code_open_failed">Не удалось открыть браузер. Откройте microsoft.com/link и введите показанный код.</string>
 </resources>

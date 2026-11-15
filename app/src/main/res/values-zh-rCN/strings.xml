@@ -1444,4 +1444,6 @@
     <string name="caramel_news_title">消息</string>
     <string name="caramel_store_title">商店</string>
     <string name="caramel_version_range">%1$s \u2013 %2$s</string>
+    <string name="caramel_sign_in_idle">尚未登录</string>
+    <string name="caramel_device_code_open_failed">无法打开浏览器。请访问 microsoft.com/link 并输入显示的代码。</string>
 </resources>

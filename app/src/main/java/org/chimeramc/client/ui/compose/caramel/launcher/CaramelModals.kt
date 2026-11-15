@@ -34,6 +34,7 @@ import androidx.compose.material.icons.rounded.Check
 import androidx.compose.material.icons.rounded.Close
 import androidx.compose.material.icons.rounded.ContentCopy
 import androidx.compose.material.icons.rounded.Delete
+import androidx.compose.material.icons.rounded.ErrorOutline
 import androidx.compose.material.icons.rounded.Extension
 import androidx.compose.material.icons.rounded.Folder
 import androidx.compose.material.icons.rounded.Group
@@ -284,26 +285,41 @@ fun CaramelFriendsModal(state: CaramelLauncherState, actions: CaramelLauncherHos
     }
 }
 
-/** The Microsoft sign-in modal: the device code the activity is polling. */
+/**
+ * The Microsoft sign-in modal.
+ *
+ * <p>It carries the whole device-code flow: the button starts it, the code and the pre-filled link
+ * appear as soon as Microsoft issues them, and a failure shows why instead of closing silently.
+ * Before this the modal only ever showed a code the flow never had time to hand over, so the button
+ * looked dead and the modal closed on its own.
+ */
 @Composable
 fun CaramelAddAccountModal(state: CaramelLauncherState, actions: CaramelLauncherHost.Actions) {
-    CaramelModal(state.addAccount, { state.addAccount = false }, Modifier.size(460.dp, 520.dp)) {
+    CaramelModal(state.addAccount, { state.addAccount = false }, Modifier.size(460.dp, 560.dp)) {
         Column(Modifier.fillMaxSize()) {
             CaramelModalHeader(
                 stringResource(R.string.caramel_add_account_title),
                 stringResource(R.string.caramel_add_account_sub),
                 { state.addAccount = false },
             )
-            Column(Modifier.weight(1f).padding(horizontal = 32.dp), verticalArrangement = Arrangement.spacedBy(16.dp)) {
+            Column(
+                Modifier.weight(1f).padding(horizontal = 32.dp).verticalScroll(rememberScrollState()),
+                verticalArrangement = Arrangement.spacedBy(16.dp),
+            ) {
                 Row(
                     Modifier.fillMaxWidth().height(56.dp).clip(RoundedCornerShape(16.dp))
-                        .background(Color.White)
-                        .clickable(remember { MutableInteractionSource() }, null, onClick = actions::startSignIn),
+                        .background(if (state.signInRunning) Color.White.copy(0.6f) else Color.White)
+                        .clickable(
+                            remember { MutableInteractionSource() }, null,
+                            enabled = !state.signInRunning,
+                            onClick = actions::startSignIn,
+                        ),
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.Center,
                 ) {
                     Text(
-                        stringResource(R.string.caramel_sign_in_microsoft),
+                        if (state.signInRunning) stringResource(R.string.caramel_sign_in_starting)
+                        else stringResource(R.string.caramel_sign_in_microsoft),
                         style = T.Label.copy(color = Color(0xFF1C2446), fontSize = 14.5.sp_),
                     )
                 }
@@ -316,10 +332,43 @@ fun CaramelAddAccountModal(state: CaramelLauncherState, actions: CaramelLauncher
                     Modifier.fillMaxWidth().clip(RoundedCornerShape(18.dp)).background(Color(0x78040A1A))
                         .border(1.dp, Color.White.copy(0.16f), RoundedCornerShape(18.dp)).padding(20.dp),
                     horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.spacedBy(12.dp),
                 ) {
                     val code = state.deviceCode.ifEmpty { "\u2014\u2014\u2014\u2014" }
                     Text(code, style = T.Display.copy(fontSize = 30.sp_, letterSpacing = 3.sp_))
                     if (state.busyMessage.isNotEmpty()) Text(state.busyMessage, style = T.Body)
+                    if (state.deviceCode.isNotEmpty()) {
+                        Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
+                            GlassButton(
+                                stringResource(R.string.ms_device_code_open_browser),
+                                actions::openDeviceCodePage,
+                                icon = Icons.Rounded.Public,
+                                height = 34,
+                            )
+                            GlassButton(
+                                stringResource(R.string.ms_device_code_copy),
+                                actions::copyDeviceCode,
+                                icon = Icons.Rounded.ContentCopy,
+                                height = 34,
+                            )
+                        }
+                    }
+                }
+                if (state.signInError.isNotEmpty()) {
+                    Row(
+                        Modifier.fillMaxWidth().clip(RoundedCornerShape(14.dp))
+                            .background(C.Red.copy(0.14f))
+                            .border(1.dp, C.Red.copy(0.45f), RoundedCornerShape(14.dp))
+                            .padding(horizontal = 16.dp, vertical = 12.dp),
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(10.dp),
+                    ) {
+                        Icon(Icons.Rounded.ErrorOutline, null, Modifier.size(16.dp), C.Red)
+                        Text(
+                            stringResource(R.string.ms_login_failed_detail, state.signInError),
+                            style = T.Body.copy(color = C.Red),
+                        )
+                    }
                 }
                 Text(
                     stringResource(R.string.caramel_device_code_hint),
@@ -331,7 +380,13 @@ fun CaramelAddAccountModal(state: CaramelLauncherState, actions: CaramelLauncher
             Row(Modifier.fillMaxWidth().padding(24.dp, 18.dp), verticalAlignment = Alignment.CenterVertically) {
                 GlassButton(stringResource(R.string.cancel), { state.addAccount = false })
                 Spacer(Modifier.weight(1f))
-                Text(stringResource(R.string.caramel_waiting_sign_in), style = T.Body)
+                Text(
+                    stringResource(
+                        if (state.signInRunning) R.string.caramel_waiting_sign_in
+                        else R.string.caramel_sign_in_idle
+                    ),
+                    style = T.Body,
+                )
             }
         }
     }

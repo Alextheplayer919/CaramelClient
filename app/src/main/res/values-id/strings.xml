@@ -1447,4 +1447,6 @@ Migrasi harus selesai sebelum CaramelClient dapat melanjutkan.</string>
     <string name="caramel_news_title">Berita</string>
     <string name="caramel_store_title">Toko</string>
     <string name="caramel_version_range">%1$s \u2013 %2$s</string>
+    <string name="caramel_sign_in_idle">Belum masuk</string>
+    <string name="caramel_device_code_open_failed">Tidak ada peramban yang dapat dibuka. Buka microsoft.com/link dan masukkan kode yang ditampilkan.</string>
 </resources>

@@ -2891,6 +2891,8 @@ CaramelClient must complete the migration before continuing.</string>
     <string name="caramel_device_code_hint">Open microsoft.com/link on any device and enter this code.</string>
     <string name="caramel_waiting_sign_in">Waiting for sign-in…</string>
     <string name="caramel_sign_in_starting">Starting sign-in…</string>
+    <string name="caramel_sign_in_idle">Not signed in yet</string>
+    <string name="caramel_device_code_open_failed">No browser could be opened. Visit microsoft.com/link and enter the code shown.</string>
     <string name="caramel_account_settings_title">Account settings</string>
     <string name="caramel_privacy">Privacy</string>
     <string name="caramel_show_online_status">Show my online status</string>

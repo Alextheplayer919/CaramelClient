@@ -43,6 +43,8 @@ object CaramelLauncherHost {
         fun openScreenshot(screenshot: CaramelScreenshotInfo)
         fun deleteScreenshot(screenshot: CaramelScreenshotInfo)
         fun startSignIn()
+        fun openDeviceCodePage()
+        fun copyDeviceCode()
         fun signOut()
         fun renameInstance(name: String)
         fun repairInstance()

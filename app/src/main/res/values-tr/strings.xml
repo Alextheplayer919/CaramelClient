@@ -1450,4 +1450,6 @@ CaramelClient\'ın devam edebilmesi için taşımanın tamamlanması gerekiyor.<
     <string name="caramel_news_title">Haberler</string>
     <string name="caramel_store_title">Mağaza</string>
     <string name="caramel_version_range">%1$s \u2013 %2$s</string>
+    <string name="caramel_sign_in_idle">Henüz giriş yapılmadı</string>
+    <string name="caramel_device_code_open_failed">Hiçbir tarayıcı açılamadı. microsoft.com/link adresine gidin ve gösterilen kodu girin.</string>
 </resources>

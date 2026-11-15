@@ -1420,4 +1420,6 @@ CaramelClient を続行するには移行を完了する必要があります。
     <string name="caramel_news_title">ニュース</string>
     <string name="caramel_store_title">ストア</string>
     <string name="caramel_version_range">%1$s \u2013 %2$s</string>
+    <string name="caramel_sign_in_idle">まだサインインしていません</string>
+    <string name="caramel_device_code_open_failed">ブラウザーを開けませんでした。microsoft.com/link を開き、表示されたコードを入力してください。</string>
 </resources>

@@ -7181,17 +7181,6 @@
 
     <issue
         id="LogConditional"
-        message="The log call Log.i(...) should be conditional: surround with `if (Log.isLoggable(...))` or `if (BuildConfig.DEBUG) { ... }`"
-        errorLine1="                        Log.i(TAG, &quot;Successfully authenticated: &quot; + authenticationResult.getAccount().getUsername());"
-        errorLine2="                        ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="src/main/java/org/chimeramc/client/launcher/core/auth/MicrosoftOAuthManager.java"
-            line="144"
-            column="25"/>
-    </issue>
-
-    <issue
-        id="LogConditional"
         message="The log call Log.d(...) should be conditional: surround with `if (Log.isLoggable(...))` or `if (BuildConfig.DEBUG) { ... }`"
         errorLine1="        Log.d(TAG, &quot;Loaded &quot; + options.size() + &quot; options from &quot; + optionsFile.getAbsolutePath());"
         errorLine2="        ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">

@@ -1453,4 +1453,6 @@ Quá trình chuyển đổi phải hoàn tất trước khi CaramelClient có th
     <string name="caramel_news_title">Tin tức</string>
     <string name="caramel_store_title">Cửa hàng</string>
     <string name="caramel_version_range">%1$s \u2013 %2$s</string>
+    <string name="caramel_sign_in_idle">Chưa đăng nhập</string>
+    <string name="caramel_device_code_open_failed">Không thể mở trình duyệt nào. Truy cập microsoft.com/link và nhập mã hiển thị.</string>
 </resources>

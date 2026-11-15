@@ -1423,4 +1423,6 @@ La migration doit être terminée avant de continuer avec CaramelClient.</string
     <string name="caramel_news_title">Nouvelles</string>
     <string name="caramel_store_title">Boutique</string>
     <string name="caramel_version_range">%1$s \u2013 %2$s</string>
+    <string name="caramel_sign_in_idle">Pas encore connecté</string>
+    <string name="caramel_device_code_open_failed">Aucun navigateur n\'a pu être ouvert. Rendez-vous sur microsoft.com/link et saisissez le code affiché.</string>
 </resources>

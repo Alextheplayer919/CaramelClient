@@ -39,6 +39,7 @@ import org.chimeramc.client.ui.compose.caramel.launcher.CaramelLauncherHost;
 import org.chimeramc.client.util.AppExecutors;
 import org.chimeramc.client.util.AppLog;
 import org.chimeramc.client.util.LocalFileOpener;
+import org.chimeramc.client.util.UrlOpener;
 
 import java.io.File;
 import java.io.InputStream;
@@ -303,6 +304,11 @@ public class MainActivity extends BaseActivity implements CaramelLauncherHost.Ac
         Toast.makeText(this, getString(resId), Toast.LENGTH_SHORT).show();
     }
 
+    private void toast(String message) {
+        if (message == null || message.isEmpty()) return;
+        Toast.makeText(this, message, Toast.LENGTH_LONG).show();
+    }
+
     /** Applies a change to the Compose state on the UI thread and recomposes. */
     private void mutateState(StateMutation mutation) {
         CaramelLauncherState s = launcherState.getValue();
@@ -448,31 +454,86 @@ public class MainActivity extends BaseActivity implements CaramelLauncherHost.Ac
         mutateState(s -> s.setSelectedScreenshot(null));
     }
 
+    /**
+     * Starts the Microsoft device-code sign-in.
+     *
+     * <p>The button used to call this and see nothing happen. Three things were wrong, and each one
+     * on its own was enough to make the press look dead: the code was never shown for long enough to
+     * act on, the browser was never opened, and every failure was written to the log and then
+     * discarded, so the modal closed with no account, no code and no message. This runs the flow the
+     * device-code path actually supports (the Bedrock title id is an MSA title, so the MSAL browser
+     * flow cannot authenticate it) and reports each step into the modal.
+     */
     @Override
     public void startSignIn() {
-        mutateState(s -> s.setBusyMessage(getString(R.string.caramel_sign_in_starting)));
+        mutateState(s -> {
+            s.setSignInRunning(true);
+            s.setSignInError("");
+            s.setDeviceCode("");
+            s.setDeviceCodeUrl("");
+            s.setBusyMessage(getString(R.string.caramel_sign_in_starting));
+        });
         AppExecutors.run(AppExecutors.Kind.NETWORK, "caramel-sign-in", () -> {
+            String failure = null;
             try {
                 BedrockAuthManager manager = MsftAuthManager.loginWithDeviceCode(
-                        code -> runOnUiThread(() -> mutateState(s -> {
-                            s.setDeviceCode(code.getUserCode());
-                            s.setBusyMessage(getString(R.string.caramel_waiting_sign_in));
-                        })),
+                        code -> runOnUiThread(() -> {
+                            // The code is shown first and the browser opened second, so the user
+                            // returns to a modal that already carries the code and the link.
+                            mutateState(s -> {
+                                s.setDeviceCode(code.getUserCode());
+                                s.setDeviceCodeUrl(code.getDirectVerificationUri());
+                                s.setBusyMessage(getString(R.string.caramel_waiting_sign_in));
+                            });
+                            UrlOpener.open(this, code.getDirectVerificationUri());
+                        }),
                         org.chimeramc.client.core.auth.Cancellation.none(),
                         state -> { });
-                MsftAuthManager.saveAccountAndActivate(this, manager);
+                MsftAccountStore.MsftAccount account = MsftAuthManager.saveAccountAndActivate(this, manager);
+                runOnUiThread(() -> toast(getString(R.string.ms_login_success, displayName(account))));
             } catch (Throwable t) {
+                failure = MsftAuthManager.describeError(t);
                 AppLog.warnOnce(TAG, "startSignIn", "Microsoft sign-in did not complete", t);
             }
+            final String error = failure;
             runOnUiThread(() -> {
                 mutateState(s -> {
                     s.setBusyMessage("");
-                    s.setDeviceCode("");
-                    s.setAddAccount(false);
+                    s.setSignInRunning(false);
+                    s.setSignInError(error == null ? "" : error);
+                    if (error == null) {
+                        s.setDeviceCode("");
+                        s.setDeviceCodeUrl("");
+                        s.setAddAccount(false);
+                    }
                 });
+                if (error != null) toast(error);
                 refreshState();
             });
         });
+    }
+
+    @Override
+    public void openDeviceCodePage() {
+        CaramelLauncherState s = launcherState.getValue();
+        if (!UrlOpener.open(this, s.getDeviceCodeUrl())) {
+            toast(R.string.caramel_device_code_open_failed);
+        }
+    }
+
+    @Override
+    public void copyDeviceCode() {
+        String code = launcherState.getValue().getDeviceCode();
+        if (code == null || code.isEmpty()) return;
+        try {
+            android.content.ClipboardManager clipboard =
+                    (android.content.ClipboardManager) getSystemService(CLIPBOARD_SERVICE);
+            if (clipboard == null) return;
+            clipboard.setPrimaryClip(android.content.ClipData.newPlainText("Microsoft device code", code));
+            toast(R.string.ms_device_code_copied);
+        } catch (Throwable t) {
+            AppLog.warnOnce(TAG, "copyDeviceCode", "Could not copy the device code", t);
+        }
     }
 
     @Override

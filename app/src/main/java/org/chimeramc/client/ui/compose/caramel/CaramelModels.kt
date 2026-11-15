@@ -147,4 +147,13 @@ class CaramelLauncherState {
 
     /** The Microsoft device code shown in the add-account modal, empty when no sign-in is running. */
     var deviceCode by mutableStateOf("")
+
+    /** The page the code is entered on, with the code pre-filled; empty until a code is issued. */
+    var deviceCodeUrl by mutableStateOf("")
+
+    /** Whether a sign-in is in flight, so the modal can show progress rather than a dead button. */
+    var signInRunning by mutableStateOf(false)
+
+    /** Why the last sign-in attempt failed, empty when it has not failed. */
+    var signInError by mutableStateOf("")
 }
