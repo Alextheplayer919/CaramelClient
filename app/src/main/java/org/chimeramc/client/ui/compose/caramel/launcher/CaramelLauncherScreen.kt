@@ -24,7 +24,7 @@ fun CaramelLauncherScreen(
 ) {
     val cosmeticsSkinViewer = skinViewer ?: { m: Modifier -> CaramelSkinPreview(state, m) }
     Box(Modifier.fillMaxSize()) {
-        CaramelLauncherFrame(state) { contentModifier ->
+        CaramelLauncherFrame(state, actions::joinServer) { contentModifier ->
             Box(contentModifier) {
                 when (state.tab) {
                     CaramelTab.Home -> CaramelHomeScreen(state, actions::launch, actions::openScreenshots)
@@ -33,7 +33,13 @@ fun CaramelLauncherScreen(
                         onToggle = actions::toggleMod,
                         onOpenFolder = actions::openModsFolder,
                     )
-                    CaramelTab.Servers -> CaramelServersScreen(state, actions::joinServer)
+                    CaramelTab.Servers -> CaramelServersScreen(
+                        state,
+                        onJoin = actions::joinServer,
+                        onFavourite = actions::toggleServerFavourite,
+                        onAddServer = actions::addServer,
+                        onDeleteServer = actions::deleteServer,
+                    )
                     CaramelTab.Cosmetics -> CaramelCosmeticsScreen(
                         state,
                         onToggleFavourite = actions::toggleFavourite,
@@ -57,6 +63,7 @@ fun CaramelLauncherScreen(
         CaramelAccountSettingsModal(state, actions)
         CaramelAddFriendModal(state, actions)
         CaramelModsFolderModal(state, actions)
+        CaramelAddServerModal(state, actions)
         CaramelModal(state.launcherSettings, { state.launcherSettings = false }, Modifier.size(760.dp, 620.dp)) {
             CaramelLauncherSettingsPanel(state, actions) { state.launcherSettings = false }
         }

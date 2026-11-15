@@ -1462,7 +1462,6 @@
     <string name="caramel_unlocked">Разблокировано</string>
     <string name="caramel_news_title">Новости</string>
     <string name="caramel_store_title">Магазин</string>
-    <string name="caramel_version_range">%1$s \u2013 %2$s</string>
     <string name="caramel_sign_in_idle">Вы ещё не вошли</string>
     <string name="caramel_device_code_open_failed">Не удалось открыть браузер. Откройте microsoft.com/link и введите показанный код.</string>
     <string name="caramel_friends_loading">Загрузка друзей…</string>
@@ -1484,4 +1483,13 @@
     <string name="caramel_mods_folder_empty_body">Добавьте архив мода или откройте папку в файловом менеджере.</string>
     <string name="caramel_mods_folder_in_file_manager">Открыть в файловом менеджере</string>
     <string name="caramel_folder_label">Папка</string>
+    <string name="caramel_add_server">Добавить сервер</string>
+    <string name="caramel_add_server_title">Добавить сервер</string>
+    <string name="caramel_add_server_sub">Сохраняется в список серверов этого экземпляра</string>
+    <string name="caramel_add">Добавить</string>
+    <string name="caramel_default">По умолчанию</string>
+    <string name="caramel_saved_servers">Ваши серверы</string>
+    <string name="caramel_default_servers">Серверы по умолчанию</string>
+    <string name="server_deleted">Сервер удалён</string>
+    <string name="server_delete_failed">Не удалось удалить сервер</string>
 </resources>

@@ -1444,7 +1444,6 @@
     <string name="caramel_unlocked">未锁定</string>
     <string name="caramel_news_title">消息</string>
     <string name="caramel_store_title">商店</string>
-    <string name="caramel_version_range">%1$s \u2013 %2$s</string>
     <string name="caramel_sign_in_idle">尚未登录</string>
     <string name="caramel_device_code_open_failed">无法打开浏览器。请访问 microsoft.com/link 并输入显示的代码。</string>
     <string name="caramel_friends_loading">正在加载好友…</string>
@@ -1466,4 +1465,13 @@
     <string name="caramel_mods_folder_empty_body">添加一个 mod 压缩包，或在文件管理器中打开该文件夹。</string>
     <string name="caramel_mods_folder_in_file_manager">在文件管理器中打开</string>
     <string name="caramel_folder_label">文件夹</string>
+    <string name="caramel_add_server">添加服务器</string>
+    <string name="caramel_add_server_title">添加服务器</string>
+    <string name="caramel_add_server_sub">保存到此实例的服务器列表</string>
+    <string name="caramel_add">添加</string>
+    <string name="caramel_default">默认</string>
+    <string name="caramel_saved_servers">你的服务器</string>
+    <string name="caramel_default_servers">默认服务器</string>
+    <string name="server_deleted">服务器已删除</string>
+    <string name="server_delete_failed">无法删除服务器</string>
 </resources>

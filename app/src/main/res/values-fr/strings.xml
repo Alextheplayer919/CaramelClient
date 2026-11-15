@@ -1423,7 +1423,6 @@ La migration doit être terminée avant de continuer avec CaramelClient.</string
     <string name="caramel_unlocked">Déverrouillé</string>
     <string name="caramel_news_title">Nouvelles</string>
     <string name="caramel_store_title">Boutique</string>
-    <string name="caramel_version_range">%1$s \u2013 %2$s</string>
     <string name="caramel_sign_in_idle">Pas encore connecté</string>
     <string name="caramel_device_code_open_failed">Aucun navigateur n\'a pu être ouvert. Rendez-vous sur microsoft.com/link et saisissez le code affiché.</string>
     <string name="caramel_friends_loading">Chargement des amis…</string>
@@ -1445,4 +1444,13 @@ La migration doit être terminée avant de continuer avec CaramelClient.</string
     <string name="caramel_mods_folder_empty_body">Ajoutez une archive de mod ou ouvrez le dossier dans votre gestionnaire de fichiers.</string>
     <string name="caramel_mods_folder_in_file_manager">Ouvrir dans le gestionnaire de fichiers</string>
     <string name="caramel_folder_label">Dossier</string>
+    <string name="caramel_add_server">Ajouter un serveur</string>
+    <string name="caramel_add_server_title">Ajouter un serveur</string>
+    <string name="caramel_add_server_sub">Enregistré dans la liste de serveurs de cette instance</string>
+    <string name="caramel_add">Ajouter</string>
+    <string name="caramel_default">Par défaut</string>
+    <string name="caramel_saved_servers">Vos serveurs</string>
+    <string name="caramel_default_servers">Serveurs par défaut</string>
+    <string name="server_deleted">Serveur supprimé</string>
+    <string name="server_delete_failed">Impossible de supprimer le serveur</string>
 </resources>

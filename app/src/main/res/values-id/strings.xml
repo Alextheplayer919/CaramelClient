@@ -1447,7 +1447,6 @@ Migrasi harus selesai sebelum CaramelClient dapat melanjutkan.</string>
     <string name="caramel_unlocked">Terbuka</string>
     <string name="caramel_news_title">Berita</string>
     <string name="caramel_store_title">Toko</string>
-    <string name="caramel_version_range">%1$s \u2013 %2$s</string>
     <string name="caramel_sign_in_idle">Belum masuk</string>
     <string name="caramel_device_code_open_failed">Tidak ada peramban yang dapat dibuka. Buka microsoft.com/link dan masukkan kode yang ditampilkan.</string>
     <string name="caramel_friends_loading">Memuat teman…</string>
@@ -1469,4 +1468,13 @@ Migrasi harus selesai sebelum CaramelClient dapat melanjutkan.</string>
     <string name="caramel_mods_folder_empty_body">Tambahkan arsip mod, atau buka folder di pengelola berkas Anda.</string>
     <string name="caramel_mods_folder_in_file_manager">Buka di pengelola berkas</string>
     <string name="caramel_folder_label">Folder</string>
+    <string name="caramel_add_server">Tambah server</string>
+    <string name="caramel_add_server_title">Tambah server</string>
+    <string name="caramel_add_server_sub">Disimpan ke daftar server instans ini</string>
+    <string name="caramel_add">Tambah</string>
+    <string name="caramel_default">Bawaan</string>
+    <string name="caramel_saved_servers">Server Anda</string>
+    <string name="caramel_default_servers">Server bawaan</string>
+    <string name="server_deleted">Server dihapus</string>
+    <string name="server_delete_failed">Tidak dapat menghapus server</string>
 </resources>

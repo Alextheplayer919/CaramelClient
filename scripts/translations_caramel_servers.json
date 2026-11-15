@@ -1,0 +1,112 @@
+{
+  "es": {
+    "caramel_add_server": "Añadir servidor",
+    "caramel_add_server_title": "Añadir un servidor",
+    "caramel_add_server_sub": "Se guarda en la lista de servidores de esta instancia",
+    "caramel_add": "Añadir",
+    "caramel_default": "Predeterminado",
+    "caramel_saved_servers": "Tus servidores",
+    "caramel_default_servers": "Servidores predeterminados",
+    "server_deleted": "Servidor eliminado",
+    "server_delete_failed": "No se pudo eliminar el servidor"
+  },
+  "fr": {
+    "caramel_add_server": "Ajouter un serveur",
+    "caramel_add_server_title": "Ajouter un serveur",
+    "caramel_add_server_sub": "Enregistré dans la liste de serveurs de cette instance",
+    "caramel_add": "Ajouter",
+    "caramel_default": "Par défaut",
+    "caramel_saved_servers": "Vos serveurs",
+    "caramel_default_servers": "Serveurs par défaut",
+    "server_deleted": "Serveur supprimé",
+    "server_delete_failed": "Impossible de supprimer le serveur"
+  },
+  "hi": {
+    "caramel_add_server": "सर्वर जोड़ें",
+    "caramel_add_server_title": "सर्वर जोड़ें",
+    "caramel_add_server_sub": "इस इंस्टेंस की सर्वर सूची में सहेजा गया",
+    "caramel_add": "जोड़ें",
+    "caramel_default": "डिफ़ॉल्ट",
+    "caramel_saved_servers": "आपके सर्वर",
+    "caramel_default_servers": "डिफ़ॉल्ट सर्वर",
+    "server_deleted": "सर्वर हटा दिया गया",
+    "server_delete_failed": "सर्वर नहीं हटाया जा सका"
+  },
+  "id": {
+    "caramel_add_server": "Tambah server",
+    "caramel_add_server_title": "Tambah server",
+    "caramel_add_server_sub": "Disimpan ke daftar server instans ini",
+    "caramel_add": "Tambah",
+    "caramel_default": "Bawaan",
+    "caramel_saved_servers": "Server Anda",
+    "caramel_default_servers": "Server bawaan",
+    "server_deleted": "Server dihapus",
+    "server_delete_failed": "Tidak dapat menghapus server"
+  },
+  "ja": {
+    "caramel_add_server": "サーバーを追加",
+    "caramel_add_server_title": "サーバーを追加",
+    "caramel_add_server_sub": "このインスタンスのサーバーリストに保存されます",
+    "caramel_add": "追加",
+    "caramel_default": "デフォルト",
+    "caramel_saved_servers": "あなたのサーバー",
+    "caramel_default_servers": "デフォルトサーバー",
+    "server_deleted": "サーバーを削除しました",
+    "server_delete_failed": "サーバーを削除できませんでした"
+  },
+  "pt": {
+    "caramel_add_server": "Adicionar servidor",
+    "caramel_add_server_title": "Adicionar um servidor",
+    "caramel_add_server_sub": "Salvo na lista de servidores desta instância",
+    "caramel_add": "Adicionar",
+    "caramel_default": "Padrão",
+    "caramel_saved_servers": "Seus servidores",
+    "caramel_default_servers": "Servidores padrão",
+    "server_deleted": "Servidor removido",
+    "server_delete_failed": "Não foi possível remover o servidor"
+  },
+  "ru": {
+    "caramel_add_server": "Добавить сервер",
+    "caramel_add_server_title": "Добавить сервер",
+    "caramel_add_server_sub": "Сохраняется в список серверов этого экземпляра",
+    "caramel_add": "Добавить",
+    "caramel_default": "По умолчанию",
+    "caramel_saved_servers": "Ваши серверы",
+    "caramel_default_servers": "Серверы по умолчанию",
+    "server_deleted": "Сервер удалён",
+    "server_delete_failed": "Не удалось удалить сервер"
+  },
+  "tr": {
+    "caramel_add_server": "Sunucu ekle",
+    "caramel_add_server_title": "Sunucu ekle",
+    "caramel_add_server_sub": "Bu örneğin sunucu listesine kaydedilir",
+    "caramel_add": "Ekle",
+    "caramel_default": "Varsayılan",
+    "caramel_saved_servers": "Sunucularınız",
+    "caramel_default_servers": "Varsayılan sunucular",
+    "server_deleted": "Sunucu kaldırıldı",
+    "server_delete_failed": "Sunucu kaldırılamadı"
+  },
+  "vi": {
+    "caramel_add_server": "Thêm máy chủ",
+    "caramel_add_server_title": "Thêm máy chủ",
+    "caramel_add_server_sub": "Được lưu vào danh sách máy chủ của phiên bản này",
+    "caramel_add": "Thêm",
+    "caramel_default": "Mặc định",
+    "caramel_saved_servers": "Máy chủ của bạn",
+    "caramel_default_servers": "Máy chủ mặc định",
+    "server_deleted": "Đã xóa máy chủ",
+    "server_delete_failed": "Không thể xóa máy chủ"
+  },
+  "zh-rCN": {
+    "caramel_add_server": "添加服务器",
+    "caramel_add_server_title": "添加服务器",
+    "caramel_add_server_sub": "保存到此实例的服务器列表",
+    "caramel_add": "添加",
+    "caramel_default": "默认",
+    "caramel_saved_servers": "你的服务器",
+    "caramel_default_servers": "默认服务器",
+    "server_deleted": "服务器已删除",
+    "server_delete_failed": "无法删除服务器"
+  }
+}

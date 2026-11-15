@@ -1338,8 +1338,10 @@ CaramelClient must complete the migration before continuing.</string>
     <string name="server_ping_offline">Offline or unreachable</string>
     <string name="server_ping_version_mismatch">Version %1$s may not be compatible</string>
     <string name="server_added">Server added</string>
+    <string name="server_deleted">Server removed</string>
     <string name="server_exists">That server is already in your list</string>
     <string name="server_add_failed">Could not add the server</string>
+    <string name="server_delete_failed">Could not remove the server</string>
     <string name="server_favourite_label">Favourite</string>
     <string name="server_favourite">Favourite %1$s</string>
     <string name="server_unfavourite">Remove %1$s from favourites</string>
@@ -2819,6 +2821,13 @@ CaramelClient must complete the migration before continuing.</string>
     <string name="caramel_no_servers_body">Add a server and it appears here.</string>
     <string name="caramel_players_online">%1$d online</string>
     <string name="caramel_ping_ms">%1$d ms</string>
+    <string name="caramel_add_server">Add server</string>
+    <string name="caramel_add_server_title">Add a server</string>
+    <string name="caramel_add_server_sub">Saved to this instance\'s server list</string>
+    <string name="caramel_add">Add</string>
+    <string name="caramel_default">Default</string>
+    <string name="caramel_saved_servers">Your servers</string>
+    <string name="caramel_default_servers">Default servers</string>
     <string name="caramel_cosmetics_sub">Capes, wings, hats and more</string>
     <string name="caramel_save_outfit">Save outfit</string>
     <string name="caramel_reset_view">Reset view</string>
@@ -2942,5 +2951,4 @@ CaramelClient must complete the migration before continuing.</string>
     <string name="caramel_unlocked">Unlocked</string>
     <string name="caramel_news_title">News</string>
     <string name="caramel_store_title">Store</string>
-    <string name="caramel_version_range">%1$s \u2013 %2$s</string>
 </resources>

@@ -1450,7 +1450,6 @@ CaramelClient\'ın devam edebilmesi için taşımanın tamamlanması gerekiyor.<
     <string name="caramel_unlocked">Kilidi açık</string>
     <string name="caramel_news_title">Haberler</string>
     <string name="caramel_store_title">Mağaza</string>
-    <string name="caramel_version_range">%1$s \u2013 %2$s</string>
     <string name="caramel_sign_in_idle">Henüz giriş yapılmadı</string>
     <string name="caramel_device_code_open_failed">Hiçbir tarayıcı açılamadı. microsoft.com/link adresine gidin ve gösterilen kodu girin.</string>
     <string name="caramel_friends_loading">Arkadaşlar yükleniyor…</string>
@@ -1472,4 +1471,13 @@ CaramelClient\'ın devam edebilmesi için taşımanın tamamlanması gerekiyor.<
     <string name="caramel_mods_folder_empty_body">Bir mod arşivi ekleyin veya klasörü dosya yöneticinizde açın.</string>
     <string name="caramel_mods_folder_in_file_manager">Dosya yöneticisinde aç</string>
     <string name="caramel_folder_label">Klasör</string>
+    <string name="caramel_add_server">Sunucu ekle</string>
+    <string name="caramel_add_server_title">Sunucu ekle</string>
+    <string name="caramel_add_server_sub">Bu örneğin sunucu listesine kaydedilir</string>
+    <string name="caramel_add">Ekle</string>
+    <string name="caramel_default">Varsayılan</string>
+    <string name="caramel_saved_servers">Sunucularınız</string>
+    <string name="caramel_default_servers">Varsayılan sunucular</string>
+    <string name="server_deleted">Sunucu kaldırıldı</string>
+    <string name="server_delete_failed">Sunucu kaldırılamadı</string>
 </resources>

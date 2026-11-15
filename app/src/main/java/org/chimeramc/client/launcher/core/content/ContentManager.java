@@ -9,6 +9,7 @@ import androidx.lifecycle.MutableLiveData;
 
 import org.chimeramc.client.core.versions.GameVersion;
 import org.chimeramc.client.launcher.core.minecraft.UserFacingError;
+import org.chimeramc.client.R;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -217,7 +218,7 @@ public class ContentManager {
                 if (callback != null) callback.onSuccess("Server deleted");
             } else {
                 setStatus("Failed to delete server");
-                if (callback != null) callback.onError("Failed to delete server");
+                if (callback != null) callback.onError(context.getString(R.string.server_delete_failed));
             }
         }, callback);
     }
@@ -235,8 +236,8 @@ public class ContentManager {
                 // boolean this replaced reported both as "Failed to add server", and the Quick
                 // Launch path reported both as "already in your list".
                 String message = result == ServerManager.AddResult.DUPLICATE
-                        ? "That server is already in your list"
-                        : "Could not add the server";
+                        ? context.getString(R.string.server_exists)
+                        : context.getString(R.string.server_add_failed);
                 setStatus(message);
                 if (callback != null) callback.onError(message);
             }

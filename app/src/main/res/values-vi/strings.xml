@@ -1453,7 +1453,6 @@ Quá trình chuyển đổi phải hoàn tất trước khi CaramelClient có th
     <string name="caramel_unlocked">Đã mở khóa</string>
     <string name="caramel_news_title">Tin tức</string>
     <string name="caramel_store_title">Cửa hàng</string>
-    <string name="caramel_version_range">%1$s \u2013 %2$s</string>
     <string name="caramel_sign_in_idle">Chưa đăng nhập</string>
     <string name="caramel_device_code_open_failed">Không thể mở trình duyệt nào. Truy cập microsoft.com/link và nhập mã hiển thị.</string>
     <string name="caramel_friends_loading">Đang tải bạn bè…</string>
@@ -1475,4 +1474,13 @@ Quá trình chuyển đổi phải hoàn tất trước khi CaramelClient có th
     <string name="caramel_mods_folder_empty_body">Thêm một tệp mod, hoặc mở thư mục trong trình quản lý tệp của bạn.</string>
     <string name="caramel_mods_folder_in_file_manager">Mở trong trình quản lý tệp</string>
     <string name="caramel_folder_label">Thư mục</string>
+    <string name="caramel_add_server">Thêm máy chủ</string>
+    <string name="caramel_add_server_title">Thêm máy chủ</string>
+    <string name="caramel_add_server_sub">Được lưu vào danh sách máy chủ của phiên bản này</string>
+    <string name="caramel_add">Thêm</string>
+    <string name="caramel_default">Mặc định</string>
+    <string name="caramel_saved_servers">Máy chủ của bạn</string>
+    <string name="caramel_default_servers">Máy chủ mặc định</string>
+    <string name="server_deleted">Đã xóa máy chủ</string>
+    <string name="server_delete_failed">Không thể xóa máy chủ</string>
 </resources>

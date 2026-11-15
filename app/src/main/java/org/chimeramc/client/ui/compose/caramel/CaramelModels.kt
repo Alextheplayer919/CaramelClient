@@ -58,9 +58,15 @@ data class CaramelServerInfo(
     val port: Int,
     val online: Int?,
     val ping: Int?,
-    val minVersion: String,
-    val maxVersion: String,
+    /** The game version the server advertised, empty until a ping measured one. */
+    val version: String,
     val favourite: Boolean,
+    /** The icon key from [org.chimeramc.client.core.content.ServerIconCatalog], empty when none. */
+    val iconKey: String,
+    /** True for a shipped default server, false for one the user saved. */
+    val featured: Boolean,
+    /** True once a ping has been attempted, so the row can tell "checking" from "offline". */
+    val checked: Boolean = false,
 )
 
 /** What kind of cosmetic a tile is, which is the Cosmetics screen's filter chip. */
@@ -202,6 +208,24 @@ class CaramelLauncherState {
 
     /** Whether the in-app mods-folder browser is open. */
     var modsFolderOpen by mutableStateOf(false)
+
+    /** Whether the Add server modal is open. */
+    var addServer by mutableStateOf(false)
+
+    /** The name typed into the Add server modal. */
+    var serverDraftName by mutableStateOf("")
+
+    /** The address typed into the Add server modal. */
+    var serverDraftAddress by mutableStateOf("")
+
+    /** The port typed into the Add server modal, as text so the field can be cleared. */
+    var serverDraftPort by mutableStateOf("")
+
+    /** Whether an add-server write is in flight, so the button shows progress. */
+    var addServerRunning by mutableStateOf(false)
+
+    /** Why the last add-server attempt failed, empty when it has not failed. */
+    var addServerError by mutableStateOf("")
 
     /** The folder the browser is currently showing, as a path relative to the mods root. */
     var modsFolderPath by mutableStateOf("/")

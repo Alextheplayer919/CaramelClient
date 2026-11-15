@@ -1420,7 +1420,6 @@ CaramelClient を続行するには移行を完了する必要があります。
     <string name="caramel_unlocked">ロック解除</string>
     <string name="caramel_news_title">ニュース</string>
     <string name="caramel_store_title">ストア</string>
-    <string name="caramel_version_range">%1$s \u2013 %2$s</string>
     <string name="caramel_sign_in_idle">まだサインインしていません</string>
     <string name="caramel_device_code_open_failed">ブラウザーを開けませんでした。microsoft.com/link を開き、表示されたコードを入力してください。</string>
     <string name="caramel_friends_loading">フレンドを読み込み中…</string>
@@ -1442,4 +1441,13 @@ CaramelClient を続行するには移行を完了する必要があります。
     <string name="caramel_mods_folder_empty_body">Modアーカイブを追加するか、ファイルマネージャーでフォルダーを開いてください。</string>
     <string name="caramel_mods_folder_in_file_manager">ファイルマネージャーで開く</string>
     <string name="caramel_folder_label">フォルダー</string>
+    <string name="caramel_add_server">サーバーを追加</string>
+    <string name="caramel_add_server_title">サーバーを追加</string>
+    <string name="caramel_add_server_sub">このインスタンスのサーバーリストに保存されます</string>
+    <string name="caramel_add">追加</string>
+    <string name="caramel_default">デフォルト</string>
+    <string name="caramel_saved_servers">あなたのサーバー</string>
+    <string name="caramel_default_servers">デフォルトサーバー</string>
+    <string name="server_deleted">サーバーを削除しました</string>
+    <string name="server_delete_failed">サーバーを削除できませんでした</string>
 </resources>

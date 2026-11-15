@@ -17,17 +17,27 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.rounded.Add
 import androidx.compose.material.icons.rounded.Bolt
+import androidx.compose.material.icons.rounded.Close
 import androidx.compose.material.icons.rounded.Dashboard
+import androidx.compose.material.icons.rounded.DeleteOutline
+import androidx.compose.material.icons.rounded.Dns
 import androidx.compose.material.icons.rounded.Extension
 import androidx.compose.material.icons.rounded.Folder
+import androidx.compose.material.icons.rounded.Numbers
 import androidx.compose.material.icons.rounded.Place
 import androidx.compose.material.icons.rounded.PlayArrow
+import androidx.compose.material.icons.rounded.Public
+import androidx.compose.material.icons.rounded.Star
+import androidx.compose.material.icons.rounded.StarBorder
 import androidx.compose.material.icons.rounded.Wifi
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
@@ -43,13 +53,16 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import org.chimeramc.client.R
 import androidx.compose.ui.unit.dp
 import org.chimeramc.client.ui.compose.caramel.C
 import org.chimeramc.client.ui.compose.caramel.CaramelLauncherState
+import org.chimeramc.client.ui.compose.caramel.CaramelModal
 import org.chimeramc.client.ui.compose.caramel.CaramelModInfo
 import org.chimeramc.client.ui.compose.caramel.CaramelServerInfo
+import org.chimeramc.client.ui.compose.caramel.CaramelTextField
 import org.chimeramc.client.ui.compose.caramel.CaramelToggle
 import org.chimeramc.client.ui.compose.caramel.FilterChip
 import org.chimeramc.client.ui.compose.caramel.GlassButton
@@ -59,7 +72,7 @@ import org.chimeramc.client.ui.compose.caramel.SearchField
 import org.chimeramc.client.ui.compose.caramel.ServerIcon
 import org.chimeramc.client.ui.compose.caramel.StatusLabel
 import org.chimeramc.client.ui.compose.caramel.T
-import org.chimeramc.client.ui.compose.caramel.VersionRangeLabel
+import org.chimeramc.client.ui.compose.caramel.VersionLabel
 import org.chimeramc.client.ui.compose.caramel.sp_
 
 private val accents = listOf(C.Blue, C.Caramel, C.Green, Color(0xFF966EFF))
@@ -164,19 +177,41 @@ private fun modIconIndex(m: CaramelModInfo): Int = (m.name.hashCode() and 0x7fff
 
 /** The Servers screen: a featured banner over the saved-server rows. */
 @Composable
-fun CaramelServersScreen(state: CaramelLauncherState, onJoin: (CaramelServerInfo) -> Unit) {
-    CaramelPage(stringResource(R.string.servers_category), stringResource(R.string.caramel_servers_sub)) {
-        val featured = state.servers.firstOrNull()
+fun CaramelServersScreen(
+    state: CaramelLauncherState,
+    onJoin: (CaramelServerInfo) -> Unit,
+    onFavourite: (CaramelServerInfo) -> Unit,
+    onAddServer: () -> Unit,
+    onDeleteServer: (CaramelServerInfo) -> Unit,
+) {
+    val saved = state.servers.filter { !it.featured }
+    val defaults = state.servers.filter { it.featured }
+    CaramelPage(
+        stringResource(R.string.servers_category),
+        stringResource(R.string.caramel_servers_sub),
+        {
+            PrimaryButton(
+                stringResource(R.string.caramel_add_server),
+                onAddServer,
+                icon = Icons.Rounded.Add,
+                height = 38,
+            )
+        },
+    ) {
+        val featured = saved.firstOrNull() ?: defaults.firstOrNull()
         if (featured != null) {
             GlassPanel(Modifier.fillMaxWidth().height(180.dp), RoundedCornerShape(24.dp)) {
                 Box(Modifier.matchParentSize().background(Brush.horizontalGradient(listOf(C.Blue.copy(0.28f), C.Caramel.copy(0.16f)))))
                 Row(Modifier.fillMaxSize().padding(36.dp), verticalAlignment = Alignment.CenterVertically) {
+                    ServerIcon(accents[0], 74, iconKey = featured.iconKey)
+                    Spacer(Modifier.width(22.dp))
                     Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(8.dp)) {
                         Text(featured.name, style = T.Display.copy(fontSize = 26.sp_))
                         Text(featured.address, style = T.Body.copy(fontSize = 13.sp_))
                         Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                            if (featured.featured) StatusLabel(stringResource(R.string.caramel_featured), C.Caramel)
                             featured.online?.let { StatusLabel(stringResource(R.string.caramel_players_online, it), C.Green) }
-                            VersionRangeLabel(featured.minVersion, featured.maxVersion)
+                            VersionLabel(featured.version)
                         }
                     }
                     PrimaryButton(stringResource(R.string.caramel_join_server), { onJoin(featured) }, Modifier.width(176.dp), icon = Icons.Rounded.PlayArrow)
@@ -186,27 +221,138 @@ fun CaramelServersScreen(state: CaramelLauncherState, onJoin: (CaramelServerInfo
         if (state.servers.isEmpty()) {
             EmptyState(stringResource(R.string.caramel_no_servers_title), stringResource(R.string.caramel_no_servers_body), Modifier.fillMaxWidth().weight(1f))
         } else {
-            Column(Modifier.fillMaxWidth().weight(1f), verticalArrangement = Arrangement.spacedBy(12.dp)) {
-                state.servers.forEachIndexed { i, s ->
-                    GlassPanel(Modifier.fillMaxWidth().height(80.dp), RoundedCornerShape(20.dp), elevation = 6.dp) {
-                        Row(
-                            Modifier.fillMaxSize().padding(horizontal = 22.dp),
-                            verticalAlignment = Alignment.CenterVertically,
-                            horizontalArrangement = Arrangement.spacedBy(18.dp),
-                        ) {
-                            ServerIcon(accents[i % 4], 52)
-                            Column(Modifier.weight(1f)) {
-                                Text(s.name, style = T.Subtitle.copy(fontSize = 15.sp_))
-                                Text(s.address, style = T.Body)
-                            }
-                            s.online?.let { Text(stringResource(R.string.caramel_players_online, it), style = T.Label) }
-                            if (s.online != null) Icon(Icons.Rounded.Wifi, null, Modifier.size(18.dp), C.Green)
-                            s.ping?.let { Text(stringResource(R.string.caramel_ping_ms, it), style = T.Body) }
-                            VersionRangeLabel(s.minVersion, s.maxVersion)
-                            GlassButton(stringResource(R.string.caramel_join), { onJoin(s) }, icon = Icons.Rounded.PlayArrow, height = 36)
-                        }
+            LazyColumn(Modifier.fillMaxWidth().weight(1f), verticalArrangement = Arrangement.spacedBy(12.dp)) {
+                if (saved.isNotEmpty()) {
+                    item { ServerSectionHeader(stringResource(R.string.caramel_saved_servers), saved.size) }
+                    items(saved, key = { it.address + ":" + it.port + ":saved" }) { s ->
+                        ServerRow(s, accents[0], onJoin, onFavourite, onDeleteServer)
                     }
                 }
+                if (defaults.isNotEmpty()) {
+                    item { ServerSectionHeader(stringResource(R.string.caramel_default_servers), defaults.size) }
+                    items(defaults, key = { it.address + ":" + it.port + ":default" }) { s ->
+                        ServerRow(s, accents[1], onJoin, onFavourite, onDeleteServer)
+                    }
+                }
+            }
+        }
+    }
+}
+
+/** A section title with its server count, so "saved" and "default" never blur together. */
+@Composable
+private fun ServerSectionHeader(title: String, count: Int) {
+    Row(
+        Modifier.fillMaxWidth().padding(top = 4.dp, bottom = 2.dp),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(10.dp),
+    ) {
+        Text(title, style = T.Subtitle.copy(fontSize = 14.sp_))
+        Text("$count", style = T.Caption)
+    }
+}
+
+/** One server row: its mark, name, address, the status labels, a star and the join action. */
+@Composable
+private fun ServerRow(
+    s: CaramelServerInfo,
+    accent: Color,
+    onJoin: (CaramelServerInfo) -> Unit,
+    onFavourite: (CaramelServerInfo) -> Unit,
+    onDelete: (CaramelServerInfo) -> Unit,
+) {
+    GlassPanel(Modifier.fillMaxWidth().height(80.dp), RoundedCornerShape(20.dp), elevation = 6.dp) {
+        Row(
+            Modifier.fillMaxSize().padding(horizontal = 22.dp),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(18.dp),
+        ) {
+            ServerIcon(accent, 52, iconKey = s.iconKey)
+            Column(Modifier.weight(1f)) {
+                Text(s.name, style = T.Subtitle.copy(fontSize = 15.sp_))
+                Text(s.address, style = T.Body)
+            }
+            if (s.featured) StatusLabel(stringResource(R.string.caramel_default), C.Caramel)
+            s.online?.let { Text(stringResource(R.string.caramel_players_online, it), style = T.Label) }
+            if (s.online != null) {
+                Icon(Icons.Rounded.Wifi, null, Modifier.size(18.dp), C.Green)
+            } else if (!s.checked) {
+                Text(stringResource(R.string.server_ping_checking), style = T.Caption)
+            } else {
+                Text(stringResource(R.string.server_ping_offline), style = T.Caption)
+            }
+            s.ping?.let { Text(stringResource(R.string.caramel_ping_ms, it), style = T.Body) }
+            VersionLabel(s.version)
+            GlassButton(
+                null,
+                { onFavourite(s) },
+                icon = if (s.favourite) Icons.Rounded.Star else Icons.Rounded.StarBorder,
+                active = s.favourite,
+                height = 36,
+            )
+            if (!s.featured) {
+                GlassButton(
+                    null,
+                    { onDelete(s) },
+                    icon = Icons.Rounded.DeleteOutline,
+                    danger = true,
+                    height = 36,
+                )
+            }
+            GlassButton(stringResource(R.string.caramel_join), { onJoin(s) }, icon = Icons.Rounded.PlayArrow, height = 36)
+        }
+    }
+}
+
+/**
+ * The add-server modal.
+ *
+ * <p>There was no launcher-side editor at all: "add server" opened the game's data folder and asked
+ * the user to hand-edit {@code external_servers.txt}. This collects the name, address and port and
+ * writes them through [org.chimeramc.client.core.content.ServerManager], the same file the game
+ * reads, and reports which of added / duplicate / failed actually happened.
+ */
+@Composable
+fun CaramelAddServerModal(state: CaramelLauncherState, actions: CaramelLauncherHost.Actions) {
+    CaramelModal(state.addServer, { state.addServer = false; actions.resetAddServer() }, Modifier.size(460.dp, 470.dp)) {
+        Column(Modifier.fillMaxSize().padding(28.dp), verticalArrangement = Arrangement.spacedBy(14.dp)) {
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Column(Modifier.weight(1f)) {
+                    Text(stringResource(R.string.caramel_add_server_title), style = T.Title.copy(fontSize = 18.sp_))
+                    Text(stringResource(R.string.caramel_add_server_sub), style = T.Body)
+                }
+                GlassButton(null, { state.addServer = false; actions.resetAddServer() }, icon = Icons.Rounded.Close, height = 32)
+            }
+            CaramelField(stringResource(R.string.server_name_hint)) {
+                CaramelTextField(state.serverDraftName, { state.serverDraftName = it }, Modifier.fillMaxWidth(), stringResource(R.string.server_name_hint), Icons.Rounded.Dns)
+            }
+            CaramelField(stringResource(R.string.server_ip_hint)) {
+                CaramelTextField(state.serverDraftAddress, { state.serverDraftAddress = it }, Modifier.fillMaxWidth(), stringResource(R.string.server_ip_hint), Icons.Rounded.Public)
+            }
+            CaramelField(stringResource(R.string.server_port_hint)) {
+                CaramelTextField(state.serverDraftPort, { state.serverDraftPort = it.filter(Char::isDigit) }, Modifier.fillMaxWidth(), "19132", Icons.Rounded.Numbers)
+            }
+            if (state.addServerError.isNotEmpty()) {
+                Row(
+                    Modifier.fillMaxWidth().clip(RoundedCornerShape(12.dp)).background(C.Red.copy(0.11f))
+                        .border(1.dp, C.Red.copy(0.4f), RoundedCornerShape(12.dp)).padding(horizontal = 14.dp, vertical = 10.dp),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(10.dp),
+                ) {
+                    Icon(Icons.Rounded.Close, null, Modifier.size(15.dp), C.Red)
+                    Text(state.addServerError, style = T.Label.copy(fontWeight = FontWeight.Medium, fontSize = 12.5.sp_))
+                }
+            }
+            Spacer(Modifier.weight(1f))
+            Row(horizontalArrangement = Arrangement.spacedBy(14.dp)) {
+                GlassButton(stringResource(R.string.cancel), { state.addServer = false; actions.resetAddServer() }, Modifier.width(140.dp), height = 38)
+                PrimaryButton(
+                    stringResource(if (state.addServerRunning) R.string.adding_server else R.string.caramel_add),
+                    { actions.submitAddServer() },
+                    Modifier.weight(1f),
+                    height = 38,
+                    icon = Icons.Rounded.Add,
+                )
             }
         }
     }

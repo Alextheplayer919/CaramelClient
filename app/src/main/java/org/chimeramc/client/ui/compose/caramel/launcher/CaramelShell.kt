@@ -48,6 +48,7 @@ import org.chimeramc.client.ui.compose.caramel.CaramelAvatarPicture
 import org.chimeramc.client.ui.compose.caramel.CaramelBackdrop
 import org.chimeramc.client.ui.compose.caramel.CaramelLauncherState
 import org.chimeramc.client.ui.compose.caramel.CaramelPill
+import org.chimeramc.client.ui.compose.caramel.CaramelServerInfo
 import org.chimeramc.client.ui.compose.caramel.CaramelTab
 import org.chimeramc.client.ui.compose.caramel.GlassPanel
 import org.chimeramc.client.ui.compose.caramel.ServerIcon
@@ -64,12 +65,13 @@ import org.chimeramc.client.ui.compose.caramel.sp_
 @Composable
 fun CaramelLauncherFrame(
     state: CaramelLauncherState,
+    onJoinServer: (CaramelServerInfo) -> Unit,
     content: @Composable (Modifier) -> Unit,
 ) {
     Box(Modifier.fillMaxSize().background(C.Abyss)) {
         CaramelBackdrop()
         Column(Modifier.fillMaxSize()) {
-            CaramelTitleBar(state)
+            CaramelTitleBar(state, onJoinServer)
             Row(
                 Modifier.fillMaxSize().padding(start = 14.dp, end = 14.dp, bottom = 14.dp),
                 horizontalArrangement = Arrangement.spacedBy(16.dp),
@@ -82,7 +84,7 @@ fun CaramelLauncherFrame(
 }
 
 @Composable
-private fun CaramelTitleBar(state: CaramelLauncherState) {
+private fun CaramelTitleBar(state: CaramelLauncherState, onJoinServer: (CaramelServerInfo) -> Unit) {
     Row(
         Modifier.fillMaxWidth().height(44.dp).padding(horizontal = 14.dp),
         verticalAlignment = Alignment.CenterVertically,
@@ -109,8 +111,17 @@ private fun CaramelTitleBar(state: CaramelLauncherState) {
         }
         Spacer(Modifier.width(12.dp))
         Text(stringResource(R.string.caramel_quick_play), style = T.Caption)
-        // Quick play tiles: one per saved server, capped so the row never overflows.
-        state.servers.take(8).forEachIndexed { i, _ -> ServerIcon(quickPlayAccent(i), 26) }
+        // Quick play tiles: one per saved/default server, capped so the row never overflows. Each
+        // carries its server's own mark inside its own rounded square, and joins that server.
+        state.servers.take(8).forEachIndexed { i, s ->
+            ServerIcon(
+                quickPlayAccent(i),
+                26,
+                Modifier.clickable(remember { MutableInteractionSource() }, null) { onJoinServer(s) },
+                iconKey = s.iconKey,
+            )
+            Spacer(Modifier.width(6.dp))
+        }
         Spacer(Modifier.weight(1f))
         Text(stringResource(R.string.caramel_instances_running, state.runningInstances), style = T.Caption)
         CaramelPill(onClick = { state.accountMenu = !state.accountMenu }) {

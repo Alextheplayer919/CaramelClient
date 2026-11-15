@@ -18,8 +18,14 @@ import net.raphimc.minecraftauth.bedrock.BedrockAuthManager;
 import org.chimeramc.client.core.auth.MsftAccountStore;
 import org.chimeramc.client.core.auth.MsftAuthManager;
 import org.chimeramc.client.core.content.ContentManager;
+import org.chimeramc.client.core.content.FeaturedServers;
+import org.chimeramc.client.core.content.RakNetPing;
 import org.chimeramc.client.core.content.ScreenshotItem;
+import org.chimeramc.client.core.content.ServerFavouritesStore;
 import org.chimeramc.client.core.content.ServerItem;
+import org.chimeramc.client.core.content.ServerListRows;
+import org.chimeramc.client.core.content.ServerManager;
+import org.chimeramc.client.core.content.ServerPongInfo;
 import org.chimeramc.client.core.xbox.XboxFriendRequestClient;
 import org.chimeramc.client.core.xbox.XboxFriendsClient;
 import org.chimeramc.client.core.xbox.XboxPeopleHub;
@@ -85,11 +91,69 @@ public class MainActivity extends BaseActivity implements CaramelLauncherHost.Ac
     /** The account id whose friends are already loaded, so a rebuild does not refetch. */
     private String friendsAccountId = null;
 
+    /** The user's saved servers, kept so a re-measure can rebuild the rows without a re-scan. */
+    private List<ServerItem> savedServers = new ArrayList<>();
+
+    /** The last measured status per {@code address:port}, empty until the first ping answers. */
+    private final java.util.Map<String, ServerListRows.Status> serverStatuses =
+            new java.util.concurrent.ConcurrentHashMap<>();
+
+    /** The starred server keys, read once and updated as the user stars and unstars. */
+    private java.util.Set<String> serverFavourites = new java.util.HashSet<>();
+
+    /** True while a ping sweep is in flight, so a scan that re-fires does not start a second one. */
+    private boolean serverPingRunning = false;
+
+    /** Rebuilds the Servers tab's rows from the saved servers, the defaults and the measurements. */
+    private void publishServerRows() {
+        List<ServerListRows.Row> rows = ServerListRows.build(savedServers, serverFavourites, serverStatuses);
+        List<CaramelServerInfo> out = new ArrayList<>();
+        for (ServerListRows.Row r : rows) {
+            out.add(new CaramelServerInfo(r.name, r.address, r.port, r.online, r.ping, r.version,
+                    r.favourite, r.iconKey, r.featured, r.checked));
+        }
+        mutateState(s -> s.setServers(out));
+    }
+
+    /**
+     * Measures every listed server with a RakNet unconnected ping and republishes the rows.
+     *
+     * <p>The ping runs on the network executor, one target at a time, and a server that does not
+     * answer keeps its unknown status rather than a fabricated zero. The rows are rebuilt once at
+     * the end so the list does not flicker through a half-measured state.
+     */
+    private void refreshServerStatuses() {
+        java.util.Map<String, Integer> targets = ServerListRows.pingTargets(savedServers);
+        if (targets.isEmpty() || serverPingRunning) return;
+        serverPingRunning = true;
+        AppExecutors.run(AppExecutors.Kind.NETWORK, "caramel-server-ping", () -> {
+            try {
+                for (java.util.Map.Entry<String, Integer> target : targets.entrySet()) {
+                    String key = target.getKey();
+                    int port = target.getValue();
+                    String host = key.substring(0, key.lastIndexOf(':'));
+                    long started = System.currentTimeMillis();
+                    ServerPongInfo pong = RakNetPing.ping(host, port, 2500);
+                    if (pong == null || pong.parseError) {
+                        serverStatuses.put(key, ServerListRows.Status.offline());
+                        continue;
+                    }
+                    int ping = (int) Math.min(Integer.MAX_VALUE, System.currentTimeMillis() - started);
+                    serverStatuses.put(key, new ServerListRows.Status(pong.playersOnline, ping, pong.gameVersion));
+                }
+            } finally {
+                serverPingRunning = false;
+            }
+            runOnUiThread(this::publishServerRows);
+        });
+    }
+
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         minecraftLauncher = new MinecraftLauncher(this);
         launcherState = CaramelLauncherHost.state();
+        serverFavourites = ServerFavouritesStore.load(this);
         setContentView(buildComposeHost());
         initVersionManager();
         initContent();
@@ -119,11 +183,9 @@ public class MainActivity extends BaseActivity implements CaramelLauncherHost.Ac
     private void initContent() {
         contentManager = ContentManager.getInstance(this);
         contentManager.getServersLiveData().observe(this, servers -> {
-            List<CaramelServerInfo> rows = new ArrayList<>();
-            if (servers != null) {
-                for (ServerItem s : servers) rows.add(serverRow(s));
-            }
-            mutateState(s -> s.setServers(rows));
+            savedServers = servers == null ? new ArrayList<>() : new ArrayList<>(servers);
+            publishServerRows();
+            refreshServerStatuses();
         });
         contentManager.getScreenshotsLiveData().observe(this, shots -> {
             List<CaramelScreenshotInfo> rows = new ArrayList<>();
@@ -349,12 +411,6 @@ public class MainActivity extends BaseActivity implements CaramelLauncherHost.Ac
         return sb.toString();
     }
 
-    private static CaramelServerInfo serverRow(ServerItem s) {
-        // online/ping/version range are only known once measured; the client does not measure them,
-        // so the row carries the saved address and leaves the rest null.
-        return new CaramelServerInfo(s.name, s.ip, s.port, null, null, "", "", false);
-    }
-
     private MsftAccountStore.MsftAccount activeAccount() {
         for (MsftAccountStore.MsftAccount a : MsftAccountStore.list(this)) {
             if (a.active) return a;
@@ -468,23 +524,118 @@ public class MainActivity extends BaseActivity implements CaramelLauncherHost.Ac
     @Override
     public void joinServer(CaramelServerInfo server) {
         // Bedrock has no launcher-side "join server" intent; the saved server reaches the game
-        // through external_servers.txt, so the honest action is to launch the instance.
+        // through external_servers.txt, so the honest action is to launch the instance. A featured
+        // server the user has not saved is written to that file first, so the game can see it.
+        if (server != null && server.getFeatured()) {
+            saveServerIfAbsent(server);
+        }
         launch();
     }
 
     @Override
     public void addServer() {
-        // There is no launcher-side server editor, so the honest action is to open the folder the
-        // game reads its server list from: the user edits external_servers.txt directly.
-        GameVersion selected = selectedVersion();
-        File dataDir = selected == null ? null : activeGameDataDir();
-        if (dataDir == null) return;
-        LocalFileOpener.openFolder(this, new File(dataDir, "minecraftpe"));
+        // Open the in-app editor rather than the folder: handing the directory to a file manager
+        // did nothing on a device with none, and asked the user to hand-edit the game's file.
+        mutateState(s -> {
+            s.setServerDraftName("");
+            s.setServerDraftAddress("");
+            s.setServerDraftPort(String.valueOf(FeaturedServers.DEFAULT_PORT));
+            s.setAddServerError("");
+            s.setAddServerRunning(false);
+            s.setAddServer(true);
+        });
+    }
+
+    @Override
+    public void submitAddServer() {
+        CaramelLauncherState s = launcherState.getValue();
+        String name = s.getServerDraftName().trim();
+        String address = s.getServerDraftAddress().trim();
+        String portText = s.getServerDraftPort().trim();
+        if (name.isEmpty() || address.isEmpty()) {
+            mutateState(x -> x.setAddServerError(getString(R.string.server_details_required)));
+            return;
+        }
+        int port = FeaturedServers.DEFAULT_PORT;
+        if (!portText.isEmpty()) {
+            try {
+                port = Integer.parseInt(portText);
+            } catch (NumberFormatException e) {
+                mutateState(x -> x.setAddServerError(getString(R.string.server_ip_required)));
+                return;
+            }
+        }
+        if (port <= 0 || port > 65535) port = FeaturedServers.DEFAULT_PORT;
+
+        final int finalPort = port;
+        final ServerItem item = new ServerItem(name, address, finalPort);
+        mutateState(x -> {
+            x.setAddServerRunning(true);
+            x.setAddServerError("");
+        });
+        contentManager.addServer(item, new ContentManager.ContentOperationCallback() {
+            @Override
+            public void onSuccess(String message) {
+                mutateState(x -> {
+                    x.setAddServerRunning(false);
+                    x.setAddServer(false);
+                });
+                toast(R.string.server_added);
+            }
+
+            @Override
+            public void onError(String error) {
+                mutateState(x -> {
+                    x.setAddServerRunning(false);
+                    x.setAddServerError(error);
+                });
+            }
+        });
+    }
+
+    @Override
+    public void resetAddServer() {
+        mutateState(x -> {
+            x.setServerDraftName("");
+            x.setServerDraftAddress("");
+            x.setServerDraftPort("");
+            x.setAddServerError("");
+            x.setAddServerRunning(false);
+        });
+    }
+
+    @Override
+    public void deleteServer(CaramelServerInfo server) {
+        if (server == null || contentManager == null) return;
+        ServerItem item = new ServerItem(server.getName(), server.getAddress(), server.getPort());
+        contentManager.deleteServer(item, new ContentManager.ContentOperationCallback() {
+            @Override
+            public void onSuccess(String message) {
+                serverStatuses.remove(ServerListRows.key(server.getAddress(), server.getPort()));
+                toast(R.string.server_deleted);
+            }
+
+            @Override
+            public void onError(String error) {
+                toast(error);
+            }
+        });
     }
 
     @Override
     public void toggleServerFavourite(CaramelServerInfo server) {
-        // Server favourites are persisted by ServerFavouritesStore, wired with the server editor.
+        if (server == null) return;
+        serverFavourites = ServerFavouritesStore.toggle(this, ServerListRows.key(server.getAddress(), server.getPort()));
+        publishServerRows();
+    }
+
+    /** Writes a featured server into the game's file if it is not already saved, and ignores failure. */
+    private void saveServerIfAbsent(CaramelServerInfo server) {
+        GameVersion selected = selectedVersion();
+        File dataDir = selected == null ? null : activeGameDataDir();
+        if (dataDir == null) return;
+        File file = new File(new File(dataDir, "minecraftpe"), "external_servers.txt");
+        ServerManager.writeServerToFile(file, new ServerItem(server.getName(), server.getAddress(), server.getPort()));
     }
 
     @Override

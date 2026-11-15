@@ -36,6 +36,7 @@ import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import org.chimeramc.client.R
 import androidx.compose.ui.unit.dp
@@ -199,19 +200,40 @@ fun CaramelAvatarPicture(
     }
 }
 
-/** The server-icon slot used by Quick play and the Servers list. */
+/**
+ * The server-icon slot used by Quick play and the Servers list.
+ *
+ * <p>When [iconKey] names a server the client can draw, its own mark fills a rounded square; the
+ * generic tinted square is the fallback for a server with no known mark. The square is clipped
+ * either way, so a wide logo never bleeds past its tile.
+ */
 @Composable
-fun ServerIcon(color: Color, size: Int = 26, modifier: Modifier = Modifier) {
+fun ServerIcon(
+    color: Color,
+    size: Int = 26,
+    modifier: Modifier = Modifier,
+    iconKey: String = "",
+) {
     val shape = RoundedCornerShape((size * 0.3f).dp)
+    val icon = ServerIcons.drawableFor(iconKey)
     Box(
         modifier
             .size(size.dp)
             .clip(shape)
-            .background(color.copy(0.22f))
+            .background(if (icon != 0) Color.White.copy(0.06f) else color.copy(0.22f))
             .border(1.dp, color.copy(0.6f), shape),
         Alignment.Center,
     ) {
-        Box(Modifier.size((size * 0.4f).dp).background(color, RoundedCornerShape(2.dp)))
+        if (icon != 0) {
+            Image(
+                painterResource(icon),
+                contentDescription = null,
+                modifier = Modifier.size((size * 0.72f).dp),
+                contentScale = ContentScale.Fit,
+            )
+        } else {
+            Box(Modifier.size((size * 0.4f).dp).background(color, RoundedCornerShape(2.dp)))
+        }
     }
 }
 
@@ -242,7 +264,9 @@ fun CaramelFriendRow(friend: CaramelFriendInfo, modifier: Modifier = Modifier) {
     }
 }
 
-/** A "1.21.132 – 26.62" supported-version label for a server. */
+/** A "1.21.132" measured-version label for a server; blank versions draw nothing. */
 @Composable
-fun VersionRangeLabel(min: String, max: String, modifier: Modifier = Modifier) =
-    StatusLabel(stringResource(R.string.caramel_version_range, min, max), Color(0xFF78A0FF), modifier)
+fun VersionLabel(version: String, modifier: Modifier = Modifier) {
+    if (version.isEmpty()) return
+    StatusLabel(version, Color(0xFF78A0FF), modifier)
+}
