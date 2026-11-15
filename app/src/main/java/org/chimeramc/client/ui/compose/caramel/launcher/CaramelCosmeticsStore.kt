@@ -131,7 +131,7 @@ private fun CosmeticTile(c: CaramelCosmeticInfo, onFav: () -> Unit, onEquip: () 
                     .background(Brush.verticalGradient(listOf(accent.copy(0.32f), accent.copy(0.05f))), RoundedCornerShape(12.dp)),
                 Alignment.Center,
             ) {
-                Box(Modifier.size(40.dp, 68.dp).background(accent, RoundedCornerShape(4.dp)))
+                CaramelCosmeticThumbnail(c, Modifier.fillMaxWidth().height(104.dp).padding(6.dp), 192)
                 Box(
                     Modifier.align(Alignment.TopEnd).padding(8.dp).size(28.dp).clip(CircleShape)
                         .background(Color(0x96081024))

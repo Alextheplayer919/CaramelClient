@@ -109,4 +109,5 @@ file is missing from the index.
 - [BerryAPI cosmetic C ABI (sweetloader mirror + launcher surface)](docs/agents/berryapi-cosmetic-c-abi.md)
 - [One UI: the Caramel UI pack, the native ImGui menu, and FPS honesty](docs/agents/one-ui-the-caramel-ui-pack-the-native-imgui-menu-and-fps-honesty.md)
 - [The white screen after the launch screen (game window theme)](docs/agents/game-window-white-screen-theme.md)
+- [The Compose launcher's real-data screens (skin preview + cosmetic tiles)](docs/agents/caramel-compose-ui-real-data.md)
 - [Microsoft sign-in: device code, not MSAL](docs/agents/microsoft-sign-in-device-code-not-msal.md)
