@@ -745,14 +745,36 @@ fun CaramelInstanceSettingsModal(state: CaramelLauncherState, actions: CaramelLa
                                 CaramelProfileDropdown(state.profile, { state.profile = it }, width = 240)
                             }
                         }
+                        1 -> {
+                            Text(stringResource(R.string.caramel_section_game), style = T.Title)
+                            SettingRow(
+                                stringResource(R.string.caramel_instance_launch_vertical),
+                                stringResource(R.string.caramel_instance_launch_vertical_desc),
+                            ) { CaramelToggle(state.instanceLaunchVertical, { actions.setInstanceLaunchVertical(it) }) }
+                            SettingRow(
+                                stringResource(R.string.caramel_instance_pack_changer),
+                                stringResource(R.string.caramel_instance_pack_changer_desc),
+                            ) { CaramelToggle(state.instancePackChanger, { actions.setInstancePackChanger(it) }) }
+                        }
+                        2 -> CaramelPerformanceTab(state, actions)
                         3 -> {
-                            Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
+                            Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(10.dp)) {
+                                Text(
+                                    stringResource(R.string.enabled_mods) + " " +
+                                        state.mods.count { it.enabled } + "/" + state.mods.size,
+                                    style = T.Label,
+                                )
+                                Box(Modifier.weight(1f))
                                 GlassButton(stringResource(R.string.caramel_open_mods_folder), actions::openModsFolder, icon = Icons.Rounded.Folder)
                             }
                             if (state.mods.isEmpty()) {
-                                Text(stringResource(R.string.caramel_no_mods_title), style = T.Body)
+                                EmptyState(
+                                    stringResource(R.string.empty_mods_title),
+                                    stringResource(R.string.empty_mods_message),
+                                    Modifier.fillMaxWidth(),
+                                )
                             } else {
-                                state.mods.take(8).forEach { m ->
+                                state.mods.forEach { m ->
                                     Row(
                                         Modifier.fillMaxWidth().clip(RoundedCornerShape(13.dp)).background(Color.White.copy(0.06f))
                                             .border(1.dp, Color.White.copy(0.12f), RoundedCornerShape(13.dp)).padding(12.dp),
@@ -764,7 +786,10 @@ fun CaramelInstanceSettingsModal(state: CaramelLauncherState, actions: CaramelLa
                                         }
                                         Column(Modifier.weight(1f)) {
                                             Text(m.name, style = T.Label)
-                                            Text(stringResource(R.string.caramel_mod_version, m.version), style = T.Caption)
+                                            Text(
+                                                if (m.version.isEmpty()) m.author else stringResource(R.string.caramel_mod_version, m.version),
+                                                style = T.Caption,
+                                            )
                                         }
                                         CaramelToggle(m.enabled, { actions.toggleMod(m, it) })
                                     }
@@ -773,7 +798,15 @@ fun CaramelInstanceSettingsModal(state: CaramelLauncherState, actions: CaramelLa
                         }
                         else -> {
                             Text(stringResource(R.string.caramel_section_advanced), style = T.Title)
-                            Text(stringResource(R.string.caramel_verbose_logging_desc), style = T.Body)
+                            SettingRow(
+                                stringResource(R.string.caramel_instance_shader_compat),
+                                stringResource(R.string.caramel_instance_shader_compat_desc),
+                            ) { CaramelToggle(state.instanceShaderCompat, { actions.setInstanceShaderCompat(it) }) }
+                            SettingRow(
+                                stringResource(R.string.caramel_instance_isolation),
+                                stringResource(R.string.caramel_instance_isolation_desc),
+                            ) { CaramelToggle(state.instanceIsolation, { actions.setInstanceIsolation(it) }) }
+                            Text(stringResource(R.string.caramel_instance_advanced_note), style = T.Body)
                         }
                     }
                 }

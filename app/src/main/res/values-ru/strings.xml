@@ -1499,4 +1499,20 @@
     <string name="caramel_settings_unavailable_title">Настройки здесь недоступны</string>
     <string name="caramel_settings_unavailable_body">Это окно открыто без хранилища настроек. Откройте Настройки на боковой панели.</string>
     <string name="caramel_settings_reset_done">Настройки сброшены к значениям по умолчанию</string>
+    <string name="caramel_perf_sub">Эти настройки записываются в собственный файл параметров экземпляра. Игра применит их при следующей загрузке этого экземпляра.</string>
+    <string name="caramel_perf_reset">Сбросить значения</string>
+    <string name="caramel_perf_applied">%1$s применено. Перезапустите этот экземпляр, чтобы увидеть.</string>
+    <string name="caramel_perf_all_features">Все функции производительности</string>
+    <string name="caramel_perf_write_failed">Не удалось записать файл параметров этого экземпляра.</string>
+    <string name="caramel_perf_no_instance">Выберите экземпляр, прежде чем менять его настройки производительности.</string>
+    <string name="caramel_perf_unavailable">У этого экземпляра пока нет доступного файла параметров. Запустите его один раз, чтобы игра создала файл.</string>
+    <string name="caramel_instance_shader_compat">Загрузчик шейдеров MB</string>
+    <string name="caramel_instance_shader_compat_desc">Запускает исправление совместимости шейдеров mtbinloader2 для этого экземпляра. Требуется большинством наборов шейдеров.</string>
+    <string name="caramel_instance_isolation">Изоляция версии</string>
+    <string name="caramel_instance_isolation_desc">Хранить миры и настройки этого экземпляра в отдельной папке, а не в общей.</string>
+    <string name="caramel_instance_launch_vertical">Запуск вертикально</string>
+    <string name="caramel_instance_launch_vertical_desc">Принудительно запускать этот экземпляр в портретной ориентации.</string>
+    <string name="caramel_instance_pack_changer">Смена наборов в игре</string>
+    <string name="caramel_instance_pack_changer_desc">Добавить переключатель наборов ресурсов во внутриигровое меню модов для этого экземпляра.</string>
+    <string name="caramel_instance_advanced_note">Это меняет то, как лаунчер запускает этот экземпляр. Сохраняется для каждого экземпляра и переживает переименование.</string>
 </resources>

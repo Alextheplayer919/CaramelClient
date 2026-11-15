@@ -235,6 +235,28 @@ class CaramelLauncherState {
 
     /** Whether the browser can go up a level (false at the mods root). */
     var modsFolderCanGoUp by mutableStateOf(false)
+
+    /**
+     * The instance's performance settings, keyed by [org.chimeramc.client.core.minecraft.PerfFeatureCatalog]
+     * feature id. A missing entry means the instance's options file has no such key yet, so the tab
+     * draws the feature's own default rather than a fabricated reading.
+     */
+    var perfValues by mutableStateOf<Map<String, String>>(emptyMap())
+
+    /** A status line for the last performance write; empty when idle. */
+    var perfStatus by mutableStateOf("")
+
+    /** Whether this instance runs the MB shader loader (the mtbinloader2 compatibility fixer). */
+    var instanceShaderCompat by mutableStateOf(false)
+
+    /** Whether this instance keeps its own game data rather than the shared root. */
+    var instanceIsolation by mutableStateOf(false)
+
+    /** Whether this instance launches in portrait. */
+    var instanceLaunchVertical by mutableStateOf(false)
+
+    /** Whether this instance exposes the in-game resource-pack changer. */
+    var instancePackChanger by mutableStateOf(false)
 }
 
 /** One row in the mods-folder browser: a file or a sub-directory. */

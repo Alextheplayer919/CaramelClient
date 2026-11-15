@@ -1457,4 +1457,20 @@ CaramelClient を続行するには移行を完了する必要があります。
     <string name="caramel_settings_unavailable_title">ここでは設定を利用できません</string>
     <string name="caramel_settings_unavailable_body">このウィンドウは設定ストアなしで開かれました。サイドバーから設定を開いてください。</string>
     <string name="caramel_settings_reset_done">設定を既定値に戻しました</string>
+    <string name="caramel_perf_sub">これらはインスタンス自身の設定ファイルに書き込まれます。次回このインスタンスを読み込むときにゲームが適用します。</string>
+    <string name="caramel_perf_reset">既定値に戻す</string>
+    <string name="caramel_perf_applied">%1$s を適用しました。反映するにはこのインスタンスを再起動してください。</string>
+    <string name="caramel_perf_all_features">すべてのパフォーマンス機能</string>
+    <string name="caramel_perf_write_failed">このインスタンスの設定ファイルに書き込めませんでした。</string>
+    <string name="caramel_perf_no_instance">パフォーマンス設定を変更する前にインスタンスを選択してください。</string>
+    <string name="caramel_perf_unavailable">このインスタンスにはまだ参照できる設定ファイルがありません。一度起動するとゲームが作成します。</string>
+    <string name="caramel_instance_shader_compat">MB シェーダーローダー</string>
+    <string name="caramel_instance_shader_compat_desc">このインスタンス向けに mtbinloader2 シェーダー互換修正を実行します。ほとんどのシェーダーパックが必要とします。</string>
+    <string name="caramel_instance_isolation">バージョン分離</string>
+    <string name="caramel_instance_isolation_desc">このインスタンスのワールドと設定を共有フォルダではなく専用フォルダに保存します。</string>
+    <string name="caramel_instance_launch_vertical">縦向きで起動</string>
+    <string name="caramel_instance_launch_vertical_desc">このインスタンスを縦向きで起動するよう強制します。</string>
+    <string name="caramel_instance_pack_changer">ゲーム内パック切り替え</string>
+    <string name="caramel_instance_pack_changer_desc">このインスタンスのゲーム内 Mod メニューにリソースパック切り替えを追加します。</string>
+    <string name="caramel_instance_advanced_note">これらはランチャーがこのインスタンスを起動する方法を変えます。インスタンスごとに保存され、名前を変更しても保持されます。</string>
 </resources>

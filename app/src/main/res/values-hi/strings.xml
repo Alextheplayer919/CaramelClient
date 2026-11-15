@@ -1488,4 +1488,20 @@ CaramelClient जारी रखने से पहले माइग्र�
     <string name="caramel_settings_unavailable_title">सेटिंग्स यहाँ उपलब्ध नहीं हैं</string>
     <string name="caramel_settings_unavailable_body">यह विंडो सेटिंग्स स्टोर के बिना खोली गई थी। साइडबार से सेटिंग्स खोलें।</string>
     <string name="caramel_settings_reset_done">सेटिंग्स उनके डिफ़ॉल्ट पर रीसेट हो गईं</string>
+    <string name="caramel_perf_sub">ये इंस्टेंस की अपनी विकल्प फ़ाइल लिखते हैं। अगली बार इस इंस्टेंस को लोड करने पर गेम इन्हें लागू करता है।</string>
+    <string name="caramel_perf_reset">डिफ़ॉल्ट पर लौटाएँ</string>
+    <string name="caramel_perf_applied">%1$s लागू हुआ। देखने के लिए इस इंस्टेंस को पुनः आरंभ करें।</string>
+    <string name="caramel_perf_all_features">प्रदर्शन की सभी सुविधाएँ</string>
+    <string name="caramel_perf_write_failed">इस इंस्टेंस की विकल्प फ़ाइल लिखी नहीं जा सकी।</string>
+    <string name="caramel_perf_no_instance">इसके प्रदर्शन सेटिंग बदलने से पहले एक इंस्टेंस चुनें।</string>
+    <string name="caramel_perf_unavailable">इस इंस्टेंस में अभी कोई पहुँच योग्य विकल्प फ़ाइल नहीं है। इसे एक बार चलाएँ ताकि गेम इसे बना सके।</string>
+    <string name="caramel_instance_shader_compat">MB शेडर लोडर</string>
+    <string name="caramel_instance_shader_compat_desc">इस इंस्टेंस के लिए mtbinloader2 शेडर संगतता सुधारक चलाता है। अधिकांश शेडर पैक इसे आवश्यक मानते हैं।</string>
+    <string name="caramel_instance_isolation">संस्करण अलगाव</string>
+    <string name="caramel_instance_isolation_desc">इस इंस्टेंस की दुनियाएँ और सेटिंग साझा फ़ोल्डर के बजाय अपने फ़ोल्डर में रखें।</string>
+    <string name="caramel_instance_launch_vertical">खड़ी दिशा में शुरू करें</string>
+    <string name="caramel_instance_launch_vertical_desc">इस इंस्टेंस को पोर्ट्रेट में शुरू करने के लिए बाध्य करें।</string>
+    <string name="caramel_instance_pack_changer">इन-गेम पैक बदलने वाला</string>
+    <string name="caramel_instance_pack_changer_desc">इस इंस्टेंस के लिए इन-गेम मॉड मेनू में संसाधन पैक स्विचर जोड़ें।</string>
+    <string name="caramel_instance_advanced_note">ये बदलते हैं कि लॉन्चर इस इंस्टेंस को कैसे शुरू करता है। ये प्रति इंस्टेंस सहेजे जाते हैं और नाम बदलने पर भी रहते हैं।</string>
 </resources>

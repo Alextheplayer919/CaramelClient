@@ -1481,4 +1481,20 @@
     <string name="caramel_settings_unavailable_title">此处无法使用设置</string>
     <string name="caramel_settings_unavailable_body">此窗口打开时没有设置存储。请从侧边栏打开设置。</string>
     <string name="caramel_settings_reset_done">设置已恢复为默认值</string>
+    <string name="caramel_perf_sub">这些选项会写入该实例自己的配置文件，游戏将在下次加载此实例时应用。</string>
+    <string name="caramel_perf_reset">恢复默认值</string>
+    <string name="caramel_perf_applied">已应用 %1$s。重启此实例即可生效。</string>
+    <string name="caramel_perf_all_features">全部性能功能</string>
+    <string name="caramel_perf_write_failed">无法写入此实例的配置文件。</string>
+    <string name="caramel_perf_no_instance">请先选择一个实例，再更改其性能设置。</string>
+    <string name="caramel_perf_unavailable">此实例还没有可访问的配置文件。先启动一次，游戏便会创建它。</string>
+    <string name="caramel_instance_shader_compat">MB 光影加载器</string>
+    <string name="caramel_instance_shader_compat_desc">为此实例运行 mtbinloader2 光影兼容性修复。大多数光影包都需要它。</string>
+    <string name="caramel_instance_isolation">版本隔离</string>
+    <string name="caramel_instance_isolation_desc">将此实例的世界和设置保存在自己的文件夹中，而不是共享文件夹。</string>
+    <string name="caramel_instance_launch_vertical">竖屏启动</string>
+    <string name="caramel_instance_launch_vertical_desc">强制此实例以竖屏模式启动。</string>
+    <string name="caramel_instance_pack_changer">游戏内资源包切换</string>
+    <string name="caramel_instance_pack_changer_desc">为此实例在游戏内模组菜单中添加资源包切换器。</string>
+    <string name="caramel_instance_advanced_note">这些设置改变启动器启动此实例的方式。按实例保存，重命名后仍然保留。</string>
 </resources>

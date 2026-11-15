@@ -60,6 +60,18 @@ object CaramelLauncherHost {
         fun repairInstance()
         fun deleteInstance()
         fun openInstanceFolder()
+        /** Writes one performance feature's value into the selected instance's options file. */
+        fun setPerfFeature(featureId: String, value: String)
+        /** Resets every performance feature to its catalogue default. */
+        fun resetPerfFeatures()
+        /** Toggles the instance's MB shader-loader compatibility fixer. */
+        fun setInstanceShaderCompat(enabled: Boolean)
+        /** Toggles whether this instance keeps its own game data. */
+        fun setInstanceIsolation(enabled: Boolean)
+        /** Toggles portrait launch for this instance. */
+        fun setInstanceLaunchVertical(enabled: Boolean)
+        /** Toggles the in-game resource-pack changer for this instance. */
+        fun setInstancePackChanger(enabled: Boolean)
         fun quit()
     }
 

@@ -1487,4 +1487,20 @@ CaramelClient\'ın devam edebilmesi için taşımanın tamamlanması gerekiyor.<
     <string name="caramel_settings_unavailable_title">Ayarlar burada kullanılamaz</string>
     <string name="caramel_settings_unavailable_body">Bu pencere ayar deposu olmadan açıldı. Yan çubuktan Ayarlar\'ı açın.</string>
     <string name="caramel_settings_reset_done">Ayarlar varsayılanlarına sıfırlandı</string>
+    <string name="caramel_perf_sub">Bunlar örneğin kendi ayar dosyasına yazılır. Oyun, bu örnek bir sonraki yüklendiğinde uygular.</string>
+    <string name="caramel_perf_reset">Varsayılanlara sıfırla</string>
+    <string name="caramel_perf_applied">%1$s uygulandı. Görmek için bu örneği yeniden başlatın.</string>
+    <string name="caramel_perf_all_features">Tüm performans özellikleri</string>
+    <string name="caramel_perf_write_failed">Bu örneğin ayar dosyası yazılamadı.</string>
+    <string name="caramel_perf_no_instance">Performans ayarlarını değiştirmeden önce bir örnek seçin.</string>
+    <string name="caramel_perf_unavailable">Bu örnekte henüz erişilebilir bir ayar dosyası yok. Oyun oluşturabilmesi için bir kez başlatın.</string>
+    <string name="caramel_instance_shader_compat">MB shader yükleyici</string>
+    <string name="caramel_instance_shader_compat_desc">Bu örnek için mtbinloader2 shader uyumluluk düzelticisini çalıştırır. Çoğu shader paketi bunu gerektirir.</string>
+    <string name="caramel_instance_isolation">Sürüm yalıtımı</string>
+    <string name="caramel_instance_isolation_desc">Bu örneğin dünyalarını ve ayarlarını paylaşılan klasör yerine kendi klasöründe tut.</string>
+    <string name="caramel_instance_launch_vertical">Dikey başlat</string>
+    <string name="caramel_instance_launch_vertical_desc">Bu örneği dikey modda başlatmaya zorla.</string>
+    <string name="caramel_instance_pack_changer">Oyun içi paket değiştirici</string>
+    <string name="caramel_instance_pack_changer_desc">Bu örnek için oyun içi mod menüsüne bir kaynak paketi değiştirici ekle.</string>
+    <string name="caramel_instance_advanced_note">Bunlar başlatıcının bu örneği nasıl başlattığını değiştirir. Örnek başına kaydedilir ve yeniden adlandırmadan sonra da kalır.</string>
 </resources>

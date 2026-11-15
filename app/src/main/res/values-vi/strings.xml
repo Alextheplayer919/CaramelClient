@@ -1490,4 +1490,20 @@ Quá trình chuyển đổi phải hoàn tất trước khi CaramelClient có th
     <string name="caramel_settings_unavailable_title">Cài đặt không khả dụng ở đây</string>
     <string name="caramel_settings_unavailable_body">Cửa sổ này được mở mà không có kho cài đặt. Hãy mở Cài đặt từ thanh bên.</string>
     <string name="caramel_settings_reset_done">Đã đặt lại cài đặt về mặc định</string>
+    <string name="caramel_perf_sub">Những mục này ghi vào tệp tùy chọn riêng của bản cài. Trò chơi sẽ áp dụng chúng vào lần tải tiếp theo của bản cài này.</string>
+    <string name="caramel_perf_reset">Khôi phục mặc định</string>
+    <string name="caramel_perf_applied">Đã áp dụng %1$s. Khởi động lại bản cài này để thấy.</string>
+    <string name="caramel_perf_all_features">Mọi tính năng hiệu năng</string>
+    <string name="caramel_perf_write_failed">Không ghi được tệp tùy chọn của bản cài này.</string>
+    <string name="caramel_perf_no_instance">Hãy chọn một bản cài trước khi đổi cài đặt hiệu năng của nó.</string>
+    <string name="caramel_perf_unavailable">Bản cài này chưa có tệp tùy chọn nào truy cập được. Hãy chạy nó một lần để trò chơi tạo tệp.</string>
+    <string name="caramel_instance_shader_compat">Trình nạp shader MB</string>
+    <string name="caramel_instance_shader_compat_desc">Chạy bản sửa tương thích shader mtbinloader2 cho bản cài này. Hầu hết gói shader đều cần.</string>
+    <string name="caramel_instance_isolation">Cách ly phiên bản</string>
+    <string name="caramel_instance_isolation_desc">Giữ thế giới và cài đặt của bản cài này trong thư mục riêng thay vì thư mục dùng chung.</string>
+    <string name="caramel_instance_launch_vertical">Chạy dọc</string>
+    <string name="caramel_instance_launch_vertical_desc">Buộc bản cài này chạy ở chế độ dọc.</string>
+    <string name="caramel_instance_pack_changer">Trình đổi gói trong game</string>
+    <string name="caramel_instance_pack_changer_desc">Thêm trình chuyển gói tài nguyên vào menu mod trong game cho bản cài này.</string>
+    <string name="caramel_instance_advanced_note">Những mục này thay đổi cách trình khởi chạy mở bản cài này. Được lưu theo từng bản cài và giữ nguyên khi đổi tên.</string>
 </resources>

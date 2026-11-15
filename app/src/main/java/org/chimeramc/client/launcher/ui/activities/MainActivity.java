@@ -31,7 +31,9 @@ import org.chimeramc.client.core.xbox.XboxFriendsClient;
 import org.chimeramc.client.core.xbox.XboxPeopleHub;
 import org.chimeramc.client.core.xbox.XboxSocial;
 import org.chimeramc.client.core.xbox.CaramelIdentity;
+import org.chimeramc.client.core.minecraft.InstanceOptionsStore;
 import org.chimeramc.client.core.minecraft.MinecraftActivityState;
+import org.chimeramc.client.core.minecraft.PerfFeatureCatalog;
 import org.chimeramc.client.core.minecraft.MinecraftLauncher;
 import org.chimeramc.client.core.mods.Mod;
 import org.chimeramc.client.core.mods.ModManager;
@@ -41,6 +43,7 @@ import org.chimeramc.client.settings.FeatureSettings;
 import org.chimeramc.client.launcher.util.LauncherSettingsController;
 import org.chimeramc.client.util.LauncherStorage;
 import org.chimeramc.client.launcher.core.mods.ModsFolderListing;
+import org.chimeramc.client.launcher.settings.OptionsText;
 import org.chimeramc.client.ui.compose.caramel.CaramelCosmeticInfo;
 import org.chimeramc.client.ui.compose.caramel.CaramelCosmeticKind;
 import org.chimeramc.client.ui.compose.caramel.CaramelFileEntry;
@@ -62,8 +65,11 @@ import java.io.File;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 
 /**
  * The launcher's main screen: the Caramel UI pack's Compose launcher, hosted in a {@link ComposeView}.
@@ -326,6 +332,13 @@ public class MainActivity extends BaseActivity implements CaramelLauncherHost.Ac
         s.setMods(buildMods());
         s.setCosmetics(buildCosmetics());
         s.setNews(buildNews());
+        // The instance-level flags the Advanced tab and the performance tab drive, read straight
+        // from the selected version so a change made here is what the tab shows.
+        s.setInstanceShaderCompat(selected != null && selected.shaderCompatEnabled);
+        s.setInstanceIsolation(selected != null && selected.versionIsolation);
+        s.setInstanceLaunchVertical(selected != null && selected.launchVertically);
+        s.setInstancePackChanger(selected != null && selected.inGamePackChangerEnabled);
+        s.setPerfValues(readPerfValues(selected));
         launcherState.setValue(s);
     }
 
@@ -1079,6 +1092,107 @@ public class MainActivity extends BaseActivity implements CaramelLauncherHost.Ac
         GameVersion selected = selectedVersion();
         if (selected == null || selected.versionDir == null) return;
         LocalFileOpener.openFolder(this, selected.versionDir);
+    }
+
+    @Override
+    public void setPerfFeature(String featureId, String value) {
+        PerfFeatureCatalog.Feature feature = PerfFeatureCatalog.find(featureId);
+        GameVersion selected = selectedVersion();
+        if (feature == null || selected == null) return;
+        Map<String, String> write = new HashMap<>();
+        write.put(feature.key, value);
+        applyPerfWrite(selected, write, feature);
+    }
+
+    @Override
+    public void resetPerfFeatures() {
+        GameVersion selected = selectedVersion();
+        if (selected == null) return;
+        Map<String, String> write = new LinkedHashMap<>();
+        for (PerfFeatureCatalog.Feature feature : PerfFeatureCatalog.all()) {
+            write.put(feature.key, feature.defaultValue);
+        }
+        applyPerfWrite(selected, write, null);
+    }
+
+    /**
+     * Writes [values] into the instance's options file and republishes the tab's values.
+     *
+     * <p>The write runs on the disk pool; the state is updated from the written file rather than
+     * from the request, so what the tab shows is what the game will read. A failure reports rather
+     * than leaving the switch looking like it took effect.
+     */
+    private void applyPerfWrite(GameVersion version, Map<String, String> values,
+                                PerfFeatureCatalog.Feature feature) {
+        AppExecutors.run(AppExecutors.Kind.DISK, "caramel-perf-write", () -> {
+            boolean ok = InstanceOptionsStore.write(this, version, values);
+            String text = ok ? InstanceOptionsStore.read(this, version) : null;
+            Map<String, String> readBack = new HashMap<>();
+            if (text != null) {
+                for (PerfFeatureCatalog.Feature f : PerfFeatureCatalog.all()) {
+                    String v = OptionsText.get(text, f.key);
+                    if (v != null) readBack.put(f.id, v);
+                }
+            }
+            String status = ok
+                    ? getString(R.string.caramel_perf_applied, feature == null
+                            ? getString(R.string.caramel_perf_all_features) : feature.name)
+                    : getString(R.string.caramel_perf_write_failed);
+            runOnUiThread(() -> mutateState(s -> {
+                if (ok) s.setPerfValues(readBack);
+                s.setPerfStatus(status);
+            }));
+        });
+    }
+
+    @Override
+    public void setInstanceShaderCompat(boolean enabled) {
+        GameVersion selected = selectedVersion();
+        if (selected == null || versionManager == null) return;
+        versionManager.setInstanceShaderCompatEnabled(selected, enabled);
+        refreshState();
+    }
+
+    @Override
+    public void setInstanceIsolation(boolean enabled) {
+        GameVersion selected = selectedVersion();
+        if (selected == null || versionManager == null) return;
+        versionManager.setInstanceVersionIsolation(selected, enabled);
+        refreshState();
+    }
+
+    @Override
+    public void setInstanceLaunchVertical(boolean enabled) {
+        GameVersion selected = selectedVersion();
+        if (selected == null || versionManager == null) return;
+        versionManager.setInstanceLaunchVertically(selected, enabled);
+        refreshState();
+    }
+
+    @Override
+    public void setInstancePackChanger(boolean enabled) {
+        GameVersion selected = selectedVersion();
+        if (selected == null || versionManager == null) return;
+        versionManager.setInstanceInGamePackChangerEnabled(selected, enabled);
+        refreshState();
+    }
+
+    /**
+     * Reads the selected instance's performance values from its options file.
+     *
+     * <p>The values the tab draws are the file's own, so a setting the user changed in the game
+     * shows up here rather than a launcher-side default. A missing key is simply absent from the
+     * map, and the tab then draws the catalogue's own default.
+     */
+    private Map<String, String> readPerfValues(GameVersion version) {
+        Map<String, String> values = new HashMap<>();
+        if (version == null) return values;
+        String text = InstanceOptionsStore.read(this, version);
+        for (PerfFeatureCatalog.Feature f : PerfFeatureCatalog.all()) {
+            String v = OptionsText.get(text, f.key);
+            if (v != null) values.put(f.id, v);
+        }
+        return values;
     }
 
     @Override

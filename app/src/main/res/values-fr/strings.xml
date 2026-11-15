@@ -1460,4 +1460,20 @@ La migration doit être terminée avant de continuer avec CaramelClient.</string
     <string name="caramel_settings_unavailable_title">Les paramètres ne sont pas disponibles ici</string>
     <string name="caramel_settings_unavailable_body">Cette fenêtre a été ouverte sans le stockage des paramètres. Ouvrez Paramètres depuis la barre latérale.</string>
     <string name="caramel_settings_reset_done">Paramètres rétablis à leurs valeurs par défaut</string>
+    <string name="caramel_perf_sub">Ces réglages écrivent le fichier d\'options de l\'instance. Le jeu les applique au prochain chargement de cette instance.</string>
+    <string name="caramel_perf_reset">Rétablir les valeurs</string>
+    <string name="caramel_perf_applied">%1$s appliqué. Redémarrez cette instance pour le voir.</string>
+    <string name="caramel_perf_all_features">Toutes les fonctions de performance</string>
+    <string name="caramel_perf_write_failed">Impossible d\'écrire le fichier d\'options de cette instance.</string>
+    <string name="caramel_perf_no_instance">Sélectionnez une instance avant de modifier ses réglages de performance.</string>
+    <string name="caramel_perf_unavailable">Cette instance n\'a pas encore de fichier d\'options accessible. Lancez-la une fois pour que le jeu le crée.</string>
+    <string name="caramel_instance_shader_compat">Chargeur de shaders MB</string>
+    <string name="caramel_instance_shader_compat_desc">Lance le correctif de compatibilité des shaders mtbinloader2 pour cette instance. Requis par la plupart des packs de shaders.</string>
+    <string name="caramel_instance_isolation">Isolation de version</string>
+    <string name="caramel_instance_isolation_desc">Conserve les mondes et les réglages de cette instance dans son propre dossier plutôt que dans le dossier partagé.</string>
+    <string name="caramel_instance_launch_vertical">Lancer en vertical</string>
+    <string name="caramel_instance_launch_vertical_desc">Force cette instance à se lancer en mode portrait.</string>
+    <string name="caramel_instance_pack_changer">Changeur de packs en jeu</string>
+    <string name="caramel_instance_pack_changer_desc">Ajoute un sélecteur de packs de ressources au menu de mods en jeu pour cette instance.</string>
+    <string name="caramel_instance_advanced_note">Ces réglages changent la façon dont le lanceur démarre cette instance. Ils sont enregistrés par instance et survivent à un renommage.</string>
 </resources>

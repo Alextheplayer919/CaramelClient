@@ -1460,4 +1460,20 @@ La migración debe completarse antes de continuar con CaramelClient.</string>
     <string name="caramel_settings_unavailable_title">Los ajustes no están disponibles aquí</string>
     <string name="caramel_settings_unavailable_body">Esta ventana se abrió sin el almacén de ajustes. Abre Ajustes desde la barra lateral.</string>
     <string name="caramel_settings_reset_done">Ajustes restablecidos a sus valores predeterminados</string>
+    <string name="caramel_perf_sub">Estos escriben el archivo de opciones de la instancia. El juego los aplica la próxima vez que cargue esta instancia.</string>
+    <string name="caramel_perf_reset">Restablecer valores</string>
+    <string name="caramel_perf_applied">%1$s aplicado. Reinicia esta instancia para verlo.</string>
+    <string name="caramel_perf_all_features">Todas las funciones de rendimiento</string>
+    <string name="caramel_perf_write_failed">No se pudo escribir el archivo de opciones de esta instancia.</string>
+    <string name="caramel_perf_no_instance">Selecciona una instancia antes de cambiar sus ajustes de rendimiento.</string>
+    <string name="caramel_perf_unavailable">Esta instancia aún no tiene un archivo de opciones accesible. Iníciala una vez para que el juego lo cree.</string>
+    <string name="caramel_instance_shader_compat">Cargador de shaders MB</string>
+    <string name="caramel_instance_shader_compat_desc">Ejecuta el corrector de compatibilidad de shaders mtbinloader2 para esta instancia. Lo requieren casi todos los paquetes de shaders.</string>
+    <string name="caramel_instance_isolation">Aislamiento de versión</string>
+    <string name="caramel_instance_isolation_desc">Guarda los mundos y ajustes de esta instancia en su propia carpeta en lugar de la compartida.</string>
+    <string name="caramel_instance_launch_vertical">Iniciar en vertical</string>
+    <string name="caramel_instance_launch_vertical_desc">Fuerza a esta instancia a iniciarse en vertical.</string>
+    <string name="caramel_instance_pack_changer">Cambiador de paquetes en el juego</string>
+    <string name="caramel_instance_pack_changer_desc">Añade un selector de paquetes de recursos al menú de mods en el juego para esta instancia.</string>
+    <string name="caramel_instance_advanced_note">Esto cambia cómo el lanzador inicia esta instancia. Se guarda por instancia y sobrevive a un cambio de nombre.</string>
 </resources>

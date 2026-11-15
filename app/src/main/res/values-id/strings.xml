@@ -1484,4 +1484,20 @@ Migrasi harus selesai sebelum CaramelClient dapat melanjutkan.</string>
     <string name="caramel_settings_unavailable_title">Pengaturan tidak tersedia di sini</string>
     <string name="caramel_settings_unavailable_body">Jendela ini dibuka tanpa penyimpanan pengaturan. Buka Pengaturan dari bilah samping.</string>
     <string name="caramel_settings_reset_done">Pengaturan direset ke bawaannya</string>
+    <string name="caramel_perf_sub">Ini menulis berkas opsi milik instans. Game menerapkannya saat memuat instans ini berikutnya.</string>
+    <string name="caramel_perf_reset">Kembalikan ke bawaan</string>
+    <string name="caramel_perf_applied">%1$s diterapkan. Mulai ulang instans ini untuk melihatnya.</string>
+    <string name="caramel_perf_all_features">Semua fitur performa</string>
+    <string name="caramel_perf_write_failed">Tidak dapat menulis berkas opsi instans ini.</string>
+    <string name="caramel_perf_no_instance">Pilih instans sebelum mengubah pengaturan performanya.</string>
+    <string name="caramel_perf_unavailable">Instans ini belum punya berkas opsi yang dapat dijangkau. Jalankan sekali agar game membuatnya.</string>
+    <string name="caramel_instance_shader_compat">Pemuat shader MB</string>
+    <string name="caramel_instance_shader_compat_desc">Menjalankan perbaikan kompatibilitas shader mtbinloader2 untuk instans ini. Diperlukan oleh hampir semua paket shader.</string>
+    <string name="caramel_instance_isolation">Isolasi versi</string>
+    <string name="caramel_instance_isolation_desc">Simpan dunia dan pengaturan instans ini di folder sendiri, bukan folder bersama.</string>
+    <string name="caramel_instance_launch_vertical">Jalankan vertikal</string>
+    <string name="caramel_instance_launch_vertical_desc">Paksa instans ini dijalankan dalam mode potret.</string>
+    <string name="caramel_instance_pack_changer">Pengubah paket dalam game</string>
+    <string name="caramel_instance_pack_changer_desc">Tambahkan pengalih paket sumber daya ke menu mod dalam game untuk instans ini.</string>
+    <string name="caramel_instance_advanced_note">Ini mengubah cara peluncur memulai instans ini. Disimpan per instans dan tetap ada setelah penggantian nama.</string>
 </resources>
