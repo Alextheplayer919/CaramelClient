@@ -182,7 +182,7 @@ fun CaramelScreenshotsModal(state: CaramelLauncherState, actions: CaramelLaunche
                 stringResource(R.string.caramel_screenshots_sub, shots.size, state.profile.title),
                 { state.screenshotsModal = false },
             ) {
-                GlassButton(stringResource(R.string.caramel_open_folder), actions::openScreenshots, icon = Icons.Rounded.Folder, height = 32)
+                GlassButton(stringResource(R.string.caramel_open_folder), actions::openScreenshotsFolder, icon = Icons.Rounded.Folder, height = 32)
             }
             Row(Modifier.padding(start = 32.dp, bottom = 12.dp), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                 listOf(R.string.caramel_filter_all, R.string.caramel_filter_today, R.string.caramel_filter_this_week)
@@ -195,7 +195,6 @@ fun CaramelScreenshotsModal(state: CaramelLauncherState, actions: CaramelLaunche
                     Modifier.fillMaxWidth().weight(1f).padding(horizontal = 32.dp),
                 )
             } else {
-                val tints = listOf(C.Blue, C.Caramel, C.Green, Color(0xFF966EFF), C.Red, Color(0xFF4AC8E6))
                 LazyVerticalGrid(
                     GridCells.Fixed(4),
                     Modifier.weight(1f).padding(horizontal = 32.dp),
@@ -208,12 +207,12 @@ fun CaramelScreenshotsModal(state: CaramelLauncherState, actions: CaramelLaunche
                             Modifier.clickable(remember { MutableInteractionSource() }, null) { state.selectedScreenshot = s },
                             verticalArrangement = Arrangement.spacedBy(6.dp),
                         ) {
-                            val tint = tints[(s.name.hashCode() and 0x7fffffff) % 6]
                             Box(
                                 Modifier.fillMaxWidth().height(118.dp).clip(RoundedCornerShape(14.dp))
-                                    .background(Brush.verticalGradient(listOf(tint.copy(0.55f), C.Navy)))
                                     .border(if (selected) 2.dp else 1.dp, if (selected) C.Blue else Color.White.copy(0.16f), RoundedCornerShape(14.dp)),
-                            )
+                            ) {
+                                CaramelScreenshotThumbnail(s.path, s.name, Modifier.fillMaxSize())
+                            }
                             Text(s.name, style = T.Caption, maxLines = 1)
                         }
                     }
@@ -231,7 +230,7 @@ fun CaramelScreenshotsModal(state: CaramelLauncherState, actions: CaramelLaunche
                     style = T.Label,
                     modifier = Modifier.weight(1f),
                 )
-                GlassButton(stringResource(R.string.caramel_open_folder), actions::openScreenshots, icon = Icons.Rounded.Folder)
+                GlassButton(stringResource(R.string.caramel_open_folder), actions::openScreenshotsFolder, icon = Icons.Rounded.Folder)
                 GlassButton(
                     stringResource(R.string.delete),
                     { sel?.let(actions::deleteScreenshot) },

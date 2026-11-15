@@ -402,8 +402,12 @@ public class MainActivity extends BaseActivity implements CaramelLauncherHost.Ac
 
     @Override
     public void addServer() {
-        // The add-server dialog lives in the content screens.
-        openContent();
+        // There is no launcher-side server editor, so the honest action is to open the folder the
+        // game reads its server list from: the user edits external_servers.txt directly.
+        GameVersion selected = selectedVersion();
+        File dataDir = selected == null ? null : activeGameDataDir();
+        if (dataDir == null) return;
+        LocalFileOpener.openFolder(this, new File(dataDir, "minecraftpe"));
     }
 
     @Override
@@ -418,9 +422,21 @@ public class MainActivity extends BaseActivity implements CaramelLauncherHost.Ac
         LocalFileOpener.openFolder(this, selected.modsDir);
     }
 
+    /**
+     * Opens the selected instance's Screenshots folder in a file manager.
+     *
+     * <p>The modal's "Open folder" buttons used to call {@link #openScreenshots()}, which only
+     * toggled the modal they were already in — a dead press. This opens the real folder the shots
+     * were scanned from.
+     */
     @Override
-    public void openContent() {
-        startActivity(new Intent(this, LibraryActivity.class));
+    public void openScreenshotsFolder() {
+        GameVersion selected = selectedVersion();
+        File dataDir = selected == null ? null : activeGameDataDir();
+        if (dataDir == null) return;
+        if (!LocalFileOpener.openFolder(this, new File(dataDir, "Screenshots"))) {
+            toast(R.string.caramel_open_folder_failed);
+        }
     }
 
     @Override

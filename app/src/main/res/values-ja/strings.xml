@@ -1363,6 +1363,7 @@ CaramelClient を続行するには移行を完了する必要があります。
     <string name="caramel_verbose_logging">詳細ログ</string>
     <string name="caramel_verbose_logging_desc">トラブルシューティング用の詳細ログを書き出します</string>
     <string name="caramel_open_folder">フォルダーを開く</string>
+    <string name="caramel_open_folder_failed">このフォルダーを開けるファイルマネージャーがありません。</string>
     <string name="caramel_save_changes">変更を保存</string>
     <string name="caramel_launcher_settings_title">設定</string>
     <string name="caramel_appearance">外観</string>

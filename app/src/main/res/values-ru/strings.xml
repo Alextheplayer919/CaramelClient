@@ -1405,6 +1405,7 @@
     <string name="caramel_verbose_logging">Подробное логирование</string>
     <string name="caramel_verbose_logging_desc">Записывать подробные журналы для диагностики</string>
     <string name="caramel_open_folder">Открыть папку</string>
+    <string name="caramel_open_folder_failed">Ни один файловый менеджер не смог открыть эту папку.</string>
     <string name="caramel_save_changes">Сохранить изменения</string>
     <string name="caramel_launcher_settings_title">Настройки</string>
     <string name="caramel_appearance">Внешний вид</string>

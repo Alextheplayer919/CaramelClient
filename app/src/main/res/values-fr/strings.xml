@@ -1366,6 +1366,7 @@ La migration doit être terminée avant de continuer avec CaramelClient.</string
     <string name="caramel_verbose_logging">Journalisation détaillée</string>
     <string name="caramel_verbose_logging_desc">Écrit des journaux détaillés pour le dépannage</string>
     <string name="caramel_open_folder">Ouvrir le dossier</string>
+    <string name="caramel_open_folder_failed">Aucun gestionnaire de fichiers n\'a pu ouvrir ce dossier.</string>
     <string name="caramel_save_changes">Enregistrer les modifications</string>
     <string name="caramel_launcher_settings_title">Paramètres</string>
     <string name="caramel_appearance">Apparence</string>

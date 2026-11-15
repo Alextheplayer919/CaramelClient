@@ -1394,6 +1394,7 @@ CaramelClient जारी रखने से पहले माइग्र�
     <string name="caramel_verbose_logging">विस्तृत लॉगिंग</string>
     <string name="caramel_verbose_logging_desc">समस्या निवारण के लिए विस्तृत लॉग लिखें</string>
     <string name="caramel_open_folder">फ़ोल्डर खोलें</string>
+    <string name="caramel_open_folder_failed">कोई फ़ाइल प्रबंधक इस फ़ोल्डर को नहीं खोल सका।</string>
     <string name="caramel_save_changes">बदलाव सहेजें</string>
     <string name="caramel_launcher_settings_title">सेटिंग्स</string>
     <string name="caramel_appearance">रूप</string>

@@ -110,4 +110,5 @@ file is missing from the index.
 - [One UI: the Caramel UI pack, the native ImGui menu, and FPS honesty](docs/agents/one-ui-the-caramel-ui-pack-the-native-imgui-menu-and-fps-honesty.md)
 - [The white screen after the launch screen (game window theme)](docs/agents/game-window-white-screen-theme.md)
 - [The Compose launcher's real-data screens (skin preview + cosmetic tiles)](docs/agents/caramel-compose-ui-real-data.md)
+- [The Screenshots entry points (the "Content" button and the blank Library)](docs/agents/screenshot-entry-points-content-button.md)
 - [Microsoft sign-in: device code, not MSAL](docs/agents/microsoft-sign-in-device-code-not-msal.md)

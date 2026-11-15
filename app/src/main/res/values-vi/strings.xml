@@ -1396,6 +1396,7 @@ Quá trình chuyển đổi phải hoàn tất trước khi CaramelClient có th
     <string name="caramel_verbose_logging">Ghi nhật ký chi tiết</string>
     <string name="caramel_verbose_logging_desc">Ghi nhật ký chi tiết để khắc phục sự cố</string>
     <string name="caramel_open_folder">Mở thư mục</string>
+    <string name="caramel_open_folder_failed">Không có trình quản lý tệp nào mở được thư mục này.</string>
     <string name="caramel_save_changes">Lưu thay đổi</string>
     <string name="caramel_launcher_settings_title">Cài đặt</string>
     <string name="caramel_appearance">Giao diện</string>

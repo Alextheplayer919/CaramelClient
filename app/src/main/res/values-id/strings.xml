@@ -1390,6 +1390,7 @@ Migrasi harus selesai sebelum CaramelClient dapat melanjutkan.</string>
     <string name="caramel_verbose_logging">Log terperinci</string>
     <string name="caramel_verbose_logging_desc">Tulis log terperinci untuk pemecahan masalah</string>
     <string name="caramel_open_folder">Buka folder</string>
+    <string name="caramel_open_folder_failed">Tidak ada pengelola berkas yang dapat membuka folder ini.</string>
     <string name="caramel_save_changes">Simpan perubahan</string>
     <string name="caramel_launcher_settings_title">Pengaturan</string>
     <string name="caramel_appearance">Tampilan</string>

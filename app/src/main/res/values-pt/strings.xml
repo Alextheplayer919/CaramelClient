@@ -1366,6 +1366,7 @@ A migração deve ser concluída antes que o CaramelClient continue.</string>
     <string name="caramel_verbose_logging">Registro detalhado</string>
     <string name="caramel_verbose_logging_desc">Grava registros detalhados para solução de problemas</string>
     <string name="caramel_open_folder">Abrir pasta</string>
+    <string name="caramel_open_folder_failed">Nenhum gerenciador de arquivos pôde abrir esta pasta.</string>
     <string name="caramel_save_changes">Salvar alterações</string>
     <string name="caramel_launcher_settings_title">Configurações</string>
     <string name="caramel_appearance">Aparência</string>

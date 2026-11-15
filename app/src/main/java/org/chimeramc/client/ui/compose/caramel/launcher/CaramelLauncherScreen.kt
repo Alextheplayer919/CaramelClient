@@ -27,7 +27,7 @@ fun CaramelLauncherScreen(
         CaramelLauncherFrame(state) { contentModifier ->
             Box(contentModifier) {
                 when (state.tab) {
-                    CaramelTab.Home -> CaramelHomeScreen(state, actions::launch, actions::openContent)
+                    CaramelTab.Home -> CaramelHomeScreen(state, actions::launch, actions::openScreenshots)
                     CaramelTab.Mods -> CaramelModsScreen(
                         state,
                         onToggle = actions::toggleMod,

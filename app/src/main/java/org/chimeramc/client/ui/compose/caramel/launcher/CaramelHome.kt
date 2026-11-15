@@ -66,11 +66,11 @@ import org.chimeramc.client.ui.compose.caramel.sp_
 fun CaramelHomeScreen(
     state: CaramelLauncherState,
     onLaunch: () -> Unit,
-    onOpenContent: () -> Unit,
+    onOpenScreenshots: () -> Unit,
 ) {
     Row(Modifier.fillMaxSize(), horizontalArrangement = Arrangement.spacedBy(20.dp)) {
         Column(Modifier.weight(1f).fillMaxHeight(), verticalArrangement = Arrangement.spacedBy(20.dp)) {
-            Hero(state, onLaunch, onOpenContent, Modifier.fillMaxWidth().height(320.dp))
+            Hero(state, onLaunch, onOpenScreenshots, Modifier.fillMaxWidth().height(320.dp))
             Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
                 Text(stringResource(R.string.caramel_latest_news), style = T.Title, modifier = Modifier.weight(1f))
                 Text(
@@ -105,7 +105,7 @@ private fun newsArt(i: Int): List<Color> = when (i % 3) {
 }
 
 @Composable
-private fun Hero(state: CaramelLauncherState, onLaunch: () -> Unit, onOpenContent: () -> Unit, modifier: Modifier) {
+private fun Hero(state: CaramelLauncherState, onLaunch: () -> Unit, onOpenScreenshots: () -> Unit, modifier: Modifier) {
     GlassPanel(modifier, RoundedCornerShape(24.dp)) {
         Canvas(Modifier.matchParentSize()) {
             drawCircle(
@@ -129,7 +129,7 @@ private fun Hero(state: CaramelLauncherState, onLaunch: () -> Unit, onOpenConten
             Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                 GlassButton(stringResource(R.string.caramel_profiles), { state.launchMenu = true }, icon = Icons.Rounded.Folder, height = 32)
                 GlassButton(stringResource(R.string.caramel_instances), { state.instanceSettings = true }, icon = Icons.Rounded.Tune, height = 32)
-                GlassButton(stringResource(R.string.caramel_content), onOpenContent, icon = Icons.Rounded.PhotoCamera, height = 32)
+                GlassButton(stringResource(R.string.caramel_screenshots_title), onOpenScreenshots, icon = Icons.Rounded.PhotoCamera, height = 32)
             }
             val line = state.instanceName.ifEmpty { stringResource(R.string.caramel_no_instance) }
             Text(line, style = T.Caption)

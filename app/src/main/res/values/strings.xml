@@ -2864,6 +2864,7 @@ CaramelClient must complete the migration before continuing.</string>
     <string name="caramel_verbose_logging">Verbose logging</string>
     <string name="caramel_verbose_logging_desc">Write detailed logs for troubleshooting</string>
     <string name="caramel_open_folder">Open folder</string>
+    <string name="caramel_open_folder_failed">No file manager could open this folder.</string>
     <string name="caramel_save_changes">Save changes</string>
     <string name="caramel_launcher_settings_title">Settings</string>
     <string name="caramel_appearance">Appearance</string>

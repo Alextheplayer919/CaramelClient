@@ -1393,6 +1393,7 @@ CaramelClient\'ın devam edebilmesi için taşımanın tamamlanması gerekiyor.<
     <string name="caramel_verbose_logging">Ayrıntılı günlük</string>
     <string name="caramel_verbose_logging_desc">Sorun giderme için ayrıntılı günlük yaz</string>
     <string name="caramel_open_folder">Klasörü aç</string>
+    <string name="caramel_open_folder_failed">Hiçbir dosya yöneticisi bu klasörü açamadı.</string>
     <string name="caramel_save_changes">Değişiklikleri kaydet</string>
     <string name="caramel_launcher_settings_title">Ayarlar</string>
     <string name="caramel_appearance">Görünüm</string>
