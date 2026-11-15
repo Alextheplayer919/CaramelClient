@@ -58,6 +58,19 @@
     </style>
 
     <!--
+        The splash and the launcher both draw the Caramel backdrop themselves (Compose), so their
+        window background is the pack's navy (`launcher_backdrop`). It was `@color/background`, which
+        is near-white in light mode: the user saw that colour for the whole first frame, which read
+        as a blank white screen. `windowDisablePreview` keeps the system from painting its own
+        (light) starting window over the top of it.
+    -->
+    <style name="LauncherTheme" parent="Base.Theme.FullScreen">
+        <item name="android:windowBackground">@color/launcher_backdrop</item>
+        <item name="android:windowDisablePreview">true</item>
+        <item name="android:windowLightStatusBar">false</item>
+    </style>
+
+    <!--
         The first-run wizard is a self-sizing popup over the launcher, so its window is translucent
         and transparent: the launcher behind stays visible, and the wizard's own dim overlay in
         activity_setup_wizard.xml is what darkens it. No window animation is used — the card animates

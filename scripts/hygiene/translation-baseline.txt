@@ -35,7 +35,6 @@ values-es:armor_hud_target
 values-es:behavior_packs
 values-es:blur_intensity
 values-es:blur_intensity_value
-values-es:caramel_user_badge
 values-es:card_rounding
 values-es:card_rounding_value
 values-es:catalog_command_text
@@ -1311,7 +1310,6 @@ values-fr:armor_hud_target
 values-fr:behavior_packs
 values-fr:blur_intensity
 values-fr:blur_intensity_value
-values-fr:caramel_user_badge
 values-fr:card_rounding
 values-fr:card_rounding_value
 values-fr:catalog_command_text
@@ -2587,7 +2585,6 @@ values-hi:armor_hud_target
 values-hi:behavior_packs
 values-hi:blur_intensity
 values-hi:blur_intensity_value
-values-hi:caramel_user_badge
 values-hi:card_rounding
 values-hi:card_rounding_value
 values-hi:catalog_command_text
@@ -3863,7 +3860,6 @@ values-id:armor_hud_target
 values-id:behavior_packs
 values-id:blur_intensity
 values-id:blur_intensity_value
-values-id:caramel_user_badge
 values-id:card_rounding
 values-id:card_rounding_value
 values-id:catalog_command_text
@@ -5139,7 +5135,6 @@ values-ja:armor_hud_target
 values-ja:behavior_packs
 values-ja:blur_intensity
 values-ja:blur_intensity_value
-values-ja:caramel_user_badge
 values-ja:card_rounding
 values-ja:card_rounding_value
 values-ja:catalog_command_text
@@ -6415,7 +6410,6 @@ values-pt:armor_hud_target
 values-pt:behavior_packs
 values-pt:blur_intensity
 values-pt:blur_intensity_value
-values-pt:caramel_user_badge
 values-pt:card_rounding
 values-pt:card_rounding_value
 values-pt:catalog_command_text
@@ -7691,7 +7685,6 @@ values-ru:armor_hud_target
 values-ru:behavior_packs
 values-ru:blur_intensity
 values-ru:blur_intensity_value
-values-ru:caramel_user_badge
 values-ru:card_rounding
 values-ru:card_rounding_value
 values-ru:catalog_command_text
@@ -8967,7 +8960,6 @@ values-tr:armor_hud_target
 values-tr:behavior_packs
 values-tr:blur_intensity
 values-tr:blur_intensity_value
-values-tr:caramel_user_badge
 values-tr:card_rounding
 values-tr:card_rounding_value
 values-tr:catalog_command_text
@@ -10243,7 +10235,6 @@ values-vi:armor_hud_target
 values-vi:behavior_packs
 values-vi:blur_intensity
 values-vi:blur_intensity_value
-values-vi:caramel_user_badge
 values-vi:card_rounding
 values-vi:card_rounding_value
 values-vi:catalog_command_text
@@ -11519,7 +11510,6 @@ values-zh-rCN:armor_hud_target
 values-zh-rCN:behavior_packs
 values-zh-rCN:blur_intensity
 values-zh-rCN:blur_intensity_value
-values-zh-rCN:caramel_user_badge
 values-zh-rCN:card_rounding
 values-zh-rCN:card_rounding_value
 values-zh-rCN:catalog_command_text

@@ -18,7 +18,18 @@
 
     <style name="MainActivityTheme" parent="Base.Theme.FullScreen">
         <item name="android:windowDisablePreview">true</item>
-        <item name="android:windowSplashScreenBackground">@color/background</item>
+        <item name="android:windowSplashScreenBackground">@color/launcher_backdrop</item>
+        <item name="android:windowSplashScreenAnimatedIcon">@android:color/transparent</item>
+        <item name="android:windowSplashScreenIconBackgroundColor">@android:color/transparent</item>
+    </style>
+
+    <!-- The launcher's own window: the system splash on API 31+ must use the Caramel navy, not the
+         near-white `background`, or the cold start flashes white before Compose paints. -->
+    <style name="LauncherTheme" parent="Base.Theme.FullScreen">
+        <item name="android:windowBackground">@color/launcher_backdrop</item>
+        <item name="android:windowDisablePreview">true</item>
+        <item name="android:windowLightStatusBar">false</item>
+        <item name="android:windowSplashScreenBackground">@color/launcher_backdrop</item>
         <item name="android:windowSplashScreenAnimatedIcon">@android:color/transparent</item>
         <item name="android:windowSplashScreenIconBackgroundColor">@android:color/transparent</item>
     </style>

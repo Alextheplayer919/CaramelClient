@@ -10,19 +10,25 @@ Index only. Detail and session notes live in the daily logs (`YYYY-MM-DD.md`).
 
 The repo was called **GlowberryClient** before; the package is `org.chimeramc.client` either way.
 
-### UI skeleton state (2026-11-14: the whole legacy UI was deleted for a new one)
-The launcher UI + the in-game Mod Menu UI were removed in one sweep, keeping every system. Do not
-re-add the old UI; a new one is being dropped in. See the 2026-11-14 daily log for the full list.
+### UI skeleton state (2026-11-14: legacy UI deleted, then the pack UI ported back)
+The launcher UI + the in-game Mod Menu UI were removed in one sweep, keeping every system; the
+Caramel UI pack was then ported back in on top of current `main` (PR #185 + SweetLoader #40). **Do
+not re-add the old View-based UI** — the pack port is the way forward. The port **did not** restore
+the pack's demo data (`Versions`/`ExampleMods`/`ExampleServers`): `CaramelLauncherState` defaults
+every list empty and `MainActivity` fills it from `VersionManager`/`MsftAccountStore`/`ModManager`,
+so empty screens draw empty states (honesty rule). See the 2026-11-14 daily log for the full list.
 - **`ui.activities` files live under `launcher/ui/activities/`** (dir ≠ package for the whole
   `launcher/ui` tree — package decls are `org.chimeramc.client.ui.*`). Operate on FILES, not dirs.
 - 7 placeholder Activities remain (`BaseActivity` + `MainActivity`/`SplashActivity`/`LibraryActivity`/
   `SettingsActivity`/`ModsFullscreenActivity`/`CrashActivity`); they draw nothing but are manifest
   targets. `MainActivity.setTextMinecraftVersion()` and `LibraryActivity.EXTRA_INITIAL_TAB`/`TAB_*`
   are kept no-op API other code still calls. Layouts 94→20; the kept 20 are the game-host/HUD ones.
-- **The in-game menu was 3 layers, all cut**: native ImGui (`sweetloader/src/pl/menu/` + vendored
-  `third_party/imgui/`, consumed only by `PresentFrameEffect.cpp`), the Java bridge
-  (`PreloaderMenu`/`InGameMenuController`), and the launcher overlay widgets (`MoreButtonsEditor`,
-  `VoicePanel`/`VoiceUiKit`, `CosmeticsPanel`). `DebugMenuOverlay` is the F3 overlay MOD — keep it.
+- **The in-game menu was 3 layers, all cut, then the native one restored** (SweetLoader #40): native
+  ImGui (`sweetloader/src/pl/menu/` + vendored `third_party/imgui/`, consumed only by
+  `PresentFrameEffect.cpp`), the Java bridge (`PreloaderMenu`/`InGameMenuController`), and the
+  launcher overlay widgets (`MoreButtonsEditor`, `VoicePanel`/`VoiceUiKit`, `CosmeticsPanel`, still
+  cut). `DebugMenuOverlay` is the F3 overlay MOD — keep it. The menu is drawn from the present hook
+  **with no full-screen dim scrim**, and the host skips the whole ImGui frame while the menu is closed.
 - **Kept (a new UI will reuse them)**: `UiTokens`, `Widget.Caramel.Card*`, `TextAppearance.Caramel.*`,
   `GlowDimens`, generic `bg_*`/`ic_*` drawables, `PersonalizationManager`, all `core.*` systems.
   Removed only the dead legacy chrome (`splash_bg_*`, `launch_bg_*`, dock/nav drawables + styles).
@@ -38,6 +44,9 @@ re-add the old UI; a new one is being dropped in. See the 2026-11-14 daily log f
   unmerged, and then a clean checkout depends on that branch surviving. `scripts/check_submodules.sh`
   gates it. Check with `git -C <sub> merge-base --is-ancestor <pin> origin/main`, and note a pin can
   be *behind main by one* while still looking "on a branch" (`git log --oneline <pin>..origin/main`).
+  `scripts/check_submodules.sh` does **not** check ancestry (only that no `branch =` floats and the
+  checkout equals the pin), so a `feat/*` tip pin passes it — PR #185 pins `4ff2e63` on
+  `feat/restore-pack-menu`, which must merge (SweetLoader #40) before/with it.
 - **`.universe` and `.singularity` are the only mod formats** (`.AntEgg`/`.chimerapack`/`.levipack`
   are gone). Rust workspace `sweetloader/rust/`: `universe-core/-jni`
   (manifest/archive/signature/loadorder/permission/config/report/runtime/fault/version/patterns),
@@ -169,4 +178,7 @@ re-add the old UI; a new one is being dropped in. See the 2026-11-14 daily log f
   baseline, which *shrinks* when a `findViewById` is replaced by a ViewBinding read).
 - **`NoSilentCatchTest`**: a `catch` that discards the throwable fails. Use
   `AppLog.warnOnce(tag, key, message, e)`, even for an expected `UnsatisfiedLinkError` fail-closed path.
+- **`NoEmojiInUiTextTest` / `NoEmojiTest`**: no emoji/glyph codepoints in client UI strings (a `★` in
+  a Compose `FilterChip` label fails it). **`Api28CompatTest`**: shipped sources must not call an API
+  newer than 28 — `String.isBlank` (33) is the usual slip, use `s.trim().isEmpty()`.
 - Baseline format note: the baseline files live under **`scripts/hygiene/`**, not `scripts/`.

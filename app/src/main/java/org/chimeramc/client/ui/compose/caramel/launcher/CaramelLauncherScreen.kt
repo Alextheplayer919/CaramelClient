@@ -2,9 +2,12 @@ package org.chimeramc.client.ui.compose.caramel.launcher
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.size
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
 import org.chimeramc.client.ui.compose.caramel.CaramelLauncherState
+import org.chimeramc.client.ui.compose.caramel.CaramelModal
 import org.chimeramc.client.ui.compose.caramel.CaramelTab
 
 /**
@@ -44,6 +47,16 @@ fun CaramelLauncherScreen(
         }
         CaramelLaunchMenuOverlay(state, actions::launch)
         CaramelModDetailModal(state, actions::toggleMod)
-        CaramelAppMenuOverlay(state, actions::quit)
+        CaramelAppMenu(state, actions)
+        CaramelAccountMenu(state, actions)
+        CaramelScreenshotsModal(state, actions)
+        CaramelFriendsModal(state, actions)
+        CaramelAddAccountModal(state, actions)
+        CaramelAccountSettingsModal(state, actions)
+        CaramelAddFriendModal(state)
+        CaramelModal(state.launcherSettings, { state.launcherSettings = false }, Modifier.size(760.dp, 620.dp)) {
+            CaramelLauncherSettingsPanel(state, actions) { state.launcherSettings = false }
+        }
+        CaramelInstanceSettingsModal(state, actions)
     }
 }

@@ -38,7 +38,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
+import org.chimeramc.client.R
 import androidx.compose.ui.unit.dp
 import org.chimeramc.client.ui.compose.caramel.C
 import org.chimeramc.client.ui.compose.caramel.CaramelCosmeticInfo
@@ -69,7 +71,7 @@ fun CaramelCosmeticsScreen(
     skinViewer: @Composable (Modifier) -> Unit = { EmptySkinSlot(it) },
 ) {
     var chip by remember { mutableStateOf(0) }
-    CaramelPage("Cosmetics", "Capes, wings, hats and more") {
+    CaramelPage(stringResource(R.string.mod_menu_tab_cosmetics), stringResource(R.string.caramel_cosmetics_sub)) {
         Row(Modifier.fillMaxSize(), horizontalArrangement = Arrangement.spacedBy(20.dp)) {
             GlassPanel(Modifier.width(320.dp).fillMaxHeight(), RoundedCornerShape(24.dp)) {
                 Column(
@@ -81,17 +83,17 @@ fun CaramelCosmeticsScreen(
                         Modifier.fillMaxWidth().weight(1f).background(Color.White, RoundedCornerShape(22.dp)),
                         Alignment.Center,
                     ) { skinViewer(Modifier.fillMaxSize().padding(8.dp)) }
-                    GlassButton("Save outfit", {}, Modifier.fillMaxWidth(), icon = Icons.Rounded.Check)
-                    GlassButton("Reset view", onResetView, Modifier.fillMaxWidth(), icon = Icons.Rounded.SwapHoriz)
+                    GlassButton(stringResource(R.string.caramel_save_outfit), {}, Modifier.fillMaxWidth(), icon = Icons.Rounded.Check)
+                    GlassButton(stringResource(R.string.caramel_reset_view), onResetView, Modifier.fillMaxWidth(), icon = Icons.Rounded.SwapHoriz)
                 }
             }
             Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(16.dp)) {
                 Row(horizontalArrangement = Arrangement.spacedBy(8.dp), verticalAlignment = Alignment.CenterVertically) {
-                    listOf("All", "Capes", "Wings", "Hats", "Pets").forEachIndexed { i, t -> FilterChip(t, chip == i, { chip = i }) }
-                    FilterChip("Favorites", chip == 5, { chip = 5 })
+                    listOf(R.string.caramel_filter_all, R.string.caramel_filter_capes, R.string.caramel_filter_wings, R.string.caramel_filter_hats, R.string.caramel_filter_pets).forEachIndexed { i, t -> FilterChip(stringResource(t), chip == i, { chip = i }) }
+                    FilterChip(stringResource(R.string.caramel_filter_favorites), chip == 5, { chip = 5 })
                 }
                 if (state.cosmetics.isEmpty()) {
-                    EmptyState("No cosmetics yet", "Capes and hats you own appear here.", Modifier.fillMaxWidth().weight(1f))
+                    EmptyState(stringResource(R.string.caramel_no_cosmetics_title), stringResource(R.string.caramel_no_cosmetics_body), Modifier.fillMaxWidth().weight(1f))
                 } else {
                     LazyVerticalGrid(
                         GridCells.Adaptive(190.dp),
@@ -112,7 +114,7 @@ fun CaramelCosmeticsScreen(
 internal fun EmptySkinSlot(modifier: Modifier) {
     Box(modifier, Alignment.Center) {
         Text(
-            "3D skin preview",
+            stringResource(R.string.caramel_skin_preview),
             style = T.Title.copy(color = Color(0xFF1C2854), fontSize = 15.sp_, textAlign = TextAlign.Center),
             modifier = Modifier.width(190.dp),
         )
@@ -146,14 +148,14 @@ private fun CosmeticTile(c: CaramelCosmeticInfo, onFav: () -> Unit, onEquip: () 
             Column(Modifier.padding(8.dp), verticalArrangement = Arrangement.spacedBy(4.dp)) {
                 Text(c.name, style = T.Label, maxLines = 1)
                 if (c.equipped) {
-                    StatusLabel("Equipped", C.Green)
+                    StatusLabel(stringResource(R.string.caramel_equipped), C.Green)
                 } else if (c.owned) {
                     Row(verticalAlignment = Alignment.CenterVertically) {
-                        Text("Owned", style = T.Body, modifier = Modifier.weight(1f))
-                        GlassButton("Equip", onEquip, height = 28)
+                        Text(stringResource(R.string.caramel_owned), style = T.Body, modifier = Modifier.weight(1f))
+                        GlassButton(stringResource(R.string.caramel_equip), onEquip, height = 28)
                     }
                 } else {
-                    StatusLabel("Locked", C.Caramel)
+                    StatusLabel(stringResource(R.string.caramel_locked), C.Caramel)
                 }
             }
         }
@@ -163,11 +165,11 @@ private fun CosmeticTile(c: CaramelCosmeticInfo, onFav: () -> Unit, onEquip: () 
 /** The News screen: a featured post over a side list. */
 @Composable
 fun CaramelNewsScreen(state: CaramelLauncherState) {
-    CaramelPage("News", "Updates, events and community posts") {
+    CaramelPage(stringResource(R.string.caramel_news_title), stringResource(R.string.caramel_news_sub)) {
         Row(Modifier.fillMaxWidth().weight(1f), horizontalArrangement = Arrangement.spacedBy(20.dp)) {
             val featured = state.news.firstOrNull { it.featured } ?: state.news.firstOrNull()
             if (featured == null) {
-                EmptyState("No news yet", "Posts appear here once the changelog loads.", Modifier.fillMaxSize())
+                EmptyState(stringResource(R.string.caramel_no_news_title), stringResource(R.string.caramel_no_news_body), Modifier.fillMaxSize())
             } else {
                 GlassPanel(Modifier.weight(1.3f).fillMaxHeight(), RoundedCornerShape(24.dp)) {
                     Column(Modifier.padding(6.dp)) {
@@ -176,7 +178,7 @@ fun CaramelNewsScreen(state: CaramelLauncherState) {
                                 .background(Brush.verticalGradient(listOf(Color(0xFF5A2818), Color(0xFFF5963C))), RoundedCornerShape(18.dp)),
                         )
                         Column(Modifier.padding(22.dp), verticalArrangement = Arrangement.spacedBy(10.dp)) {
-                            StatusLabel("Featured", C.Caramel)
+                            StatusLabel(stringResource(R.string.caramel_featured), C.Caramel)
                             Text(featured.title, style = T.Display)
                             Text(featured.summary, style = T.Body.copy(fontSize = 13.sp_))
                             Text(featured.meta, style = T.Label.copy(color = C.Caramel))
@@ -208,23 +210,23 @@ fun CaramelNewsScreen(state: CaramelLauncherState) {
 /** The Store screen: a Caramel+ banner over the bundle grid. */
 @Composable
 fun CaramelStoreScreen(state: CaramelLauncherState) {
-    CaramelPage("Store", "Cosmetics, bundles and Caramel+") {
+    CaramelPage(stringResource(R.string.caramel_store_title), stringResource(R.string.caramel_store_sub)) {
         GlassPanel(Modifier.fillMaxWidth().height(160.dp), RoundedCornerShape(24.dp)) {
             Box(Modifier.matchParentSize().background(Brush.horizontalGradient(listOf(C.Caramel.copy(0.3f), C.Blue.copy(0.08f)))))
             Row(Modifier.fillMaxSize().padding(horizontal = 36.dp), verticalAlignment = Alignment.CenterVertically) {
                 Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(6.dp)) {
-                    Text("Caramel+", style = T.Display.copy(fontSize = 28.sp_))
+                    Text(stringResource(R.string.caramel_plus), style = T.Display.copy(fontSize = 28.sp_))
                     Text(
-                        "Support the client and unlock cosmetics, themes and early builds.",
+                        stringResource(R.string.caramel_plus_blurb),
                         style = T.Body.copy(fontSize = 13.5.sp_),
                     )
                 }
-                PrimaryButton("Learn more", {}, Modifier.width(200.dp))
+                PrimaryButton(stringResource(R.string.caramel_learn_more), {}, Modifier.width(200.dp))
             }
         }
         EmptyState(
-            "Store coming soon",
-            "Bundles will appear here once the store backend is live.",
+            stringResource(R.string.caramel_store_soon_title),
+            stringResource(R.string.caramel_store_soon_body),
             Modifier.fillMaxWidth().weight(1f),
         )
     }
