@@ -20,8 +20,9 @@ import org.chimeramc.client.ui.compose.caramel.CaramelTab
 fun CaramelLauncherScreen(
     state: CaramelLauncherState,
     actions: CaramelLauncherHost.Actions,
-    skinViewer: @Composable (Modifier) -> Unit,
+    skinViewer: (@Composable (Modifier) -> Unit)? = null,
 ) {
+    val cosmeticsSkinViewer = skinViewer ?: { m: Modifier -> CaramelSkinPreview(state, m) }
     Box(Modifier.fillMaxSize()) {
         CaramelLauncherFrame(state) { contentModifier ->
             Box(contentModifier) {
@@ -38,7 +39,7 @@ fun CaramelLauncherScreen(
                         onToggleFavourite = actions::toggleFavourite,
                         onEquip = actions::equipCosmetic,
                         onResetView = {},
-                        skinViewer = skinViewer,
+                        skinViewer = cosmeticsSkinViewer,
                     )
                     CaramelTab.News -> CaramelNewsScreen(state)
                     CaramelTab.Store -> CaramelStoreScreen(state)

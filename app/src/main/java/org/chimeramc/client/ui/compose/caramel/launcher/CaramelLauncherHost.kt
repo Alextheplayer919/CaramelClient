@@ -56,9 +56,10 @@ object CaramelLauncherHost {
     /**
      * Mounts the launcher into [composeView], wrapped in the Caramel theme.
      *
-     * <p>The skin preview slot is left to [skinViewerProvider]: a `@Composable` lambda cannot be
-     * passed from Java, so the activity opts in by setting the provider from Kotlin code (or not at
-     * all, in which case the Cosmetics screen shows its empty slot).
+     * <p>The skin preview slot defaults to the real software-rendered character (see
+     * [CaramelSkinPreview]); a Kotlin caller may override [skinViewerProvider] to substitute its own.
+     * A `@Composable` lambda cannot be passed from Java, so the activity opts in from Kotlin code
+     * (or not at all, in which case the Cosmetics screen still shows the real render).
      */
     @JvmStatic
     fun setContent(
@@ -71,13 +72,13 @@ object CaramelLauncherHost {
                 CaramelLauncherScreen(
                     state = state.value,
                     actions = actions,
-                    skinViewer = skinViewerProvider ?: { EmptySkinSlot(it) },
+                    skinViewer = skinViewerProvider,
                 )
             }
         }
     }
 
-    /** The Cosmetics skin-preview slot; a Kotlin caller may replace it. */
+    /** An override for the Cosmetics skin-preview slot; null means the real render is used. */
     @JvmStatic
     var skinViewerProvider: (@Composable (androidx.compose.ui.Modifier) -> Unit)? = null
 }
