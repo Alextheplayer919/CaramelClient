@@ -24,9 +24,41 @@ public class CosmeticSyncTest {
         assertNotNull(advert);
         assertEquals("peer-1", advert.peerId);
         assertEquals("Alex", advert.name);
+        assertEquals("", advert.xuid);
         assertEquals("cape_chimera", advert.capeId);
         assertEquals("acc_crown", advert.accessoryId);
         assertEquals("pet_cat", advert.petId);
+    }
+
+    /** The xuid rides the wire so a receiver can badge the account; it round-trips unchanged. */
+    @Test
+    public void roundTripPreservesTheXuid() {
+        byte[] data = CosmeticSyncProtocol.encode("peer-1", "Alex", "2533274812345678",
+                "cape_chimera", "acc_crown", "pet_cat");
+        CosmeticSyncProtocol.Advert advert = CosmeticSyncProtocol.decode(data);
+        assertNotNull(advert);
+        assertEquals("2533274812345678", advert.xuid);
+        assertEquals("cape_chimera", advert.capeId);
+        assertEquals("pet_cat", advert.petId);
+    }
+
+    /**
+     * A version-1 packet (no xuid field) must still decode, so an older peer keeps syncing
+     * cosmetics; it simply carries no xuid and cannot be badged.
+     */
+    @Test
+    public void aVersionOnePacketStillDecodes() {
+        byte[] v1 = new byte[]{'C', 'S', CosmeticSyncProtocol.VERSION_XUIDLESS,
+                CosmeticSyncProtocol.TYPE_ADVERTISE, 0, 1, 'p',
+                0, 1, 'n', 0, 2, 'c', '1', 0, 2, 'a', '1', 0, 2, 't', '1'};
+        CosmeticSyncProtocol.Advert advert = CosmeticSyncProtocol.decode(v1);
+        assertNotNull(advert);
+        assertEquals("p", advert.peerId);
+        assertEquals("n", advert.name);
+        assertEquals("", advert.xuid);
+        assertEquals("c1", advert.capeId);
+        assertEquals("a1", advert.accessoryId);
+        assertEquals("t1", advert.petId);
     }
 
     /** Missing cosmetics round-trip as {@link CosmeticCatalog#NONE}, never as garbage. */

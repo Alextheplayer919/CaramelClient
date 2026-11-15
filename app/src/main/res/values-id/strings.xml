@@ -1455,4 +1455,11 @@ Migrasi harus selesai sebelum CaramelClient dapat melanjutkan.</string>
     <string name="caramel_offline">Offline</string>
     <string name="caramel_no_friends_match">Tidak ada teman yang cocok</string>
     <string name="caramel_no_friends_match_body">Tidak ada nama teman yang cocok dengan pencarian Anda.</string>
+    <string name="caramel_search">Cari</string>
+    <string name="caramel_searching">Mencari…</string>
+    <string name="caramel_player_not_found">Tidak ada pemain Xbox dengan nama itu.</string>
+    <string name="caramel_search_failed">Tidak dapat menghubungi Xbox Live. Periksa koneksi lalu coba lagi.</string>
+    <string name="caramel_sign_in_to_add">Masuk ke Xbox Live untuk menambah teman.</string>
+    <string name="caramel_friend_request_sent">Permintaan pertemanan terkirim.</string>
+    <string name="caramel_friend_request_failed">Tidak dapat mengirim permintaan pertemanan.</string>
 </resources>

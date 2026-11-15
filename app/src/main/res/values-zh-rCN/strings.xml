@@ -1452,4 +1452,11 @@
     <string name="caramel_offline">离线</string>
     <string name="caramel_no_friends_match">没有匹配的好友</string>
     <string name="caramel_no_friends_match_body">没有好友名称与你的搜索匹配。</string>
+    <string name="caramel_search">搜索</string>
+    <string name="caramel_searching">搜索中…</string>
+    <string name="caramel_player_not_found">没有该名称的 Xbox 玩家。</string>
+    <string name="caramel_search_failed">无法连接 Xbox Live。请检查网络后重试。</string>
+    <string name="caramel_sign_in_to_add">登录 Xbox Live 以添加好友。</string>
+    <string name="caramel_friend_request_sent">好友请求已发送。</string>
+    <string name="caramel_friend_request_failed">无法发送好友请求。</string>
 </resources>

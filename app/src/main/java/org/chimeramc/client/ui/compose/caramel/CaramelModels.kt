@@ -175,4 +175,35 @@ class CaramelLauncherState {
 
     /** Why the last sign-in attempt failed, empty when it has not failed. */
     var signInError by mutableStateOf("")
+
+    /** The gamertag typed into the Add friend modal. */
+    var friendQuery by mutableStateOf("")
+
+    /** Whether a gamertag lookup is in flight, so the modal can show progress. */
+    var friendSearchRunning by mutableStateOf(false)
+
+    /** The account the last lookup resolved, or null when nothing has matched yet. */
+    var friendFound by mutableStateOf<CaramelFoundUser?>(null)
+
+    /** Whether the found account is a confirmed Caramel user, so the badge is honest. */
+    var friendFoundIsCaramel by mutableStateOf(false)
+
+    /** Why the last lookup found nothing, empty when it has not failed. */
+    var friendSearchError by mutableStateOf("")
+
+    /** Whether the follow request for [friendFound] is in flight. */
+    var friendRequestRunning by mutableStateOf(false)
+
+    /** The result line shown after a follow attempt, empty when idle. */
+    var friendRequestResult by mutableStateOf("")
+
+    /** Whether the follow request succeeded, so the result line can be tinted. */
+    var friendRequestSucceeded by mutableStateOf(false)
 }
+
+/** One account the Add friend modal resolved from a typed gamertag. */
+data class CaramelFoundUser(
+    val xuid: String,
+    val gamertag: String,
+    val avatarUrl: String,
+)

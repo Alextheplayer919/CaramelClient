@@ -1459,4 +1459,11 @@ CaramelClient जारी रखने से पहले माइग्र�
     <string name="caramel_offline">ऑफ़लाइन</string>
     <string name="caramel_no_friends_match">कोई मिलता-जुलता मित्र नहीं</string>
     <string name="caramel_no_friends_match_body">आपकी खोज से कोई मित्र नाम मेल नहीं खाता।</string>
+    <string name="caramel_search">खोजें</string>
+    <string name="caramel_searching">खोज रहा है…</string>
+    <string name="caramel_player_not_found">इस नाम का कोई Xbox खिलाड़ी नहीं है।</string>
+    <string name="caramel_search_failed">Xbox Live से संपर्क नहीं हो सका। अपना कनेक्शन जांचें और फिर कोशिश करें।</string>
+    <string name="caramel_sign_in_to_add">मित्र जोड़ने के लिए Xbox Live में साइन इन करें।</string>
+    <string name="caramel_friend_request_sent">मित्र अनुरोध भेजा गया।</string>
+    <string name="caramel_friend_request_failed">मित्र अनुरोध भेजा नहीं जा सका।</string>
 </resources>

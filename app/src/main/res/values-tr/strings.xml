@@ -1458,4 +1458,11 @@ CaramelClient\'ın devam edebilmesi için taşımanın tamamlanması gerekiyor.<
     <string name="caramel_offline">Çevrimdışı</string>
     <string name="caramel_no_friends_match">Eşleşen arkadaş yok</string>
     <string name="caramel_no_friends_match_body">Aramanla eşleşen bir arkadaş adı yok.</string>
+    <string name="caramel_search">Ara</string>
+    <string name="caramel_searching">Aranıyor…</string>
+    <string name="caramel_player_not_found">Bu adda bir Xbox oyuncusu yok.</string>
+    <string name="caramel_search_failed">Xbox Live\'a ulaşılamadı. Bağlantınızı kontrol edip tekrar deneyin.</string>
+    <string name="caramel_sign_in_to_add">Arkadaş eklemek için Xbox Live\'da oturum açın.</string>
+    <string name="caramel_friend_request_sent">Arkadaşlık isteği gönderildi.</string>
+    <string name="caramel_friend_request_failed">Arkadaşlık isteği gönderilemedi.</string>
 </resources>

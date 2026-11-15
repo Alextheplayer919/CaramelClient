@@ -1431,4 +1431,11 @@ La migración debe completarse antes de continuar con CaramelClient.</string>
     <string name="caramel_offline">Sin conexión</string>
     <string name="caramel_no_friends_match">No hay amigos coincidentes</string>
     <string name="caramel_no_friends_match_body">Ningún nombre de amigo coincide con tu búsqueda.</string>
+    <string name="caramel_search">Buscar</string>
+    <string name="caramel_searching">Buscando…</string>
+    <string name="caramel_player_not_found">No hay ningún jugador de Xbox con ese nombre.</string>
+    <string name="caramel_search_failed">No se pudo conectar con Xbox Live. Comprueba tu conexión e inténtalo de nuevo.</string>
+    <string name="caramel_sign_in_to_add">Inicia sesión en Xbox Live para añadir un amigo.</string>
+    <string name="caramel_friend_request_sent">Solicitud de amistad enviada.</string>
+    <string name="caramel_friend_request_failed">No se pudo enviar la solicitud de amistad.</string>
 </resources>

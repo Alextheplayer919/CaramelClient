@@ -1470,4 +1470,11 @@
     <string name="caramel_offline">Не в сети</string>
     <string name="caramel_no_friends_match">Нет подходящих друзей</string>
     <string name="caramel_no_friends_match_body">Ни одно имя друга не совпадает с поиском.</string>
+    <string name="caramel_search">Поиск</string>
+    <string name="caramel_searching">Поиск…</string>
+    <string name="caramel_player_not_found">Игрок Xbox с таким именем не найден.</string>
+    <string name="caramel_search_failed">Не удалось связаться с Xbox Live. Проверьте подключение и повторите попытку.</string>
+    <string name="caramel_sign_in_to_add">Войдите в Xbox Live, чтобы добавить друга.</string>
+    <string name="caramel_friend_request_sent">Запрос в друзья отправлен.</string>
+    <string name="caramel_friend_request_failed">Не удалось отправить запрос в друзья.</string>
 </resources>

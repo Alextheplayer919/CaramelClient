@@ -13,14 +13,18 @@ import org.chimeramc.client.R;
 import org.chimeramc.client.core.changelog.ChangelogFeed;
 import org.chimeramc.client.core.cosmetics.CosmeticCatalog;
 import org.chimeramc.client.core.cosmetics.CosmeticStore;
+import org.chimeramc.client.core.cosmetics.CaramelUserDirectory;
 import net.raphimc.minecraftauth.bedrock.BedrockAuthManager;
 import org.chimeramc.client.core.auth.MsftAccountStore;
 import org.chimeramc.client.core.auth.MsftAuthManager;
 import org.chimeramc.client.core.content.ContentManager;
 import org.chimeramc.client.core.content.ScreenshotItem;
 import org.chimeramc.client.core.content.ServerItem;
+import org.chimeramc.client.core.xbox.XboxFriendRequestClient;
 import org.chimeramc.client.core.xbox.XboxFriendsClient;
 import org.chimeramc.client.core.xbox.XboxPeopleHub;
+import org.chimeramc.client.core.xbox.XboxSocial;
+import org.chimeramc.client.core.xbox.CaramelIdentity;
 import org.chimeramc.client.core.minecraft.MinecraftActivityState;
 import org.chimeramc.client.core.minecraft.MinecraftLauncher;
 import org.chimeramc.client.core.mods.Mod;
@@ -32,6 +36,7 @@ import org.chimeramc.client.util.LauncherStorage;
 import org.chimeramc.client.ui.compose.caramel.CaramelCosmeticInfo;
 import org.chimeramc.client.ui.compose.caramel.CaramelCosmeticKind;
 import org.chimeramc.client.ui.compose.caramel.CaramelFriendInfo;
+import org.chimeramc.client.ui.compose.caramel.CaramelFoundUser;
 import org.chimeramc.client.ui.compose.caramel.CaramelLauncherState;
 import org.chimeramc.client.ui.compose.caramel.CaramelModInfo;
 import org.chimeramc.client.ui.compose.caramel.CaramelNewsInfo;
@@ -73,6 +78,7 @@ public class MainActivity extends BaseActivity implements CaramelLauncherHost.Ac
     private ContentManager contentManager;
     private CosmeticStore cosmeticStore;
     private XboxFriendsClient friendsClient;
+    private XboxFriendRequestClient friendRequestClient;
 
     /** The account id whose friends are already loaded, so a rebuild does not refetch. */
     private String friendsAccountId = null;
@@ -212,6 +218,10 @@ public class MainActivity extends BaseActivity implements CaramelLauncherHost.Ac
         s.setSignedIn(active != null);
         s.setAccountName(active != null ? displayName(active) : "");
         s.setAccountAvatarUrl(active != null && active.xboxAvatarUrl != null ? active.xboxAvatarUrl : "");
+        // Publish the identity the Caramel-only protocols announce, so a peer who hears us can
+        // badge the account by its xuid rather than by a device name.
+        CaramelIdentity.set(active != null ? active.xuid : null,
+                active != null ? active.xboxGamertag : null);
         String accountId = active != null ? active.id : null;
         if (accountId == null ? friendsAccountId != null : !accountId.equals(friendsAccountId)) {
             friendsAccountId = accountId;
@@ -616,11 +626,144 @@ public class MainActivity extends BaseActivity implements CaramelLauncherHost.Ac
     public void signOut() {
         MsftAccountStore.MsftAccount active = activeAccount();
         if (active != null) MsftAccountStore.remove(this, active.id);
+        CaramelIdentity.clear();
         mutateState(s -> {
             s.setAccountMenu(false);
             s.setAccountSettings(false);
         });
         refreshState();
+    }
+
+    /**
+     * Resolves a typed gamertag against the real Xbox Live profile service.
+     *
+     * <p>The modal used to show a green "found" banner regardless of what was typed, because nothing
+     * ever resolved the name. This does the real lookup with the account's XSTS token and reports one
+     * of three honest outcomes: an account (with the Caramel badge only when its xuid was actually
+     * heard on a Caramel-only protocol), "no such player", or a failure reason.
+     */
+    @Override
+    public void searchFriend(String query) {
+        String trimmed = query == null ? "" : query.trim();
+        if (trimmed.isEmpty()) {
+            mutateState(s -> {
+                s.setFriendFound(null);
+                s.setFriendFoundIsCaramel(false);
+                s.setFriendSearchError("");
+            });
+            return;
+        }
+        MsftAccountStore.MsftAccount active = activeAccount();
+        if (active == null || active.xuid == null || active.xuid.isEmpty()) {
+            mutateState(s -> {
+                s.setFriendFound(null);
+                s.setFriendFoundIsCaramel(false);
+                s.setFriendSearchError(getString(R.string.caramel_sign_in_to_add));
+            });
+            return;
+        }
+        if (friendRequestClient == null) friendRequestClient = new XboxFriendRequestClient();
+        mutateState(s -> {
+            s.setFriendSearchRunning(true);
+            s.setFriendFound(null);
+            s.setFriendFoundIsCaramel(false);
+            s.setFriendSearchError("");
+            s.setFriendRequestResult("");
+        });
+        AppExecutors.run(AppExecutors.Kind.NETWORK, "caramel-friend-search", () -> {
+            String[] xsts = MsftAuthManager.xboxLiveXsts(active);
+            if (xsts == null) {
+                runOnUiThread(() -> mutateState(s -> {
+                    s.setFriendSearchRunning(false);
+                    s.setFriendSearchError(getString(R.string.caramel_search_failed));
+                }));
+                return;
+            }
+            friendRequestClient.search(xsts[0], xsts[1], trimmed, (user, error) -> runOnUiThread(() -> {
+                if (user != null) {
+                    CaramelFoundUser found = new CaramelFoundUser(
+                            user.xuid, user.label(), user.avatarUrl);
+                    boolean caramel = CaramelUserDirectory.isCaramelUser(user.xuid);
+                    mutateState(s -> {
+                        s.setFriendSearchRunning(false);
+                        s.setFriendFound(found);
+                        s.setFriendFoundIsCaramel(caramel);
+                        s.setFriendSearchError("");
+                    });
+                } else {
+                    String reason = error != null ? error : getString(R.string.caramel_player_not_found);
+                    mutateState(s -> {
+                        s.setFriendSearchRunning(false);
+                        s.setFriendFound(null);
+                        s.setFriendFoundIsCaramel(false);
+                        s.setFriendSearchError(reason);
+                    });
+                }
+            }));
+        });
+    }
+
+    /** Sends the real Xbox Live follow request for the account the last lookup resolved. */
+    @Override
+    public void sendFriendRequest() {
+        CaramelFoundUser found = launcherState.getValue().getFriendFound();
+        if (found == null) return;
+        MsftAccountStore.MsftAccount active = activeAccount();
+        if (active == null || active.xuid == null || active.xuid.isEmpty()) {
+            mutateState(s -> {
+                s.setFriendRequestSucceeded(false);
+                s.setFriendRequestResult(getString(R.string.caramel_sign_in_to_add));
+            });
+            return;
+        }
+        if (found.getXuid().equalsIgnoreCase(active.xuid)) {
+            mutateState(s -> {
+                s.setFriendRequestSucceeded(false);
+                s.setFriendRequestResult(getString(R.string.caramel_friend_request_failed));
+            });
+            return;
+        }
+        if (friendRequestClient == null) friendRequestClient = new XboxFriendRequestClient();
+        mutateState(s -> {
+            s.setFriendRequestRunning(true);
+            s.setFriendRequestResult("");
+        });
+        AppExecutors.run(AppExecutors.Kind.NETWORK, "caramel-friend-add", () -> {
+            String[] xsts = MsftAuthManager.xboxLiveXsts(active);
+            if (xsts == null) {
+                runOnUiThread(() -> mutateState(s -> {
+                    s.setFriendRequestRunning(false);
+                    s.setFriendRequestSucceeded(false);
+                    s.setFriendRequestResult(getString(R.string.caramel_friend_request_failed));
+                }));
+                return;
+            }
+            friendRequestClient.addFriend(xsts[0], xsts[1], found.getXuid(), (success, error) -> runOnUiThread(() -> {
+                mutateState(s -> {
+                    s.setFriendRequestRunning(false);
+                    s.setFriendRequestSucceeded(success);
+                    s.setFriendRequestResult(success
+                            ? getString(R.string.caramel_friend_request_sent)
+                            : (error != null ? error : getString(R.string.caramel_friend_request_failed)));
+                });
+                if (success) loadFriends();
+            }));
+        });
+    }
+
+    /** Clears the add-friend modal's transient state when it closes, so it reopens clean. */
+    @Override
+    public void resetFriendSearch() {
+        mutateState(s -> {
+            s.setFriendQuery("");
+            s.setFriendFound(null);
+            s.setFriendFoundIsCaramel(false);
+            s.setFriendSearchError("");
+            s.setFriendSearchRunning(false);
+            s.setFriendRequestResult("");
+            s.setFriendRequestSucceeded(false);
+            s.setFriendRequestRunning(false);
+        });
     }
 
     @Override

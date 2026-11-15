@@ -1428,4 +1428,11 @@ CaramelClient を続行するには移行を完了する必要があります。
     <string name="caramel_offline">オフライン</string>
     <string name="caramel_no_friends_match">一致するフレンドなし</string>
     <string name="caramel_no_friends_match_body">検索に一致するフレンド名はありません。</string>
+    <string name="caramel_search">検索</string>
+    <string name="caramel_searching">検索中…</string>
+    <string name="caramel_player_not_found">その名前の Xbox プレイヤーはいません。</string>
+    <string name="caramel_search_failed">Xbox Live に接続できませんでした。接続を確認して再試行してください。</string>
+    <string name="caramel_sign_in_to_add">フレンドを追加するには Xbox Live にサインインしてください。</string>
+    <string name="caramel_friend_request_sent">フレンド申請を送信しました。</string>
+    <string name="caramel_friend_request_failed">フレンド申請を送信できませんでした。</string>
 </resources>

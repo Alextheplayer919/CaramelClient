@@ -55,7 +55,7 @@ fun CaramelLauncherScreen(
         CaramelFriendsModal(state, actions)
         CaramelAddAccountModal(state, actions)
         CaramelAccountSettingsModal(state, actions)
-        CaramelAddFriendModal(state)
+        CaramelAddFriendModal(state, actions)
         CaramelModal(state.launcherSettings, { state.launcherSettings = false }, Modifier.size(760.dp, 620.dp)) {
             CaramelLauncherSettingsPanel(state, actions) { state.launcherSettings = false }
         }

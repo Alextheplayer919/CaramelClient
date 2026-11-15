@@ -1,5 +1,6 @@
 package org.chimeramc.client.ui.compose.caramel.launcher
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -43,6 +44,7 @@ import androidx.compose.material.icons.rounded.MoreHoriz
 import androidx.compose.material.icons.rounded.Person
 import androidx.compose.material.icons.rounded.Public
 import androidx.compose.material.icons.rounded.RocketLaunch
+import androidx.compose.material.icons.rounded.Search
 import androidx.compose.material.icons.rounded.Settings
 import androidx.compose.material.icons.rounded.SportsEsports
 import androidx.compose.material.icons.rounded.SwapHoriz
@@ -60,6 +62,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -68,6 +72,7 @@ import org.chimeramc.client.R
 import org.chimeramc.client.ui.compose.caramel.C
 import org.chimeramc.client.ui.compose.caramel.CaramelAvatarPicture
 import org.chimeramc.client.ui.compose.caramel.CaramelFriendRow
+import org.chimeramc.client.ui.compose.caramel.CaramelFoundUser
 import org.chimeramc.client.ui.compose.caramel.CaramelLauncherState
 import org.chimeramc.client.ui.compose.caramel.CaramelModal
 import org.chimeramc.client.ui.compose.caramel.CaramelProfileDropdown
@@ -524,38 +529,120 @@ fun CaramelAccountSettingsModal(state: CaramelLauncherState, actions: CaramelLau
     }
 }
 
-/** The add-friend modal. Xbox Live has no client-side add, so the request is a link-out. */
+/**
+ * The add-friend modal.
+ *
+ * <p>It used to be a shell: the field accepted text, a green "found" banner sat under it whether or
+ * not anything had been found, and "Send request" only closed the modal. Now the lookup resolves the
+ * typed gamertag against the real Xbox Live profile service, the found banner appears only when an
+ * account was actually resolved, a Caramel badge appears beside it only when that account's xuid has
+ * been heard on a Caramel-only protocol (see [org.chimeramc.client.core.cosmetics.CaramelUserDirectory]),
+ * and "Send request" issues the real follow call.
+ */
 @Composable
-fun CaramelAddFriendModal(state: CaramelLauncherState) {
-    CaramelModal(state.addFriend, { state.addFriend = false }, Modifier.size(400.dp, 300.dp)) {
-        var user by remember { mutableStateOf("") }
-        Column(Modifier.fillMaxSize().padding(28.dp), verticalArrangement = Arrangement.spacedBy(16.dp)) {
+fun CaramelAddFriendModal(state: CaramelLauncherState, actions: CaramelLauncherHost.Actions) {
+    CaramelModal(state.addFriend, { state.addFriend = false; actions.resetFriendSearch() }, Modifier.size(430.dp, 420.dp)) {
+        Column(Modifier.fillMaxSize().padding(28.dp), verticalArrangement = Arrangement.spacedBy(14.dp)) {
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Column(Modifier.weight(1f)) {
                     Text(stringResource(R.string.caramel_add_friend_title), style = T.Title.copy(fontSize = 18.sp_))
                     Text(stringResource(R.string.caramel_add_friend_sub), style = T.Body)
                 }
-                GlassButton(null, { state.addFriend = false }, icon = Icons.Rounded.Close, height = 32)
+                GlassButton(null, { state.addFriend = false; actions.resetFriendSearch() }, icon = Icons.Rounded.Close, height = 32)
             }
-            CaramelTextField(user, { user = it }, Modifier.fillMaxWidth(), stringResource(R.string.caramel_username), Icons.Rounded.Person)
-            Row(
-                Modifier.fillMaxWidth().height(40.dp).clip(RoundedCornerShape(12.dp)).background(C.Green.copy(0.11f))
-                    .border(1.dp, C.Green.copy(0.4f), RoundedCornerShape(12.dp)).padding(horizontal = 16.dp),
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.spacedBy(10.dp),
-            ) {
-                Icon(Icons.Rounded.Check, null, Modifier.size(15.dp), C.Green)
-                Text(
-                    stringResource(R.string.caramel_friend_found, user),
-                    style = T.Label.copy(fontWeight = FontWeight.Medium, fontSize = 12.5.sp_),
+            CaramelTextField(
+                state.friendQuery,
+                {
+                    state.friendQuery = it
+                    // A new name invalidates the previous result, so the found banner and the badge
+                    // never describe the account that was typed before.
+                    state.friendFound = null
+                    state.friendFoundIsCaramel = false
+                    state.friendSearchError = ""
+                    state.friendRequestResult = ""
+                },
+                Modifier.fillMaxWidth(),
+                stringResource(R.string.caramel_username),
+                Icons.Rounded.Person,
+            )
+            Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(10.dp)) {
+                PrimaryButton(
+                    stringResource(if (state.friendSearchRunning) R.string.caramel_searching else R.string.caramel_search),
+                    { actions.searchFriend(state.friendQuery) },
+                    Modifier.weight(1f),
+                    height = 38,
+                )
+            }
+            val found = state.friendFound
+            when {
+                state.friendSearchError.isNotEmpty() -> ResultBanner(state.friendSearchError, C.Red, Icons.Rounded.Close)
+                state.friendSearchRunning -> ResultBanner(stringResource(R.string.caramel_searching), C.Blue, Icons.Rounded.Search)
+                found != null -> FoundAccountRow(found, state.friendFoundIsCaramel)
+                state.friendSearchError.isEmpty() && state.friendQuery.trim().isNotEmpty() -> Unit
+            }
+            if (state.friendRequestResult.isNotEmpty()) {
+                ResultBanner(
+                    state.friendRequestResult,
+                    if (state.friendRequestSucceeded) C.Green else C.Red,
+                    if (state.friendRequestSucceeded) Icons.Rounded.Check else Icons.Rounded.Close,
                 )
             }
             Spacer(Modifier.weight(1f))
             Row(horizontalArrangement = Arrangement.spacedBy(14.dp)) {
-                GlassButton(stringResource(R.string.cancel), { state.addFriend = false }, Modifier.width(140.dp), height = 38)
-                PrimaryButton(stringResource(R.string.caramel_send_request), { state.addFriend = false }, Modifier.weight(1f), height = 38)
+                GlassButton(stringResource(R.string.cancel), { state.addFriend = false; actions.resetFriendSearch() }, Modifier.width(140.dp), height = 38)
+                PrimaryButton(
+                    stringResource(R.string.caramel_send_request),
+                    { actions.sendFriendRequest() },
+                    Modifier.weight(1f),
+                    height = 38,
+                )
             }
         }
+    }
+}
+
+/** The resolved account: its picture, gamertag and, only when confirmed, the Caramel badge. */
+@Composable
+private fun FoundAccountRow(user: CaramelFoundUser, isCaramel: Boolean) {
+    Row(
+        Modifier.fillMaxWidth().height(52.dp).clip(RoundedCornerShape(12.dp)).background(C.Green.copy(0.11f))
+            .border(1.dp, C.Green.copy(0.4f), RoundedCornerShape(12.dp)).padding(horizontal = 14.dp),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(10.dp),
+    ) {
+        CaramelAvatarPicture(user.avatarUrl, 30)
+        Text(user.gamertag, style = T.Label.copy(fontWeight = FontWeight.Medium), modifier = Modifier.weight(1f))
+        if (isCaramel) CaramelUserBadge()
+        Icon(Icons.Rounded.Check, null, Modifier.size(16.dp), C.Green)
+    }
+}
+
+/** The CaramelClient mark beside a confirmed Caramel user's name. */
+@Composable
+private fun CaramelUserBadge() {
+    val painter = painterResource(R.drawable.ic_caramel_badge)
+    Row(
+        Modifier.height(20.dp).clip(RoundedCornerShape(50)).background(C.Caramel.copy(0.16f))
+            .border(1.dp, C.Caramel.copy(0.5f), RoundedCornerShape(50)).padding(horizontal = 8.dp),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(4.dp),
+    ) {
+        Image(painter, contentDescription = stringResource(R.string.caramel_user_badge), modifier = Modifier.size(13.dp))
+        Text(stringResource(R.string.caramel_user_badge), style = T.Chip.copy(color = C.Caramel))
+    }
+}
+
+/** A one-line result banner with a leading icon, used for lookup and request outcomes. */
+@Composable
+private fun ResultBanner(text: String, tint: Color, icon: ImageVector) {
+    Row(
+        Modifier.fillMaxWidth().clip(RoundedCornerShape(12.dp)).background(tint.copy(0.11f))
+            .border(1.dp, tint.copy(0.4f), RoundedCornerShape(12.dp)).padding(horizontal = 14.dp, vertical = 10.dp),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(10.dp),
+    ) {
+        Icon(icon, null, Modifier.size(15.dp), tint)
+        Text(text, style = T.Label.copy(fontWeight = FontWeight.Medium, fontSize = 12.5.sp_))
     }
 }
 

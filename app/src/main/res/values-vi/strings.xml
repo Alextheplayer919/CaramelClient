@@ -1461,4 +1461,11 @@ Quá trình chuyển đổi phải hoàn tất trước khi CaramelClient có th
     <string name="caramel_offline">Ngoại tuyến</string>
     <string name="caramel_no_friends_match">Không có bạn bè trùng khớp</string>
     <string name="caramel_no_friends_match_body">Không có tên bạn bè nào khớp với tìm kiếm của bạn.</string>
+    <string name="caramel_search">Tìm kiếm</string>
+    <string name="caramel_searching">Đang tìm…</string>
+    <string name="caramel_player_not_found">Không có người chơi Xbox nào với tên đó.</string>
+    <string name="caramel_search_failed">Không thể kết nối Xbox Live. Kiểm tra kết nối rồi thử lại.</string>
+    <string name="caramel_sign_in_to_add">Đăng nhập Xbox Live để thêm bạn.</string>
+    <string name="caramel_friend_request_sent">Đã gửi lời mời kết bạn.</string>
+    <string name="caramel_friend_request_failed">Không thể gửi lời mời kết bạn.</string>
 </resources>
