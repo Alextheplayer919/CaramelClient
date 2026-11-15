@@ -1,17 +1,31 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <style name="AppFullScreenTheme" parent="Theme.AppCompat.NoActionBar">
+    <!--
+        The game activity's window. It parents AppCompat (not DayNight), so `@color/background`
+        resolved to the light near-white in every mode and `windowDisablePreview="false"` let the
+        system paint that as the starting window: the user saw a white screen after the launch
+        screen, every launch. The game draws its own GL frame and is always dark, so the window is
+        the Caramel navy with no system preview, exactly as the launcher's own window is.
+
+        `AppFullScreenTheme.Base` carries the attributes; `AppFullScreenTheme` extends it so the
+        API 31+ splash overrides (values-v31 / values-v35) can add the splash colour without
+        restating the whole style.
+    -->
+    <style name="AppFullScreenTheme.Base" parent="Theme.AppCompat.NoActionBar">
         <item name="android:windowNoTitle">true</item>
         <item name="android:windowActionBar">false</item>
         <item name="android:windowFullscreen">true</item>
-        <item name="android:colorBackground">@color/background</item>
-        <item name="android:windowBackground">@color/background</item>
-        <item name="android:windowDisablePreview">false</item>
+        <item name="android:colorBackground">@color/launcher_backdrop</item>
+        <item name="android:windowBackground">@color/launcher_backdrop</item>
+        <item name="android:windowDisablePreview">true</item>
+        <item name="android:windowLightStatusBar">false</item>
         <item name="android:windowContentOverlay">@null</item>
         <item name="android:fontFamily">@font/misans</item>
         <!-- Folded in from values-v27 (see theme.xml): API 27 attribute, and minSdk is 28. -->
         <item name="android:windowLayoutInDisplayCutoutMode">shortEdges</item>
     </style>
+
+    <style name="AppFullScreenTheme" parent="AppFullScreenTheme.Base" />
 
     <style name="AppPopupMenu" parent="Widget.AppCompat.PopupMenu">
         <item name="android:popupBackground">@drawable/bg_popup_menu_square</item>
