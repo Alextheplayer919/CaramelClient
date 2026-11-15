@@ -1483,4 +1483,11 @@ Quá trình chuyển đổi phải hoàn tất trước khi CaramelClient có th
     <string name="caramel_default_servers">Máy chủ mặc định</string>
     <string name="server_deleted">Đã xóa máy chủ</string>
     <string name="server_delete_failed">Không thể xóa máy chủ</string>
+    <string name="caramel_settings_sub">Mọi tùy chọn ứng dụng lưu, ở cùng một nơi</string>
+    <string name="caramel_section_client">Tính năng ứng dụng</string>
+    <string name="caramel_update_available">Đã có bản phát hành mới hơn</string>
+    <string name="settings_reset_desc">Đưa mọi tùy chọn trên màn hình này về mặc định</string>
+    <string name="caramel_settings_unavailable_title">Cài đặt không khả dụng ở đây</string>
+    <string name="caramel_settings_unavailable_body">Cửa sổ này được mở mà không có kho cài đặt. Hãy mở Cài đặt từ thanh bên.</string>
+    <string name="caramel_settings_reset_done">Đã đặt lại cài đặt về mặc định</string>
 </resources>

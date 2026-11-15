@@ -1477,4 +1477,11 @@ Migrasi harus selesai sebelum CaramelClient dapat melanjutkan.</string>
     <string name="caramel_default_servers">Server bawaan</string>
     <string name="server_deleted">Server dihapus</string>
     <string name="server_delete_failed">Tidak dapat menghapus server</string>
+    <string name="caramel_settings_sub">Semua opsi yang disimpan klien, di satu tempat</string>
+    <string name="caramel_section_client">Fitur klien</string>
+    <string name="caramel_update_available">Rilis yang lebih baru tersedia</string>
+    <string name="settings_reset_desc">Kembalikan setiap opsi di layar ini ke bawaannya</string>
+    <string name="caramel_settings_unavailable_title">Pengaturan tidak tersedia di sini</string>
+    <string name="caramel_settings_unavailable_body">Jendela ini dibuka tanpa penyimpanan pengaturan. Buka Pengaturan dari bilah samping.</string>
+    <string name="caramel_settings_reset_done">Pengaturan direset ke bawaannya</string>
 </resources>

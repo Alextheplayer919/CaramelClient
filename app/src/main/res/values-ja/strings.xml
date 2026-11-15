@@ -1450,4 +1450,11 @@ CaramelClient を続行するには移行を完了する必要があります。
     <string name="caramel_default_servers">デフォルトサーバー</string>
     <string name="server_deleted">サーバーを削除しました</string>
     <string name="server_delete_failed">サーバーを削除できませんでした</string>
+    <string name="caramel_settings_sub">クライアントが保存するすべての設定を1か所に</string>
+    <string name="caramel_section_client">クライアント機能</string>
+    <string name="caramel_update_available">新しいリリースがあります</string>
+    <string name="settings_reset_desc">この画面のすべての設定を既定値に戻します</string>
+    <string name="caramel_settings_unavailable_title">ここでは設定を利用できません</string>
+    <string name="caramel_settings_unavailable_body">このウィンドウは設定ストアなしで開かれました。サイドバーから設定を開いてください。</string>
+    <string name="caramel_settings_reset_done">設定を既定値に戻しました</string>
 </resources>

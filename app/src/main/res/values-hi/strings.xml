@@ -1481,4 +1481,11 @@ CaramelClient जारी रखने से पहले माइग्र�
     <string name="caramel_default_servers">डिफ़ॉल्ट सर्वर</string>
     <string name="server_deleted">सर्वर हटा दिया गया</string>
     <string name="server_delete_failed">सर्वर नहीं हटाया जा सका</string>
+    <string name="caramel_settings_sub">क्लाइंट के सभी विकल्प, एक ही जगह</string>
+    <string name="caramel_section_client">क्लाइंट सुविधाएँ</string>
+    <string name="caramel_update_available">एक नया संस्करण उपलब्ध है</string>
+    <string name="settings_reset_desc">इस स्क्रीन के हर विकल्प को उसके डिफ़ॉल्ट पर लौटाएँ</string>
+    <string name="caramel_settings_unavailable_title">सेटिंग्स यहाँ उपलब्ध नहीं हैं</string>
+    <string name="caramel_settings_unavailable_body">यह विंडो सेटिंग्स स्टोर के बिना खोली गई थी। साइडबार से सेटिंग्स खोलें।</string>
+    <string name="caramel_settings_reset_done">सेटिंग्स उनके डिफ़ॉल्ट पर रीसेट हो गईं</string>
 </resources>

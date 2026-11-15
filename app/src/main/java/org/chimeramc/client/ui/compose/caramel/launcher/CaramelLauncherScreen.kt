@@ -8,6 +8,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import org.chimeramc.client.ui.compose.caramel.CaramelLauncherState
 import org.chimeramc.client.ui.compose.caramel.CaramelModal
+import org.chimeramc.client.ui.compose.caramel.CaramelSettingsProvider
 import org.chimeramc.client.ui.compose.caramel.CaramelTab
 
 /**
@@ -21,6 +22,7 @@ fun CaramelLauncherScreen(
     state: CaramelLauncherState,
     actions: CaramelLauncherHost.Actions,
     skinViewer: (@Composable (Modifier) -> Unit)? = null,
+    settings: CaramelSettingsProvider? = null,
 ) {
     val cosmeticsSkinViewer = skinViewer ?: { m: Modifier -> CaramelSkinPreview(state, m) }
     Box(Modifier.fillMaxSize()) {
@@ -64,8 +66,8 @@ fun CaramelLauncherScreen(
         CaramelAddFriendModal(state, actions)
         CaramelModsFolderModal(state, actions)
         CaramelAddServerModal(state, actions)
-        CaramelModal(state.launcherSettings, { state.launcherSettings = false }, Modifier.size(760.dp, 620.dp)) {
-            CaramelLauncherSettingsPanel(state, actions) { state.launcherSettings = false }
+        CaramelModal(state.launcherSettings, { state.launcherSettings = false }, Modifier.size(880.dp, 660.dp)) {
+            CaramelLauncherSettingsModal(state, settings)
         }
         CaramelInstanceSettingsModal(state, actions)
     }

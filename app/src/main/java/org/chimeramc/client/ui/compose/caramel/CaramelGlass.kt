@@ -1,5 +1,6 @@
 package org.chimeramc.client.ui.compose.caramel
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
@@ -49,21 +50,25 @@ import androidx.compose.ui.unit.dp
 @Composable
 fun GlassPanel(
     modifier: Modifier = Modifier,
-    shape: Shape = RoundedCornerShape(CaramelDimens.RadiusCard),
+    shape: Shape = RoundedCornerShape(caramelPrefs.cardRadiusDp.dp),
     popup: Boolean = false,
     elevation: Dp = 24.dp,
     tint: Color = Color(0xFF9DB4FF).copy(alpha = if (popup) 0.10f else 0.06f),
     content: @Composable BoxScope.() -> Unit,
 ) {
+    // "Glass blur strength" scales the frost and the sheen together: Android has no backdrop blur,
+    // so the only honest knob is how much light the layered fills hold. A low strength reads as a
+    // near-flat card, a high one as heavier glass; neither claims a blur the platform cannot do.
+    val glass = caramelPrefs.glassStrength
     Box(
         modifier
             .shadow(elevation, shape, ambientColor = Color.Black, spotColor = Color(0xFF00010F))
             .clip(shape)
             .background(C.Navy)
-            .background(tint)
+            .background(tint.copy(alpha = tint.alpha * glass))
             .background(
                 Brush.verticalGradient(
-                    listOf(Color.White.copy(0.075f), Color.White.copy(0.015f)),
+                    listOf(Color.White.copy(0.075f * glass), Color.White.copy(0.015f * glass)),
                 ),
             )
             .border(
@@ -115,12 +120,17 @@ fun CaramelModal(
     modifier: Modifier = Modifier,
     content: @Composable BoxScope.() -> Unit,
 ) {
+    // A modal closes from its own X, from the system back gesture, and from nothing else. The scrim
+    // used to be the dismiss target, so a stray tap anywhere on the screen — the commonest thing to
+    // do while reading a dialog — threw it away. The scrim still swallows the tap so it cannot
+    // reach the screen behind, it just no longer closes the dialog.
+    BackHandler(enabled = visible) { onDismiss() }
     AnimatedVisibility(visible, enter = fadeIn(), exit = fadeOut()) {
         Box(
             Modifier
                 .fillMaxSize()
                 .background(Color(0xAA030714))
-                .clickable(remember { MutableInteractionSource() }, null, onClick = onDismiss),
+                .clickable(remember { MutableInteractionSource() }, null) {},
             Alignment.Center,
         ) {
             AnimatedVisibility(

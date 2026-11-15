@@ -1492,4 +1492,11 @@
     <string name="caramel_default_servers">Серверы по умолчанию</string>
     <string name="server_deleted">Сервер удалён</string>
     <string name="server_delete_failed">Не удалось удалить сервер</string>
+    <string name="caramel_settings_sub">Все параметры клиента в одном месте</string>
+    <string name="caramel_section_client">Функции клиента</string>
+    <string name="caramel_update_available">Доступна более новая версия</string>
+    <string name="settings_reset_desc">Вернуть каждую настройку на этом экране к значению по умолчанию</string>
+    <string name="caramel_settings_unavailable_title">Настройки здесь недоступны</string>
+    <string name="caramel_settings_unavailable_body">Это окно открыто без хранилища настроек. Откройте Настройки на боковой панели.</string>
+    <string name="caramel_settings_reset_done">Настройки сброшены к значениям по умолчанию</string>
 </resources>

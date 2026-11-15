@@ -1453,4 +1453,11 @@ La migration doit être terminée avant de continuer avec CaramelClient.</string
     <string name="caramel_default_servers">Serveurs par défaut</string>
     <string name="server_deleted">Serveur supprimé</string>
     <string name="server_delete_failed">Impossible de supprimer le serveur</string>
+    <string name="caramel_settings_sub">Toutes les options du client, au même endroit</string>
+    <string name="caramel_section_client">Fonctions du client</string>
+    <string name="caramel_update_available">Une version plus récente est disponible</string>
+    <string name="settings_reset_desc">Rétablit chaque option de cet écran à sa valeur par défaut</string>
+    <string name="caramel_settings_unavailable_title">Les paramètres ne sont pas disponibles ici</string>
+    <string name="caramel_settings_unavailable_body">Cette fenêtre a été ouverte sans le stockage des paramètres. Ouvrez Paramètres depuis la barre latérale.</string>
+    <string name="caramel_settings_reset_done">Paramètres rétablis à leurs valeurs par défaut</string>
 </resources>

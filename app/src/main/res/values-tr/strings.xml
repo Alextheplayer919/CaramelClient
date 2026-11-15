@@ -1480,4 +1480,11 @@ CaramelClient\'ın devam edebilmesi için taşımanın tamamlanması gerekiyor.<
     <string name="caramel_default_servers">Varsayılan sunucular</string>
     <string name="server_deleted">Sunucu kaldırıldı</string>
     <string name="server_delete_failed">Sunucu kaldırılamadı</string>
+    <string name="caramel_settings_sub">İstemcinin sakladığı tüm seçenekler tek yerde</string>
+    <string name="caramel_section_client">İstemci özellikleri</string>
+    <string name="caramel_update_available">Daha yeni bir sürüm mevcut</string>
+    <string name="settings_reset_desc">Bu ekrandaki her seçeneği varsayılanına döndürür</string>
+    <string name="caramel_settings_unavailable_title">Ayarlar burada kullanılamaz</string>
+    <string name="caramel_settings_unavailable_body">Bu pencere ayar deposu olmadan açıldı. Yan çubuktan Ayarlar\'ı açın.</string>
+    <string name="caramel_settings_reset_done">Ayarlar varsayılanlarına sıfırlandı</string>
 </resources>

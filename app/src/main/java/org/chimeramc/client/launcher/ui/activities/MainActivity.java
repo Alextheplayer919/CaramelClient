@@ -38,6 +38,7 @@ import org.chimeramc.client.core.mods.ModManager;
 import org.chimeramc.client.core.versions.GameVersion;
 import org.chimeramc.client.core.versions.VersionManager;
 import org.chimeramc.client.settings.FeatureSettings;
+import org.chimeramc.client.launcher.util.LauncherSettingsController;
 import org.chimeramc.client.util.LauncherStorage;
 import org.chimeramc.client.launcher.core.mods.ModsFolderListing;
 import org.chimeramc.client.ui.compose.caramel.CaramelCosmeticInfo;
@@ -80,6 +81,14 @@ public class MainActivity extends BaseActivity implements CaramelLauncherHost.Ac
 
     private static final String TAG = "MainActivity";
 
+    /**
+     * The tab to open on, by {@link org.chimeramc.client.ui.compose.caramel.CaramelTab} name.
+     *
+     * <p>Set when another screen hands the user to a specific tab — the settings screen's changelog
+     * row lands on News. An unknown or absent name leaves the launcher on Home.
+     */
+    public static final String EXTRA_INITIAL_TAB = "main_initial_tab";
+
     private MutableState<CaramelLauncherState> launcherState;
     private VersionManager versionManager;
     private MinecraftLauncher minecraftLauncher;
@@ -87,6 +96,9 @@ public class MainActivity extends BaseActivity implements CaramelLauncherHost.Ac
     private CosmeticStore cosmeticStore;
     private XboxFriendsClient friendsClient;
     private XboxFriendRequestClient friendRequestClient;
+
+    /** The settings panel's store; the launcher's gear renders it. */
+    private LauncherSettingsController settingsController;
 
     /** The account id whose friends are already loaded, so a rebuild does not refetch. */
     private String friendsAccountId = null;
@@ -152,19 +164,35 @@ public class MainActivity extends BaseActivity implements CaramelLauncherHost.Ac
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         minecraftLauncher = new MinecraftLauncher(this);
+        settingsController = new LauncherSettingsController(this);
         launcherState = CaramelLauncherHost.state();
         serverFavourites = ServerFavouritesStore.load(this);
+        applyInitialTab(getIntent());
         setContentView(buildComposeHost());
         initVersionManager();
         initContent();
         refreshState();
     }
 
+    /** Selects the tab named by [EXTRA_INITIAL_TAB], when it names a real one. */
+    private void applyInitialTab(Intent intent) {
+        if (intent == null) return;
+        String name = intent.getStringExtra(EXTRA_INITIAL_TAB);
+        if (name == null || name.isEmpty()) return;
+        for (org.chimeramc.client.ui.compose.caramel.CaramelTab tab
+                : org.chimeramc.client.ui.compose.caramel.CaramelTab.values()) {
+            if (tab.name().equalsIgnoreCase(name)) {
+                mutateState(s -> s.setTab(tab));
+                return;
+            }
+        }
+    }
+
     private ComposeView buildComposeHost() {
         ComposeView view = new ComposeView(this);
         view.setViewCompositionStrategy(
                 ViewCompositionStrategy.DisposeOnDetachedFromWindowOrReleasedFromPool.INSTANCE);
-        CaramelLauncherHost.setContent(view, launcherState, this);
+        CaramelLauncherHost.setContent(view, launcherState, this, settingsController);
         return view;
     }
 
@@ -725,6 +753,11 @@ public class MainActivity extends BaseActivity implements CaramelLauncherHost.Ac
         startActivity(new Intent(this, SettingsActivity.class));
     }
 
+    /** Rebuilds the settings panel from the stores after the settings screen changed them. */
+    private void refreshSettingsPanel() {
+        if (settingsController != null) settingsController.refresh();
+    }
+
     @Override
     public void openAccounts() {
         // Accounts are managed through the account modal; there is no separate screen.
@@ -1065,6 +1098,7 @@ public class MainActivity extends BaseActivity implements CaramelLauncherHost.Ac
     protected void onResume() {
         super.onResume();
         refreshContentDirectories();
+        refreshSettingsPanel();
         refreshState();
     }
 

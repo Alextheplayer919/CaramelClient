@@ -1474,4 +1474,11 @@
     <string name="caramel_default_servers">默认服务器</string>
     <string name="server_deleted">服务器已删除</string>
     <string name="server_delete_failed">无法删除服务器</string>
+    <string name="caramel_settings_sub">客户端保存的所有选项，尽在一处</string>
+    <string name="caramel_section_client">客户端功能</string>
+    <string name="caramel_update_available">有新版本可用</string>
+    <string name="settings_reset_desc">将此屏幕上的每个选项恢复为默认值</string>
+    <string name="caramel_settings_unavailable_title">此处无法使用设置</string>
+    <string name="caramel_settings_unavailable_body">此窗口打开时没有设置存储。请从侧边栏打开设置。</string>
+    <string name="caramel_settings_reset_done">设置已恢复为默认值</string>
 </resources>

@@ -75,6 +75,8 @@ import org.chimeramc.client.ui.compose.caramel.CaramelFriendRow
 import org.chimeramc.client.ui.compose.caramel.CaramelFoundUser
 import org.chimeramc.client.ui.compose.caramel.CaramelLauncherState
 import org.chimeramc.client.ui.compose.caramel.CaramelModal
+import org.chimeramc.client.ui.compose.caramel.CaramelSettingsPanel
+import org.chimeramc.client.ui.compose.caramel.CaramelSettingsProvider
 import org.chimeramc.client.ui.compose.caramel.CaramelProfileDropdown
 import org.chimeramc.client.ui.compose.caramel.CaramelScreenshotInfo
 import org.chimeramc.client.ui.compose.caramel.CaramelTab
@@ -646,43 +648,42 @@ private fun ResultBanner(text: String, tint: Color, icon: ImageVector) {
     }
 }
 
-/** The launcher settings panel: the real preferences the activity reads back. */
+/**
+ * The launcher's settings modal.
+ *
+ * <p>It used to hold its own `remember { mutableStateOf(...) }` copies of every control, so moving a
+ * slider changed a number on screen and wrote nothing anywhere — the settings did nothing. The real
+ * panel is [CaramelSettingsPanel], driven by the activity's [CaramelSettingsProvider], so every
+ * control here writes to the same store the full-screen settings screen does.
+ */
 @Composable
-fun CaramelLauncherSettingsPanel(state: CaramelLauncherState, actions: CaramelLauncherHost.Actions, close: () -> Unit) {
-    var reduceMotion by remember { mutableStateOf(false) }
-    var checkUpdates by remember { mutableStateOf(true) }
-    var blur by remember { mutableStateOf(0.6f) }
-    var scale by remember { mutableStateOf(0.4f) }
-    var accent by remember { mutableStateOf(0) }
-    Column(Modifier.fillMaxSize().padding(28.dp), verticalArrangement = Arrangement.spacedBy(20.dp)) {
-        Row(verticalAlignment = Alignment.CenterVertically) {
-            Text(stringResource(R.string.caramel_launcher_settings_title), style = T.Display, modifier = Modifier.weight(1f))
-            GlassButton(null, close, icon = Icons.Rounded.Close, height = 32)
-        }
-        Text(stringResource(R.string.caramel_appearance), style = T.Title)
-        Row(horizontalArrangement = Arrangement.spacedBy(14.dp)) {
-            listOf(C.Caramel, C.Blue, C.Green, Color(0xFF966EFF), C.Red, Color(0xFF4AC8E6)).forEachIndexed { i, col ->
-                Box(
-                    Modifier.size(34.dp).background(col, CircleShape)
-                        .border(2.dp, if (i == accent) Color.White else Color.White.copy(0.15f), CircleShape)
-                        .clickable(remember { MutableInteractionSource() }, null) { accent = i },
-                )
+fun CaramelLauncherSettingsModal(state: CaramelLauncherState, settings: CaramelSettingsProvider?) {
+    if (settings == null) {
+        // No store was handed over (a host that mounted the launcher without one): say so rather
+        // than drawing controls that cannot work.
+        Column(Modifier.fillMaxSize().padding(28.dp), verticalArrangement = Arrangement.spacedBy(16.dp)) {
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Text(stringResource(R.string.caramel_launcher_settings_title), style = T.Display, modifier = Modifier.weight(1f))
+                GlassButton(null, { state.launcherSettings = false }, icon = Icons.Rounded.Close, height = 32)
             }
+            EmptyState(
+                stringResource(R.string.caramel_settings_unavailable_title),
+                stringResource(R.string.caramel_settings_unavailable_body),
+                Modifier.fillMaxWidth().weight(1f),
+            )
         }
-        SliderRow(stringResource(R.string.caramel_glass_blur), "${(blur * 40).toInt()}", blur, { blur = it })
-        SliderRow(stringResource(R.string.caramel_interface_scale), "${(80 + scale * 50).toInt()}%", scale, { scale = it })
-        SettingRow(stringResource(R.string.caramel_reduce_motion), stringResource(R.string.caramel_reduce_motion_desc)) {
-            CaramelToggle(reduceMotion, { reduceMotion = it })
+        return
+    }
+    val settingsState = settings.settingsState()
+    Column(Modifier.fillMaxSize().padding(28.dp), verticalArrangement = Arrangement.spacedBy(16.dp)) {
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            Column(Modifier.weight(1f)) {
+                Text(stringResource(R.string.caramel_launcher_settings_title), style = T.Display)
+                Text(stringResource(R.string.caramel_settings_sub), style = T.Body)
+            }
+            GlassButton(null, { state.launcherSettings = false }, icon = Icons.Rounded.Close, height = 32)
         }
-        SettingRow(stringResource(R.string.caramel_menu_check_updates), stringResource(R.string.caramel_check_updates_desc)) {
-            CaramelToggle(checkUpdates, { checkUpdates = it })
-        }
-        Spacer(Modifier.weight(1f))
-        Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
-            GlassButton(stringResource(R.string.caramel_menu_check_updates), actions::openSettings, icon = Icons.Rounded.RocketLaunch)
-            Spacer(Modifier.weight(1f))
-            PrimaryButton(stringResource(R.string.save), close, Modifier.width(140.dp), height = 40)
-        }
+        CaramelSettingsPanel(settingsState, settings.settingsActions(), Modifier.weight(1f))
     }
 }
 

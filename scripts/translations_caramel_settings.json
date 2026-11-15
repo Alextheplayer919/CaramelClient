@@ -1,0 +1,92 @@
+{
+  "es": {
+    "caramel_settings_sub": "Todas las opciones que guarda el cliente, en un solo lugar",
+    "caramel_section_client": "Funciones del cliente",
+    "caramel_update_available": "Hay una versión más reciente disponible",
+    "settings_reset_desc": "Devuelve cada opción de esta pantalla a su valor predeterminado",
+    "caramel_settings_unavailable_title": "Los ajustes no están disponibles aquí",
+    "caramel_settings_unavailable_body": "Esta ventana se abrió sin el almacén de ajustes. Abre Ajustes desde la barra lateral.",
+    "caramel_settings_reset_done": "Ajustes restablecidos a sus valores predeterminados"
+  },
+  "fr": {
+    "caramel_settings_sub": "Toutes les options du client, au même endroit",
+    "caramel_section_client": "Fonctions du client",
+    "caramel_update_available": "Une version plus récente est disponible",
+    "settings_reset_desc": "Rétablit chaque option de cet écran à sa valeur par défaut",
+    "caramel_settings_unavailable_title": "Les paramètres ne sont pas disponibles ici",
+    "caramel_settings_unavailable_body": "Cette fenêtre a été ouverte sans le stockage des paramètres. Ouvrez Paramètres depuis la barre latérale.",
+    "caramel_settings_reset_done": "Paramètres rétablis à leurs valeurs par défaut"
+  },
+  "hi": {
+    "caramel_settings_sub": "क्लाइंट के सभी विकल्प, एक ही जगह",
+    "caramel_section_client": "क्लाइंट सुविधाएँ",
+    "caramel_update_available": "एक नया संस्करण उपलब्ध है",
+    "settings_reset_desc": "इस स्क्रीन के हर विकल्प को उसके डिफ़ॉल्ट पर लौटाएँ",
+    "caramel_settings_unavailable_title": "सेटिंग्स यहाँ उपलब्ध नहीं हैं",
+    "caramel_settings_unavailable_body": "यह विंडो सेटिंग्स स्टोर के बिना खोली गई थी। साइडबार से सेटिंग्स खोलें।",
+    "caramel_settings_reset_done": "सेटिंग्स उनके डिफ़ॉल्ट पर रीसेट हो गईं"
+  },
+  "id": {
+    "caramel_settings_sub": "Semua opsi yang disimpan klien, di satu tempat",
+    "caramel_section_client": "Fitur klien",
+    "caramel_update_available": "Rilis yang lebih baru tersedia",
+    "settings_reset_desc": "Kembalikan setiap opsi di layar ini ke bawaannya",
+    "caramel_settings_unavailable_title": "Pengaturan tidak tersedia di sini",
+    "caramel_settings_unavailable_body": "Jendela ini dibuka tanpa penyimpanan pengaturan. Buka Pengaturan dari bilah samping.",
+    "caramel_settings_reset_done": "Pengaturan direset ke bawaannya"
+  },
+  "ja": {
+    "caramel_settings_sub": "クライアントが保存するすべての設定を1か所に",
+    "caramel_section_client": "クライアント機能",
+    "caramel_update_available": "新しいリリースがあります",
+    "settings_reset_desc": "この画面のすべての設定を既定値に戻します",
+    "caramel_settings_unavailable_title": "ここでは設定を利用できません",
+    "caramel_settings_unavailable_body": "このウィンドウは設定ストアなしで開かれました。サイドバーから設定を開いてください。",
+    "caramel_settings_reset_done": "設定を既定値に戻しました"
+  },
+  "pt": {
+    "caramel_settings_sub": "Todas as opções que o cliente guarda, num só lugar",
+    "caramel_section_client": "Recursos do cliente",
+    "caramel_update_available": "Está disponível uma versão mais recente",
+    "settings_reset_desc": "Repõe cada opção deste ecrã no seu valor predefinido",
+    "caramel_settings_unavailable_title": "As configurações não estão disponíveis aqui",
+    "caramel_settings_unavailable_body": "Esta janela foi aberta sem o armazenamento de configurações. Abra Configurações na barra lateral.",
+    "caramel_settings_reset_done": "Configurações repostas nos valores predefinidos"
+  },
+  "ru": {
+    "caramel_settings_sub": "Все параметры клиента в одном месте",
+    "caramel_section_client": "Функции клиента",
+    "caramel_update_available": "Доступна более новая версия",
+    "settings_reset_desc": "Вернуть каждую настройку на этом экране к значению по умолчанию",
+    "caramel_settings_unavailable_title": "Настройки здесь недоступны",
+    "caramel_settings_unavailable_body": "Это окно открыто без хранилища настроек. Откройте Настройки на боковой панели.",
+    "caramel_settings_reset_done": "Настройки сброшены к значениям по умолчанию"
+  },
+  "tr": {
+    "caramel_settings_sub": "İstemcinin sakladığı tüm seçenekler tek yerde",
+    "caramel_section_client": "İstemci özellikleri",
+    "caramel_update_available": "Daha yeni bir sürüm mevcut",
+    "settings_reset_desc": "Bu ekrandaki her seçeneği varsayılanına döndürür",
+    "caramel_settings_unavailable_title": "Ayarlar burada kullanılamaz",
+    "caramel_settings_unavailable_body": "Bu pencere ayar deposu olmadan açıldı. Yan çubuktan Ayarlar'ı açın.",
+    "caramel_settings_reset_done": "Ayarlar varsayılanlarına sıfırlandı"
+  },
+  "vi": {
+    "caramel_settings_sub": "Mọi tùy chọn ứng dụng lưu, ở cùng một nơi",
+    "caramel_section_client": "Tính năng ứng dụng",
+    "caramel_update_available": "Đã có bản phát hành mới hơn",
+    "settings_reset_desc": "Đưa mọi tùy chọn trên màn hình này về mặc định",
+    "caramel_settings_unavailable_title": "Cài đặt không khả dụng ở đây",
+    "caramel_settings_unavailable_body": "Cửa sổ này được mở mà không có kho cài đặt. Hãy mở Cài đặt từ thanh bên.",
+    "caramel_settings_reset_done": "Đã đặt lại cài đặt về mặc định"
+  },
+  "zh-rCN": {
+    "caramel_settings_sub": "客户端保存的所有选项，尽在一处",
+    "caramel_section_client": "客户端功能",
+    "caramel_update_available": "有新版本可用",
+    "settings_reset_desc": "将此屏幕上的每个选项恢复为默认值",
+    "caramel_settings_unavailable_title": "此处无法使用设置",
+    "caramel_settings_unavailable_body": "此窗口打开时没有设置存储。请从侧边栏打开设置。",
+    "caramel_settings_reset_done": "设置已恢复为默认值"
+  }
+}
