@@ -1468,4 +1468,11 @@ Quá trình chuyển đổi phải hoàn tất trước khi CaramelClient có th
     <string name="caramel_sign_in_to_add">Đăng nhập Xbox Live để thêm bạn.</string>
     <string name="caramel_friend_request_sent">Đã gửi lời mời kết bạn.</string>
     <string name="caramel_friend_request_failed">Không thể gửi lời mời kết bạn.</string>
+    <string name="caramel_mods_folder_title">Thư mục mod</string>
+    <string name="caramel_mods_folder_sub">Mọi tệp trong thư mục mod của phiên bản này</string>
+    <string name="caramel_mods_folder_up">Lên một cấp</string>
+    <string name="caramel_mods_folder_empty">Thư mục này trống</string>
+    <string name="caramel_mods_folder_empty_body">Thêm một tệp mod, hoặc mở thư mục trong trình quản lý tệp của bạn.</string>
+    <string name="caramel_mods_folder_in_file_manager">Mở trong trình quản lý tệp</string>
+    <string name="caramel_folder_label">Thư mục</string>
 </resources>

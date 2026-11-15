@@ -33,8 +33,10 @@ import org.chimeramc.client.core.versions.GameVersion;
 import org.chimeramc.client.core.versions.VersionManager;
 import org.chimeramc.client.settings.FeatureSettings;
 import org.chimeramc.client.util.LauncherStorage;
+import org.chimeramc.client.launcher.core.mods.ModsFolderListing;
 import org.chimeramc.client.ui.compose.caramel.CaramelCosmeticInfo;
 import org.chimeramc.client.ui.compose.caramel.CaramelCosmeticKind;
+import org.chimeramc.client.ui.compose.caramel.CaramelFileEntry;
 import org.chimeramc.client.ui.compose.caramel.CaramelFriendInfo;
 import org.chimeramc.client.ui.compose.caramel.CaramelFoundUser;
 import org.chimeramc.client.ui.compose.caramel.CaramelLauncherState;
@@ -489,7 +491,65 @@ public class MainActivity extends BaseActivity implements CaramelLauncherHost.Ac
     public void openModsFolder() {
         GameVersion selected = selectedVersion();
         if (selected == null || selected.modsDir == null) return;
-        LocalFileOpener.openFolder(this, selected.modsDir);
+        // The folder is listed in-app: handing it to a file manager does nothing on a device that
+        // has none, and the modal needs a way in regardless of what is installed.
+        File root = selected.modsDir;
+        root.mkdirs();
+        showModsFolder(root, root);
+        mutateState(s -> s.setModsFolderOpen(true));
+    }
+
+    @Override
+    public void openModsFolderEntry(CaramelFileEntry entry) {
+        GameVersion selected = selectedVersion();
+        if (selected == null || selected.modsDir == null || entry == null) return;
+        File root = selected.modsDir;
+        File target = new File(entry.getPath());
+        if (entry.getDirectory()) {
+            showModsFolder(root, target);
+        } else if (!LocalFileOpener.openImage(this, target)) {
+            // Not an image (a .so, an archive): there is nothing to preview, so open the folder it
+            // lives in through a file manager and say so if that also fails.
+            if (!LocalFileOpener.openFolder(this, target.getParentFile())) {
+                toast(R.string.caramel_open_folder_failed);
+            }
+        }
+    }
+
+    @Override
+    public void openModsFolderUp() {
+        GameVersion selected = selectedVersion();
+        if (selected == null || selected.modsDir == null) return;
+        File root = selected.modsDir;
+        String path = launcherState.getValue().getModsFolderPath();
+        File current = "/".equals(path) ? root : new File(root, path);
+        File parent = current.getParentFile();
+        if (parent == null) return;
+        // Never step above the mods root: the browser is scoped to this instance.
+        if (!parent.getAbsolutePath().startsWith(root.getAbsolutePath())) {
+            showModsFolder(root, root);
+            return;
+        }
+        showModsFolder(root, parent);
+    }
+
+    /** Fills the browser's state from {@code folder}, keeping [root] as the visible boundary. */
+    private void showModsFolder(File root, File folder) {
+        String path = ModsFolderListing.relativePath(root, folder);
+        List<CaramelFileEntry> rows = new ArrayList<>();
+        for (ModsFolderListing.Entry entry : ModsFolderListing.list(folder)) {
+            rows.add(new CaramelFileEntry(
+                    entry.name,
+                    entry.path,
+                    entry.directory,
+                    ModsFolderListing.formatSize(entry.sizeBytes)));
+        }
+        boolean canGoUp = !"/".equals(path);
+        mutateState(s -> {
+            s.setModsFolderPath(path);
+            s.setModsFolderEntries(rows);
+            s.setModsFolderCanGoUp(canGoUp);
+        });
     }
 
     /**

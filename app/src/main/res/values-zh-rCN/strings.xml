@@ -1459,4 +1459,11 @@
     <string name="caramel_sign_in_to_add">登录 Xbox Live 以添加好友。</string>
     <string name="caramel_friend_request_sent">好友请求已发送。</string>
     <string name="caramel_friend_request_failed">无法发送好友请求。</string>
+    <string name="caramel_mods_folder_title">Mod 文件夹</string>
+    <string name="caramel_mods_folder_sub">此实例 mod 文件夹中的每个文件</string>
+    <string name="caramel_mods_folder_up">上一级</string>
+    <string name="caramel_mods_folder_empty">此文件夹为空</string>
+    <string name="caramel_mods_folder_empty_body">添加一个 mod 压缩包，或在文件管理器中打开该文件夹。</string>
+    <string name="caramel_mods_folder_in_file_manager">在文件管理器中打开</string>
+    <string name="caramel_folder_label">文件夹</string>
 </resources>

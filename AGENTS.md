@@ -114,3 +114,4 @@ file is missing from the index.
 - [The signed-in Xbox profile picture (the avatar slot that stayed a ring)](docs/agents/xbox-profile-picture-avatar.md)
 - [The Xbox friends list (the card and modal that never showed a friend)](docs/agents/xbox-friends-list.md)
 - [Microsoft sign-in: device code, not MSAL](docs/agents/microsoft-sign-in-device-code-not-msal.md)
+- [The mods-folder browser (the "Open mods folder" button that did nothing)](docs/agents/mods-folder-browser.md)

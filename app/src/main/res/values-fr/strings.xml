@@ -1438,4 +1438,11 @@ La migration doit être terminée avant de continuer avec CaramelClient.</string
     <string name="caramel_sign_in_to_add">Connectez-vous à Xbox Live pour ajouter un ami.</string>
     <string name="caramel_friend_request_sent">Demande d\'ami envoyée.</string>
     <string name="caramel_friend_request_failed">Impossible d\'envoyer la demande d\'ami.</string>
+    <string name="caramel_mods_folder_title">Dossier des mods</string>
+    <string name="caramel_mods_folder_sub">Tous les fichiers du dossier de mods de cette instance</string>
+    <string name="caramel_mods_folder_up">Remonter d\'un niveau</string>
+    <string name="caramel_mods_folder_empty">Ce dossier est vide</string>
+    <string name="caramel_mods_folder_empty_body">Ajoutez une archive de mod ou ouvrez le dossier dans votre gestionnaire de fichiers.</string>
+    <string name="caramel_mods_folder_in_file_manager">Ouvrir dans le gestionnaire de fichiers</string>
+    <string name="caramel_folder_label">Dossier</string>
 </resources>

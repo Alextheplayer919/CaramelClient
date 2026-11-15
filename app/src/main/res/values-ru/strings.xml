@@ -1477,4 +1477,11 @@
     <string name="caramel_sign_in_to_add">Войдите в Xbox Live, чтобы добавить друга.</string>
     <string name="caramel_friend_request_sent">Запрос в друзья отправлен.</string>
     <string name="caramel_friend_request_failed">Не удалось отправить запрос в друзья.</string>
+    <string name="caramel_mods_folder_title">Папка модов</string>
+    <string name="caramel_mods_folder_sub">Все файлы в папке модов этого экземпляра</string>
+    <string name="caramel_mods_folder_up">На уровень выше</string>
+    <string name="caramel_mods_folder_empty">Эта папка пуста</string>
+    <string name="caramel_mods_folder_empty_body">Добавьте архив мода или откройте папку в файловом менеджере.</string>
+    <string name="caramel_mods_folder_in_file_manager">Открыть в файловом менеджере</string>
+    <string name="caramel_folder_label">Папка</string>
 </resources>

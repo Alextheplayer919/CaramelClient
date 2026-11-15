@@ -4,6 +4,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.platform.ComposeView
+import org.chimeramc.client.ui.compose.caramel.CaramelFileEntry
 import org.chimeramc.client.ui.compose.caramel.CaramelLauncherState
 import org.chimeramc.client.ui.compose.caramel.CaramelModInfo
 import org.chimeramc.client.ui.compose.caramel.CaramelScreenshotInfo
@@ -36,6 +37,8 @@ object CaramelLauncherHost {
         fun addServer()
         fun toggleServerFavourite(server: CaramelServerInfo)
         fun openModsFolder()
+        fun openModsFolderEntry(entry: CaramelFileEntry)
+        fun openModsFolderUp()
         fun openSettings()
         fun openAccounts()
         fun openScreenshots()

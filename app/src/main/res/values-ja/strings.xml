@@ -1435,4 +1435,11 @@ CaramelClient を続行するには移行を完了する必要があります。
     <string name="caramel_sign_in_to_add">フレンドを追加するには Xbox Live にサインインしてください。</string>
     <string name="caramel_friend_request_sent">フレンド申請を送信しました。</string>
     <string name="caramel_friend_request_failed">フレンド申請を送信できませんでした。</string>
+    <string name="caramel_mods_folder_title">Modフォルダー</string>
+    <string name="caramel_mods_folder_sub">このインスタンスのModフォルダー内のすべてのファイル</string>
+    <string name="caramel_mods_folder_up">1つ上の階層へ</string>
+    <string name="caramel_mods_folder_empty">このフォルダーは空です</string>
+    <string name="caramel_mods_folder_empty_body">Modアーカイブを追加するか、ファイルマネージャーでフォルダーを開いてください。</string>
+    <string name="caramel_mods_folder_in_file_manager">ファイルマネージャーで開く</string>
+    <string name="caramel_folder_label">フォルダー</string>
 </resources>

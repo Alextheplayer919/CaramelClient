@@ -1465,4 +1465,11 @@ CaramelClient\'ın devam edebilmesi için taşımanın tamamlanması gerekiyor.<
     <string name="caramel_sign_in_to_add">Arkadaş eklemek için Xbox Live\'da oturum açın.</string>
     <string name="caramel_friend_request_sent">Arkadaşlık isteği gönderildi.</string>
     <string name="caramel_friend_request_failed">Arkadaşlık isteği gönderilemedi.</string>
+    <string name="caramel_mods_folder_title">Mod klasörü</string>
+    <string name="caramel_mods_folder_sub">Bu örneğin mod klasöründeki tüm dosyalar</string>
+    <string name="caramel_mods_folder_up">Bir üst seviyeye çık</string>
+    <string name="caramel_mods_folder_empty">Bu klasör boş</string>
+    <string name="caramel_mods_folder_empty_body">Bir mod arşivi ekleyin veya klasörü dosya yöneticinizde açın.</string>
+    <string name="caramel_mods_folder_in_file_manager">Dosya yöneticisinde aç</string>
+    <string name="caramel_folder_label">Klasör</string>
 </resources>

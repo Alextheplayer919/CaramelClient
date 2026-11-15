@@ -2865,6 +2865,13 @@ CaramelClient must complete the migration before continuing.</string>
     <string name="caramel_verbose_logging_desc">Write detailed logs for troubleshooting</string>
     <string name="caramel_open_folder">Open folder</string>
     <string name="caramel_open_folder_failed">No file manager could open this folder.</string>
+    <string name="caramel_mods_folder_title">Mods folder</string>
+    <string name="caramel_mods_folder_sub">Every file in this instance\'s mods folder</string>
+    <string name="caramel_mods_folder_up">Up one level</string>
+    <string name="caramel_mods_folder_empty">This folder is empty</string>
+    <string name="caramel_mods_folder_empty_body">Add a mod archive, or open the folder in your file manager.</string>
+    <string name="caramel_mods_folder_in_file_manager">Open in file manager</string>
+    <string name="caramel_folder_label">Folder</string>
     <string name="caramel_save_changes">Save changes</string>
     <string name="caramel_launcher_settings_title">Settings</string>
     <string name="caramel_appearance">Appearance</string>

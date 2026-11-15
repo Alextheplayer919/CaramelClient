@@ -117,6 +117,7 @@ fun GlassButton(
     danger: Boolean = false,
     active: Boolean = false,
     height: Int = 40,
+    enabled: Boolean = true,
 ) {
     val src = remember { MutableInteractionSource() }
     val pressed by src.collectIsPressedAsState()
@@ -126,15 +127,20 @@ fun GlassButton(
         else -> Color.White
     }
     val shape = RoundedCornerShape(CaramelDimens.RadiusButton)
-    val fg = if (danger) C.Red else C.Text
+    val fg = when {
+        !enabled -> C.Text3
+        danger -> C.Red
+        else -> C.Text
+    }
+    val alpha = if (enabled) 1f else 0.45f
     Box(
         modifier
             .height(height.dp)
             .then(if (text == null) Modifier.width(height.dp) else Modifier)
             .clip(shape)
-            .background(tint.copy(if (danger || active) 0.16f else if (pressed) 0.14f else 0.08f))
-            .border(1.dp, tint.copy(if (danger || active) 0.45f else if (pressed) 0.28f else 0.17f), shape)
-            .clickable(src, null, onClick = onClick),
+            .background(tint.copy((if (danger || active) 0.16f else if (pressed) 0.14f else 0.08f) * alpha))
+            .border(1.dp, tint.copy((if (danger || active) 0.45f else if (pressed) 0.28f else 0.17f) * alpha), shape)
+            .clickable(src, null, enabled = enabled, onClick = onClick),
         Alignment.Center,
     ) {
         Row(

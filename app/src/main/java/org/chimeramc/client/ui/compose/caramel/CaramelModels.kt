@@ -199,7 +199,27 @@ class CaramelLauncherState {
 
     /** Whether the follow request succeeded, so the result line can be tinted. */
     var friendRequestSucceeded by mutableStateOf(false)
+
+    /** Whether the in-app mods-folder browser is open. */
+    var modsFolderOpen by mutableStateOf(false)
+
+    /** The folder the browser is currently showing, as a path relative to the mods root. */
+    var modsFolderPath by mutableStateOf("/")
+
+    /** The entries in the folder the browser is showing. */
+    var modsFolderEntries by mutableStateOf<List<CaramelFileEntry>>(emptyList())
+
+    /** Whether the browser can go up a level (false at the mods root). */
+    var modsFolderCanGoUp by mutableStateOf(false)
 }
+
+/** One row in the mods-folder browser: a file or a sub-directory. */
+data class CaramelFileEntry(
+    val name: String,
+    val path: String,
+    val directory: Boolean,
+    val sizeLabel: String,
+)
 
 /** One account the Add friend modal resolved from a typed gamertag. */
 data class CaramelFoundUser(

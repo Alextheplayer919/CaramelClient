@@ -1462,4 +1462,11 @@ Migrasi harus selesai sebelum CaramelClient dapat melanjutkan.</string>
     <string name="caramel_sign_in_to_add">Masuk ke Xbox Live untuk menambah teman.</string>
     <string name="caramel_friend_request_sent">Permintaan pertemanan terkirim.</string>
     <string name="caramel_friend_request_failed">Tidak dapat mengirim permintaan pertemanan.</string>
+    <string name="caramel_mods_folder_title">Folder mod</string>
+    <string name="caramel_mods_folder_sub">Setiap berkas di folder mod instance ini</string>
+    <string name="caramel_mods_folder_up">Naik satu tingkat</string>
+    <string name="caramel_mods_folder_empty">Folder ini kosong</string>
+    <string name="caramel_mods_folder_empty_body">Tambahkan arsip mod, atau buka folder di pengelola berkas Anda.</string>
+    <string name="caramel_mods_folder_in_file_manager">Buka di pengelola berkas</string>
+    <string name="caramel_folder_label">Folder</string>
 </resources>

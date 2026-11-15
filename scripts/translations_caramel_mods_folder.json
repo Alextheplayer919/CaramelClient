@@ -1,0 +1,92 @@
+{
+  "es": {
+    "caramel_mods_folder_title": "Carpeta de mods",
+    "caramel_mods_folder_sub": "Todos los archivos de la carpeta de mods de esta instancia",
+    "caramel_mods_folder_up": "Subir un nivel",
+    "caramel_mods_folder_empty": "Esta carpeta está vacía",
+    "caramel_mods_folder_empty_body": "Añade un archivo de mod o abre la carpeta en tu gestor de archivos.",
+    "caramel_mods_folder_in_file_manager": "Abrir en el gestor de archivos",
+    "caramel_folder_label": "Carpeta"
+  },
+  "fr": {
+    "caramel_mods_folder_title": "Dossier des mods",
+    "caramel_mods_folder_sub": "Tous les fichiers du dossier de mods de cette instance",
+    "caramel_mods_folder_up": "Remonter d'un niveau",
+    "caramel_mods_folder_empty": "Ce dossier est vide",
+    "caramel_mods_folder_empty_body": "Ajoutez une archive de mod ou ouvrez le dossier dans votre gestionnaire de fichiers.",
+    "caramel_mods_folder_in_file_manager": "Ouvrir dans le gestionnaire de fichiers",
+    "caramel_folder_label": "Dossier"
+  },
+  "hi": {
+    "caramel_mods_folder_title": "मॉड फ़ोल्डर",
+    "caramel_mods_folder_sub": "इस इंस्टेंस के मॉड फ़ोल्डर की हर फ़ाइल",
+    "caramel_mods_folder_up": "एक स्तर ऊपर",
+    "caramel_mods_folder_empty": "यह फ़ोल्डर खाली है",
+    "caramel_mods_folder_empty_body": "एक मॉड फ़ाइल जोड़ें, या फ़ोल्डर को अपने फ़ाइल मैनेजर में खोलें।",
+    "caramel_mods_folder_in_file_manager": "फ़ाइल मैनेजर में खोलें",
+    "caramel_folder_label": "फ़ोल्डर"
+  },
+  "id": {
+    "caramel_mods_folder_title": "Folder mod",
+    "caramel_mods_folder_sub": "Setiap berkas di folder mod instance ini",
+    "caramel_mods_folder_up": "Naik satu tingkat",
+    "caramel_mods_folder_empty": "Folder ini kosong",
+    "caramel_mods_folder_empty_body": "Tambahkan arsip mod, atau buka folder di pengelola berkas Anda.",
+    "caramel_mods_folder_in_file_manager": "Buka di pengelola berkas",
+    "caramel_folder_label": "Folder"
+  },
+  "ja": {
+    "caramel_mods_folder_title": "Modフォルダー",
+    "caramel_mods_folder_sub": "このインスタンスのModフォルダー内のすべてのファイル",
+    "caramel_mods_folder_up": "1つ上の階層へ",
+    "caramel_mods_folder_empty": "このフォルダーは空です",
+    "caramel_mods_folder_empty_body": "Modアーカイブを追加するか、ファイルマネージャーでフォルダーを開いてください。",
+    "caramel_mods_folder_in_file_manager": "ファイルマネージャーで開く",
+    "caramel_folder_label": "フォルダー"
+  },
+  "pt": {
+    "caramel_mods_folder_title": "Pasta de mods",
+    "caramel_mods_folder_sub": "Todos os arquivos na pasta de mods desta instância",
+    "caramel_mods_folder_up": "Subir um nível",
+    "caramel_mods_folder_empty": "Esta pasta está vazia",
+    "caramel_mods_folder_empty_body": "Adicione um arquivo de mod ou abra a pasta no seu gerenciador de arquivos.",
+    "caramel_mods_folder_in_file_manager": "Abrir no gerenciador de arquivos",
+    "caramel_folder_label": "Pasta"
+  },
+  "ru": {
+    "caramel_mods_folder_title": "Папка модов",
+    "caramel_mods_folder_sub": "Все файлы в папке модов этого экземпляра",
+    "caramel_mods_folder_up": "На уровень выше",
+    "caramel_mods_folder_empty": "Эта папка пуста",
+    "caramel_mods_folder_empty_body": "Добавьте архив мода или откройте папку в файловом менеджере.",
+    "caramel_mods_folder_in_file_manager": "Открыть в файловом менеджере",
+    "caramel_folder_label": "Папка"
+  },
+  "tr": {
+    "caramel_mods_folder_title": "Mod klasörü",
+    "caramel_mods_folder_sub": "Bu örneğin mod klasöründeki tüm dosyalar",
+    "caramel_mods_folder_up": "Bir üst seviyeye çık",
+    "caramel_mods_folder_empty": "Bu klasör boş",
+    "caramel_mods_folder_empty_body": "Bir mod arşivi ekleyin veya klasörü dosya yöneticinizde açın.",
+    "caramel_mods_folder_in_file_manager": "Dosya yöneticisinde aç",
+    "caramel_folder_label": "Klasör"
+  },
+  "vi": {
+    "caramel_mods_folder_title": "Thư mục mod",
+    "caramel_mods_folder_sub": "Mọi tệp trong thư mục mod của phiên bản này",
+    "caramel_mods_folder_up": "Lên một cấp",
+    "caramel_mods_folder_empty": "Thư mục này trống",
+    "caramel_mods_folder_empty_body": "Thêm một tệp mod, hoặc mở thư mục trong trình quản lý tệp của bạn.",
+    "caramel_mods_folder_in_file_manager": "Mở trong trình quản lý tệp",
+    "caramel_folder_label": "Thư mục"
+  },
+  "zh-rCN": {
+    "caramel_mods_folder_title": "Mod 文件夹",
+    "caramel_mods_folder_sub": "此实例 mod 文件夹中的每个文件",
+    "caramel_mods_folder_up": "上一级",
+    "caramel_mods_folder_empty": "此文件夹为空",
+    "caramel_mods_folder_empty_body": "添加一个 mod 压缩包，或在文件管理器中打开该文件夹。",
+    "caramel_mods_folder_in_file_manager": "在文件管理器中打开",
+    "caramel_folder_label": "文件夹"
+  }
+}
