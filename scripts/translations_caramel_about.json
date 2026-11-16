@@ -1,0 +1,122 @@
+{
+  "es": {
+    "caramel_about_sub": "Un lanzador moderno de Minecraft Bedrock, creado por su comunidad",
+    "caramel_about_made_on": "Creado el %1$s",
+    "caramel_about_channel": "Canal de YouTube",
+    "caramel_about_repository": "Repositorio",
+    "caramel_about_people_title": "Quién hace CaramelClient",
+    "caramel_about_fun_facts": "Datos curiosos",
+    "caramel_about_fact_levimc": "Antes de crear este cliente, el Discord de LeviMC intentó acosar a nuestro desarrollador principal.",
+    "caramel_about_fact_hacks": "Este cliente al principio era solo para hacks.",
+    "caramel_about_fact_broken": "Rompimos este cliente muchísimas veces.",
+    "caramel_about_fact_best": "La mejor experiencia de Bedrock que puedes tener."
+  },
+  "fr": {
+    "caramel_about_sub": "Un lanceur Minecraft Bedrock moderne, créé par sa communauté",
+    "caramel_about_made_on": "Créé le %1$s",
+    "caramel_about_channel": "Chaîne YouTube",
+    "caramel_about_repository": "Dépôt",
+    "caramel_about_people_title": "Qui fait CaramelClient",
+    "caramel_about_fun_facts": "Anecdotes",
+    "caramel_about_fact_levimc": "Avant de créer ce client, le Discord de LeviMC a tenté d’intimider notre développeur principal.",
+    "caramel_about_fact_hacks": "Ce client était au départ uniquement destiné aux hacks.",
+    "caramel_about_fact_broken": "Nous avons cassé ce client un nombre incalculable de fois.",
+    "caramel_about_fact_best": "La meilleure expérience Bedrock possible."
+  },
+  "hi": {
+    "caramel_about_sub": "एक आधुनिक Minecraft Bedrock लॉन्चर, जिसे इसके समुदाय ने बनाया",
+    "caramel_about_made_on": "%1$s को बनाया गया",
+    "caramel_about_channel": "YouTube चैनल",
+    "caramel_about_repository": "रिपॉज़िटरी",
+    "caramel_about_people_title": "CaramelClient कौन बनाता है",
+    "caramel_about_fun_facts": "मज़ेदार तथ्य",
+    "caramel_about_fact_levimc": "इस क्लाइंट को बनाने से पहले, LeviMC Discord ने हमारे मुख्य डेवलपर को धमकाने की कोशिश की।",
+    "caramel_about_fact_hacks": "यह क्लाइंट शुरू में सिर्फ़ हैक्स के लिए था।",
+    "caramel_about_fact_broken": "हमने इस क्लाइंट को बहुत बार तोड़ा।",
+    "caramel_about_fact_best": "सबसे बेहतरीन Bedrock अनुभव जो आपको मिल सकता है।"
+  },
+  "id": {
+    "caramel_about_sub": "Peluncur Minecraft Bedrock modern, dibuat oleh komunitasnya",
+    "caramel_about_made_on": "Dibuat pada %1$s",
+    "caramel_about_channel": "Kanal YouTube",
+    "caramel_about_repository": "Repositori",
+    "caramel_about_people_title": "Siapa yang membuat CaramelClient",
+    "caramel_about_fun_facts": "Fakta menarik",
+    "caramel_about_fact_levimc": "Sebelum kami membuat klien ini, Discord LeviMC mencoba mengintimidasi pengembang utama kami.",
+    "caramel_about_fact_hacks": "Klien ini awalnya hanya untuk hack.",
+    "caramel_about_fact_broken": "Kami merusak klien ini berkali-kali.",
+    "caramel_about_fact_best": "Pengalaman Bedrock terbaik yang bisa Anda dapatkan."
+  },
+  "ja": {
+    "caramel_about_sub": "コミュニティが作る、現代的な Minecraft Bedrock ランチャー",
+    "caramel_about_made_on": "%1$s に作成",
+    "caramel_about_channel": "YouTube チャンネル",
+    "caramel_about_repository": "リポジトリ",
+    "caramel_about_people_title": "CaramelClient を作る人々",
+    "caramel_about_fun_facts": "豆知識",
+    "caramel_about_fact_levimc": "このクライアントを作る前、LeviMC の Discord は私たちの主任開発者をいじめようとしました。",
+    "caramel_about_fact_hacks": "このクライアントはもともとチート専用でした。",
+    "caramel_about_fact_broken": "私たちはこのクライアントを何度も壊しました。",
+    "caramel_about_fact_best": "手に入る最高の Bedrock 体験。"
+  },
+  "pt": {
+    "caramel_about_sub": "Um lançador moderno de Minecraft Bedrock, feito pela sua comunidade",
+    "caramel_about_made_on": "Criado em %1$s",
+    "caramel_about_channel": "Canal do YouTube",
+    "caramel_about_repository": "Repositório",
+    "caramel_about_people_title": "Quem faz o CaramelClient",
+    "caramel_about_fun_facts": "Curiosidades",
+    "caramel_about_fact_levimc": "Antes de criarmos este cliente, o Discord do LeviMC tentou intimidar nosso desenvolvedor principal.",
+    "caramel_about_fact_hacks": "Este cliente era originalmente só para hacks.",
+    "caramel_about_fact_broken": "Quebramos este cliente inúmeras vezes.",
+    "caramel_about_fact_best": "A melhor experiência de Bedrock que você pode ter."
+  },
+  "ru": {
+    "caramel_about_sub": "Современный лаунчер Minecraft Bedrock, созданный его сообществом",
+    "caramel_about_made_on": "Создан %1$s",
+    "caramel_about_channel": "Канал YouTube",
+    "caramel_about_repository": "Репозиторий",
+    "caramel_about_people_title": "Кто делает CaramelClient",
+    "caramel_about_fun_facts": "Интересные факты",
+    "caramel_about_fact_levimc": "До создания этого клиента Discord LeviMC пытался травить нашего ведущего разработчика.",
+    "caramel_about_fact_hacks": "Изначально этот клиент был только для читов.",
+    "caramel_about_fact_broken": "Мы ломали этот клиент бесчисленное множество раз.",
+    "caramel_about_fact_best": "Лучший опыт Bedrock, какой только возможен."
+  },
+  "tr": {
+    "caramel_about_sub": "Topluluğu tarafından yapılan modern bir Minecraft Bedrock başlatıcısı",
+    "caramel_about_made_on": "%1$s tarihinde yapıldı",
+    "caramel_about_channel": "YouTube kanalı",
+    "caramel_about_repository": "Depo",
+    "caramel_about_people_title": "CaramelClient'ı kim yapıyor",
+    "caramel_about_fun_facts": "İlginç bilgiler",
+    "caramel_about_fact_levimc": "Bu istemciyi yapmadan önce LeviMC Discord'u baş geliştiricimizi zorbalıkla korkutmaya çalıştı.",
+    "caramel_about_fact_hacks": "Bu istemci başta sadece hileler içindi.",
+    "caramel_about_fact_broken": "Bu istemciyi sayısız kez bozduk.",
+    "caramel_about_fact_best": "Elde edebileceğiniz en iyi Bedrock deneyimi."
+  },
+  "vi": {
+    "caramel_about_sub": "Trình khởi chạy Minecraft Bedrock hiện đại, do cộng đồng tạo nên",
+    "caramel_about_made_on": "Tạo ngày %1$s",
+    "caramel_about_channel": "Kênh YouTube",
+    "caramel_about_repository": "Kho mã nguồn",
+    "caramel_about_people_title": "Ai làm nên CaramelClient",
+    "caramel_about_fun_facts": "Sự thật thú vị",
+    "caramel_about_fact_levimc": "Trước khi chúng tôi làm trình khách này, Discord của LeviMC đã cố bắt nạt nhà phát triển chính của chúng tôi.",
+    "caramel_about_fact_hacks": "Trình khách này ban đầu chỉ để dùng cho hack.",
+    "caramel_about_fact_broken": "Chúng tôi đã làm hỏng trình khách này rất nhiều lần.",
+    "caramel_about_fact_best": "Trải nghiệm Bedrock tốt nhất mà bạn có thể có."
+  },
+  "zh-rCN": {
+    "caramel_about_sub": "由社区打造的现代 Minecraft Bedrock 启动器",
+    "caramel_about_made_on": "创建于 %1$s",
+    "caramel_about_channel": "YouTube 频道",
+    "caramel_about_repository": "代码仓库",
+    "caramel_about_people_title": "CaramelClient 的制作者",
+    "caramel_about_fun_facts": "趣闻",
+    "caramel_about_fact_levimc": "在我们制作这个客户端之前，LeviMC 的 Discord 曾试图欺负我们的首席开发者。",
+    "caramel_about_fact_hacks": "这个客户端最初只是用来做外挂的。",
+    "caramel_about_fact_broken": "我们把这个客户端弄坏过无数次。",
+    "caramel_about_fact_best": "你能获得的最好的 Bedrock 体验。"
+  }
+}

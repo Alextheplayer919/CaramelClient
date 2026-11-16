@@ -1541,4 +1541,14 @@
     <string name="file_picker_unavailable">На этом экране выбор файлов недоступен.</string>
     <string name="caramel_no_favourite_cosmetics_title">Избранного пока нет</string>
     <string name="caramel_no_favourite_cosmetics_body">Нажмите звёздочку на косметике, чтобы сохранить её здесь.</string>
+    <string name="caramel_about_sub">Современный лаунчер Minecraft Bedrock, созданный его сообществом</string>
+    <string name="caramel_about_made_on">Создан %1$s</string>
+    <string name="caramel_about_channel">Канал YouTube</string>
+    <string name="caramel_about_repository">Репозиторий</string>
+    <string name="caramel_about_people_title">Кто делает CaramelClient</string>
+    <string name="caramel_about_fun_facts">Интересные факты</string>
+    <string name="caramel_about_fact_levimc">До создания этого клиента Discord LeviMC пытался травить нашего ведущего разработчика.</string>
+    <string name="caramel_about_fact_hacks">Изначально этот клиент был только для читов.</string>
+    <string name="caramel_about_fact_broken">Мы ломали этот клиент бесчисленное множество раз.</string>
+    <string name="caramel_about_fact_best">Лучший опыт Bedrock, какой только возможен.</string>
 </resources>

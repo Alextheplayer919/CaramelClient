@@ -1502,4 +1502,14 @@ La migration doit être terminée avant de continuer avec CaramelClient.</string
     <string name="file_picker_unavailable">Aucun sélecteur de fichiers n\'est disponible sur cet écran.</string>
     <string name="caramel_no_favourite_cosmetics_title">Pas encore de favoris</string>
     <string name="caramel_no_favourite_cosmetics_body">Touchez l’étoile d’un cosmétique pour le garder ici.</string>
+    <string name="caramel_about_sub">Un lanceur Minecraft Bedrock moderne, créé par sa communauté</string>
+    <string name="caramel_about_made_on">Créé le %1$s</string>
+    <string name="caramel_about_channel">Chaîne YouTube</string>
+    <string name="caramel_about_repository">Dépôt</string>
+    <string name="caramel_about_people_title">Qui fait CaramelClient</string>
+    <string name="caramel_about_fun_facts">Anecdotes</string>
+    <string name="caramel_about_fact_levimc">Avant de créer ce client, le Discord de LeviMC a tenté d’intimider notre développeur principal.</string>
+    <string name="caramel_about_fact_hacks">Ce client était au départ uniquement destiné aux hacks.</string>
+    <string name="caramel_about_fact_broken">Nous avons cassé ce client un nombre incalculable de fois.</string>
+    <string name="caramel_about_fact_best">La meilleure expérience Bedrock possible.</string>
 </resources>

@@ -1532,4 +1532,14 @@ Quá trình chuyển đổi phải hoàn tất trước khi CaramelClient có th
     <string name="file_picker_unavailable">Không có trình chọn tệp nào khả dụng trên màn hình này.</string>
     <string name="caramel_no_favourite_cosmetics_title">Chưa có mục yêu thích</string>
     <string name="caramel_no_favourite_cosmetics_body">Chạm vào ngôi sao trên vật phẩm để lưu vào đây.</string>
+    <string name="caramel_about_sub">Trình khởi chạy Minecraft Bedrock hiện đại, do cộng đồng tạo nên</string>
+    <string name="caramel_about_made_on">Tạo ngày %1$s</string>
+    <string name="caramel_about_channel">Kênh YouTube</string>
+    <string name="caramel_about_repository">Kho mã nguồn</string>
+    <string name="caramel_about_people_title">Ai làm nên CaramelClient</string>
+    <string name="caramel_about_fun_facts">Sự thật thú vị</string>
+    <string name="caramel_about_fact_levimc">Trước khi chúng tôi làm trình khách này, Discord của LeviMC đã cố bắt nạt nhà phát triển chính của chúng tôi.</string>
+    <string name="caramel_about_fact_hacks">Trình khách này ban đầu chỉ để dùng cho hack.</string>
+    <string name="caramel_about_fact_broken">Chúng tôi đã làm hỏng trình khách này rất nhiều lần.</string>
+    <string name="caramel_about_fact_best">Trải nghiệm Bedrock tốt nhất mà bạn có thể có.</string>
 </resources>

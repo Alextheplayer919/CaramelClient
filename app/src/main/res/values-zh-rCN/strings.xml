@@ -1523,4 +1523,14 @@
     <string name="file_picker_unavailable">此界面没有可用的文件选择器。</string>
     <string name="caramel_no_favourite_cosmetics_title">还没有收藏</string>
     <string name="caramel_no_favourite_cosmetics_body">点按饰品上的星星即可收藏到这里。</string>
+    <string name="caramel_about_sub">由社区打造的现代 Minecraft Bedrock 启动器</string>
+    <string name="caramel_about_made_on">创建于 %1$s</string>
+    <string name="caramel_about_channel">YouTube 频道</string>
+    <string name="caramel_about_repository">代码仓库</string>
+    <string name="caramel_about_people_title">CaramelClient 的制作者</string>
+    <string name="caramel_about_fun_facts">趣闻</string>
+    <string name="caramel_about_fact_levimc">在我们制作这个客户端之前，LeviMC 的 Discord 曾试图欺负我们的首席开发者。</string>
+    <string name="caramel_about_fact_hacks">这个客户端最初只是用来做外挂的。</string>
+    <string name="caramel_about_fact_broken">我们把这个客户端弄坏过无数次。</string>
+    <string name="caramel_about_fact_best">你能获得的最好的 Bedrock 体验。</string>
 </resources>

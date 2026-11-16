@@ -1529,4 +1529,14 @@ CaramelClient\'ın devam edebilmesi için taşımanın tamamlanması gerekiyor.<
     <string name="file_picker_unavailable">Bu ekranda kullanılabilir bir dosya seçici yok.</string>
     <string name="caramel_no_favourite_cosmetics_title">Henüz favori yok</string>
     <string name="caramel_no_favourite_cosmetics_body">Bir kozmetiği burada tutmak için yıldıza dokunun.</string>
+    <string name="caramel_about_sub">Topluluğu tarafından yapılan modern bir Minecraft Bedrock başlatıcısı</string>
+    <string name="caramel_about_made_on">%1$s tarihinde yapıldı</string>
+    <string name="caramel_about_channel">YouTube kanalı</string>
+    <string name="caramel_about_repository">Depo</string>
+    <string name="caramel_about_people_title">CaramelClient\'ı kim yapıyor</string>
+    <string name="caramel_about_fun_facts">İlginç bilgiler</string>
+    <string name="caramel_about_fact_levimc">Bu istemciyi yapmadan önce LeviMC Discord\'u baş geliştiricimizi zorbalıkla korkutmaya çalıştı.</string>
+    <string name="caramel_about_fact_hacks">Bu istemci başta sadece hileler içindi.</string>
+    <string name="caramel_about_fact_broken">Bu istemciyi sayısız kez bozduk.</string>
+    <string name="caramel_about_fact_best">Elde edebileceğiniz en iyi Bedrock deneyimi.</string>
 </resources>

@@ -1499,4 +1499,14 @@ CaramelClient を続行するには移行を完了する必要があります。
     <string name="file_picker_unavailable">この画面ではファイル選択を利用できません。</string>
     <string name="caramel_no_favourite_cosmetics_title">お気に入りはまだありません</string>
     <string name="caramel_no_favourite_cosmetics_body">コスメの星をタップするとここに保存されます。</string>
+    <string name="caramel_about_sub">コミュニティが作る、現代的な Minecraft Bedrock ランチャー</string>
+    <string name="caramel_about_made_on">%1$s に作成</string>
+    <string name="caramel_about_channel">YouTube チャンネル</string>
+    <string name="caramel_about_repository">リポジトリ</string>
+    <string name="caramel_about_people_title">CaramelClient を作る人々</string>
+    <string name="caramel_about_fun_facts">豆知識</string>
+    <string name="caramel_about_fact_levimc">このクライアントを作る前、LeviMC の Discord は私たちの主任開発者をいじめようとしました。</string>
+    <string name="caramel_about_fact_hacks">このクライアントはもともとチート専用でした。</string>
+    <string name="caramel_about_fact_broken">私たちはこのクライアントを何度も壊しました。</string>
+    <string name="caramel_about_fact_best">手に入る最高の Bedrock 体験。</string>
 </resources>

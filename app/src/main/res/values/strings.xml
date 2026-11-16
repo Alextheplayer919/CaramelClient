@@ -2991,4 +2991,16 @@ CaramelClient must complete the migration before continuing.</string>
     <string name="caramel_unlocked">Unlocked</string>
     <string name="caramel_news_title">News</string>
     <string name="caramel_store_title">Store</string>
+
+    <!-- The About popup: the people, the channel, the date and the stories. -->
+    <string name="caramel_about_sub">A modern Minecraft Bedrock launcher, built by its community</string>
+    <string name="caramel_about_made_on">Made on %1$s</string>
+    <string name="caramel_about_channel">YouTube channel</string>
+    <string name="caramel_about_repository">Repository</string>
+    <string name="caramel_about_people_title">Who makes CaramelClient</string>
+    <string name="caramel_about_fun_facts">Fun facts</string>
+    <string name="caramel_about_fact_levimc">Before we made this client, the LeviMC Discord tried to bully our lead developer.</string>
+    <string name="caramel_about_fact_hacks">This client was originally just for hacks.</string>
+    <string name="caramel_about_fact_broken">We broke this client so many times.</string>
+    <string name="caramel_about_fact_best">The best Bedrock experience you could possibly have.</string>
 </resources>

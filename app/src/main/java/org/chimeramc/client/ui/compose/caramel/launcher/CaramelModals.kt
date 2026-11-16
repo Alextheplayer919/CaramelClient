@@ -123,7 +123,7 @@ fun CaramelAppMenu(state: CaramelLauncherState, actions: CaramelLauncherHost.Act
                     state.appMenu = false; state.releaseNotesOpen = true
                 }
                 CaramelMenuItem(stringResource(R.string.caramel_menu_about), Icons.Rounded.Info) {
-                    state.appMenu = false; actions.openAccounts()
+                    state.appMenu = false; state.aboutOpen = true
                 }
                 Box(Modifier.fillMaxWidth().padding(vertical = 6.dp, horizontal = 6.dp).height(1.dp).background(Color.White.copy(0.1f)))
                 CaramelMenuItem(stringResource(R.string.caramel_menu_quit), Icons.Rounded.Close, danger = true) {

@@ -217,6 +217,9 @@ class CaramelLauncherState {
     /** Whether the Release notes popup is open. */
     var releaseNotesOpen by mutableStateOf(false)
 
+    /** Whether the About modal is open. */
+    var aboutOpen by mutableStateOf(false)
+
     /**
      * The page the in-app browser is showing, empty when it is closed.
      *

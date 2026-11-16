@@ -1530,4 +1530,14 @@ CaramelClient जारी रखने से पहले माइग्र�
     <string name="file_picker_unavailable">इस स्क्रीन पर कोई फ़ाइल चयनकर्ता उपलब्ध नहीं है।</string>
     <string name="caramel_no_favourite_cosmetics_title">अभी कोई पसंदीदा नहीं</string>
     <string name="caramel_no_favourite_cosmetics_body">किसी कॉस्मेटिक को यहाँ रखने के लिए उस पर तारा दबाएँ।</string>
+    <string name="caramel_about_sub">एक आधुनिक Minecraft Bedrock लॉन्चर, जिसे इसके समुदाय ने बनाया</string>
+    <string name="caramel_about_made_on">%1$s को बनाया गया</string>
+    <string name="caramel_about_channel">YouTube चैनल</string>
+    <string name="caramel_about_repository">रिपॉज़िटरी</string>
+    <string name="caramel_about_people_title">CaramelClient कौन बनाता है</string>
+    <string name="caramel_about_fun_facts">मज़ेदार तथ्य</string>
+    <string name="caramel_about_fact_levimc">इस क्लाइंट को बनाने से पहले, LeviMC Discord ने हमारे मुख्य डेवलपर को धमकाने की कोशिश की।</string>
+    <string name="caramel_about_fact_hacks">यह क्लाइंट शुरू में सिर्फ़ हैक्स के लिए था।</string>
+    <string name="caramel_about_fact_broken">हमने इस क्लाइंट को बहुत बार तोड़ा।</string>
+    <string name="caramel_about_fact_best">सबसे बेहतरीन Bedrock अनुभव जो आपको मिल सकता है।</string>
 </resources>

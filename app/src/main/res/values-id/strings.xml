@@ -1526,4 +1526,14 @@ Migrasi harus selesai sebelum CaramelClient dapat melanjutkan.</string>
     <string name="file_picker_unavailable">Tidak ada pemilih berkas yang tersedia di layar ini.</string>
     <string name="caramel_no_favourite_cosmetics_title">Belum ada favorit</string>
     <string name="caramel_no_favourite_cosmetics_body">Ketuk bintang pada kosmetik untuk menyimpannya di sini.</string>
+    <string name="caramel_about_sub">Peluncur Minecraft Bedrock modern, dibuat oleh komunitasnya</string>
+    <string name="caramel_about_made_on">Dibuat pada %1$s</string>
+    <string name="caramel_about_channel">Kanal YouTube</string>
+    <string name="caramel_about_repository">Repositori</string>
+    <string name="caramel_about_people_title">Siapa yang membuat CaramelClient</string>
+    <string name="caramel_about_fun_facts">Fakta menarik</string>
+    <string name="caramel_about_fact_levimc">Sebelum kami membuat klien ini, Discord LeviMC mencoba mengintimidasi pengembang utama kami.</string>
+    <string name="caramel_about_fact_hacks">Klien ini awalnya hanya untuk hack.</string>
+    <string name="caramel_about_fact_broken">Kami merusak klien ini berkali-kali.</string>
+    <string name="caramel_about_fact_best">Pengalaman Bedrock terbaik yang bisa Anda dapatkan.</string>
 </resources>
