@@ -301,6 +301,14 @@ fun CaramelNewsModal(state: CaramelLauncherState, actions: CaramelLauncherHost.A
                                     Text(post.title, style = T.Subtitle.copy(fontSize = 15.sp_), maxLines = 2)
                                     Text(post.summary, style = T.Body, maxLines = 3)
                                     Text(post.meta, style = T.Caption)
+                                    if (post.actionLabel.isNotEmpty() && post.actionUrl.isNotEmpty()) {
+                                        PrimaryButton(
+                                            post.actionLabel,
+                                            { state.webTitle = post.title; state.webUrl = post.actionUrl },
+                                            tone = Tone.Yellow,
+                                            height = 34,
+                                        )
+                                    }
                                 }
                             }
                         }

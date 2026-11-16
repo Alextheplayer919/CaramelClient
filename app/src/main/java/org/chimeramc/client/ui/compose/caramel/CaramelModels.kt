@@ -99,12 +99,20 @@ data class CaramelCosmeticInfo(
     val favourite: Boolean,
 )
 
-/** One news/changelog entry: the News tab draws these from the real changelog. */
-data class CaramelNewsInfo(
+/** One news post: the News screen and the news modal both draw these. */
+data class CaramelNewsInfo @JvmOverloads constructor(
     val title: String,
     val summary: String,
     val meta: String,
     val featured: Boolean,
+    /**
+     * An optional in-app action: the button's label, empty when the post has none.
+     *
+     * <p>A post with a label and a [actionUrl] draws a button that opens the page in the launcher's
+     * own WebView, so a link never throws the user out to a browser.
+     */
+    val actionLabel: String = "",
+    val actionUrl: String = "",
 )
 
 /** One captured screenshot: the Screenshots modal draws these from the instance's folder. */
@@ -173,6 +181,17 @@ class CaramelLauncherState {
 
     /** Whether the "View all news" modal is open. */
     var newsAll by mutableStateOf(false)
+
+    /**
+     * The page the in-app browser is showing, empty when it is closed.
+     *
+     * <p>A news post's link opens here rather than in the system browser, so the user stays in the
+     * launcher. The host fills [webTitle] with the page's own name.
+     */
+    var webUrl by mutableStateOf("")
+
+    /** The title shown on the in-app browser's header, empty falls back to the URL. */
+    var webTitle by mutableStateOf("")
     var addAccount by mutableStateOf(false)
     var accountSettings by mutableStateOf(false)
 

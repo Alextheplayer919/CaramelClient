@@ -50,6 +50,7 @@ import org.chimeramc.client.ui.compose.caramel.C
 import org.chimeramc.client.ui.compose.caramel.CaramelFriendRow
 import org.chimeramc.client.ui.compose.caramel.CaramelNotice
 import org.chimeramc.client.ui.compose.caramel.CaramelLauncherState
+import org.chimeramc.client.ui.compose.caramel.CaramelNewsInfo
 import org.chimeramc.client.ui.compose.caramel.GlassButton
 import org.chimeramc.client.ui.compose.caramel.GlassPanel
 import org.chimeramc.client.ui.compose.caramel.PrimaryButton
@@ -87,7 +88,7 @@ fun CaramelHomeScreen(
                     EmptyCard(stringResource(R.string.caramel_no_news_title), stringResource(R.string.caramel_no_news_body), Modifier.weight(1f))
                 } else {
                     cards.forEachIndexed { i, n ->
-                        NewsCard(n.title, n.meta, newsArt(i), Modifier.weight(1f))
+                        NewsCard(state, n, newsArt(i), Modifier.weight(1f))
                     }
                 }
             }
@@ -180,7 +181,7 @@ private fun LaunchSplitButton(state: CaramelLauncherState, onLaunch: () -> Unit)
 }
 
 @Composable
-private fun NewsCard(title: String, meta: String, art: List<Color>, modifier: Modifier) {
+private fun NewsCard(state: CaramelLauncherState, post: CaramelNewsInfo, art: List<Color>, modifier: Modifier) {
     GlassPanel(modifier, RoundedCornerShape(18.dp), elevation = 10.dp) {
         Column(Modifier.padding(6.dp)) {
             Box(
@@ -201,8 +202,18 @@ private fun NewsCard(title: String, meta: String, art: List<Color>, modifier: Mo
                 }
             }
             Column(Modifier.padding(10.dp), verticalArrangement = Arrangement.spacedBy(4.dp)) {
-                Text(title, style = T.Subtitle.copy(fontSize = 13.5.sp_), maxLines = 2)
-                Text(meta, style = T.Body, maxLines = 2)
+                Text(post.title, style = T.Subtitle.copy(fontSize = 13.5.sp_), maxLines = 2)
+                Text(post.meta, style = T.Body, maxLines = 2)
+                if (post.actionLabel.isNotEmpty() && post.actionUrl.isNotEmpty()) {
+                    // The card's own action, so the announcement is one tap from Home too.
+                    val label = post.actionLabel
+                    PrimaryButton(
+                        label,
+                        { state.webTitle = post.title; state.webUrl = post.actionUrl },
+                        tone = Tone.Yellow,
+                        height = 32,
+                    )
+                }
             }
         }
     }

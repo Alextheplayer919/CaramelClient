@@ -71,6 +71,7 @@ fun CaramelLauncherScreen(
             CaramelLauncherSettingsModal(state, settings)
         }
         CaramelInstanceSettingsModal(state, actions)
+        CaramelWebModal(state)
         CaramelToast(state)
     }
 }

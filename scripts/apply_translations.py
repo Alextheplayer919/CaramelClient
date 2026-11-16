@@ -51,6 +51,7 @@ BATCHES = [
     ROOT / "scripts/translations_caramel_settings.json",
     ROOT / "scripts/translations_caramel_perf.json",
     ROOT / "scripts/translations_caramel_promo.json",
+    ROOT / "scripts/translations_caramel_news_honey.json",
 ]
 
 STRING_RE = re.compile(r'<string name="([^"]+)"([^>]*)>(.*?)</string>', re.S)

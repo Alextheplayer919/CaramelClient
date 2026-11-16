@@ -1516,4 +1516,8 @@
     <string name="caramel_instance_pack_changer_desc">Добавить переключатель наборов ресурсов во внутриигровое меню модов для этого экземпляра.</string>
     <string name="caramel_instance_advanced_note">Это меняет то, как лаунчер запускает этот экземпляр. Сохраняется для каждого экземпляра и переживает переименование.</string>
     <string name="caramel_plus_no_payment">Вы попытались оплатить Caramel+, но разработчики ещё не настроили систему оплаты</string>
+    <string name="caramel_news_honey_title">HoneyClient скоро..</string>
+    <string name="caramel_news_honey_body">Новый клиент уже в пути. Нажмите ниже, чтобы увидеть, что создаёт HoneyClient.</string>
+    <string name="caramel_news_honey_meta">Объявление</string>
+    <string name="caramel_news_honey_button">Нажмите для подробностей!</string>
 </resources>

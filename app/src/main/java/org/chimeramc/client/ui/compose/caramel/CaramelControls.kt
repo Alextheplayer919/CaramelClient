@@ -66,6 +66,7 @@ enum class Tone(val top: Color, val bottom: Color, val on: Color) {
     Caramel(Color(0xFFFFBE5A), C.CaramelDark, Color.White),
     Blue(C.BlueLight, C.BlueDark, Color.White),
     Red(Color(0xFFFF6C7E), Color(0xFFD6344E), Color.White),
+    Yellow(C.Yellow, Color(0xFFD9A100), Color(0xFF3A2A00)),
 }
 
 /** The pack's `PrimaryButton`: a filled, gradient, glowing action. */

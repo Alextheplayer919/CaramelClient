@@ -1,0 +1,62 @@
+{
+  "es": {
+    "caramel_news_honey_title": "HoneyClient muy pronto..",
+    "caramel_news_honey_body": "Un nuevo cliente está en camino. Toca abajo para ver qué está creando HoneyClient.",
+    "caramel_news_honey_meta": "Anuncio",
+    "caramel_news_honey_button": "¡Tócame para más información!"
+  },
+  "fr": {
+    "caramel_news_honey_title": "HoneyClient bientôt disponible..",
+    "caramel_news_honey_body": "Un nouveau client arrive. Appuyez ci-dessous pour voir ce que prépare HoneyClient.",
+    "caramel_news_honey_meta": "Annonce",
+    "caramel_news_honey_button": "Cliquez pour plus d'informations !"
+  },
+  "hi": {
+    "caramel_news_honey_title": "HoneyClient जल्द आ रहा है..",
+    "caramel_news_honey_body": "एक नया क्लाइंट आ रहा है। HoneyClient क्या बना रहा है, यह देखने के लिए नीचे टैप करें।",
+    "caramel_news_honey_meta": "घोषणा",
+    "caramel_news_honey_button": "अधिक जानकारी के लिए मुझे क्लिक करें!"
+  },
+  "id": {
+    "caramel_news_honey_title": "HoneyClient segera hadir..",
+    "caramel_news_honey_body": "Klien baru sedang dalam perjalanan. Ketuk di bawah untuk melihat apa yang sedang dibuat HoneyClient.",
+    "caramel_news_honey_meta": "Pengumuman",
+    "caramel_news_honey_button": "Klik saya untuk informasi lebih lanjut!"
+  },
+  "ja": {
+    "caramel_news_honey_title": "HoneyClient 近日公開..",
+    "caramel_news_honey_body": "新しいクライアントが登場します。HoneyClient が何を作っているかは下をタップしてください。",
+    "caramel_news_honey_meta": "お知らせ",
+    "caramel_news_honey_button": "詳しくはこちらをクリック！"
+  },
+  "pt": {
+    "caramel_news_honey_title": "HoneyClient em breve..",
+    "caramel_news_honey_body": "Um novo cliente está a caminho. Toque abaixo para ver o que a HoneyClient está a criar.",
+    "caramel_news_honey_meta": "Anúncio",
+    "caramel_news_honey_button": "Clique para mais informações!"
+  },
+  "ru": {
+    "caramel_news_honey_title": "HoneyClient скоро..",
+    "caramel_news_honey_body": "Новый клиент уже в пути. Нажмите ниже, чтобы увидеть, что создаёт HoneyClient.",
+    "caramel_news_honey_meta": "Объявление",
+    "caramel_news_honey_button": "Нажмите для подробностей!"
+  },
+  "tr": {
+    "caramel_news_honey_title": "HoneyClient yakında..",
+    "caramel_news_honey_body": "Yeni bir istemci yolda. HoneyClient'ın neler yaptığını görmek için aşağıya dokunun.",
+    "caramel_news_honey_meta": "Duyuru",
+    "caramel_news_honey_button": "Daha fazla bilgi için tıklayın!"
+  },
+  "vi": {
+    "caramel_news_honey_title": "HoneyClient sắp ra mắt..",
+    "caramel_news_honey_body": "Một ứng dụng khách mới đang đến. Nhấn bên dưới để xem HoneyClient đang xây dựng gì.",
+    "caramel_news_honey_meta": "Thông báo",
+    "caramel_news_honey_button": "Nhấn vào tôi để biết thêm!"
+  },
+  "zh-rCN": {
+    "caramel_news_honey_title": "HoneyClient 即将推出..",
+    "caramel_news_honey_body": "一个新客户端即将到来。点击下方查看 HoneyClient 正在打造的内容。",
+    "caramel_news_honey_meta": "公告",
+    "caramel_news_honey_button": "点击我了解更多信息！"
+  }
+}

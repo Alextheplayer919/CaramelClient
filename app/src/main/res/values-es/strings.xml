@@ -1477,4 +1477,8 @@ La migración debe completarse antes de continuar con CaramelClient.</string>
     <string name="caramel_instance_pack_changer_desc">Añade un selector de paquetes de recursos al menú de mods en el juego para esta instancia.</string>
     <string name="caramel_instance_advanced_note">Esto cambia cómo el lanzador inicia esta instancia. Se guarda por instancia y sobrevive a un cambio de nombre.</string>
     <string name="caramel_plus_no_payment">Intentaste pagar Caramel+ pero los desarrolladores aún no han configurado un sistema de pago</string>
+    <string name="caramel_news_honey_title">HoneyClient muy pronto..</string>
+    <string name="caramel_news_honey_body">Un nuevo cliente está en camino. Toca abajo para ver qué está creando HoneyClient.</string>
+    <string name="caramel_news_honey_meta">Anuncio</string>
+    <string name="caramel_news_honey_button">¡Tócame para más información!</string>
 </resources>

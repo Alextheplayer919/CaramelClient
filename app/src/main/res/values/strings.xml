@@ -2800,6 +2800,10 @@ CaramelClient must complete the migration before continuing.</string>
     <string name="caramel_plus_no_payment">You tried to pay for Caramel+ but the developers haven\'t set up a payment system yet</string>
     <string name="caramel_no_news_title">No news yet</string>
     <string name="caramel_no_news_body">Posts appear here once the changelog loads.</string>
+    <string name="caramel_news_honey_title">HoneyClient coming soon..</string>
+    <string name="caramel_news_honey_body">A new client is on the way. Tap below to see what HoneyClient is building.</string>
+    <string name="caramel_news_honey_meta">Announcement</string>
+    <string name="caramel_news_honey_button">Click me for more information!</string>
     <string name="caramel_mods_sub">Browse, install and toggle mods for this instance</string>
     <string name="caramel_search_mods">Search mods</string>
     <string name="caramel_open_mods_folder">Open mods folder</string>

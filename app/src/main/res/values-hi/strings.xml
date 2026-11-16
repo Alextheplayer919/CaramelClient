@@ -1505,4 +1505,8 @@ CaramelClient जारी रखने से पहले माइग्र�
     <string name="caramel_instance_pack_changer_desc">इस इंस्टेंस के लिए इन-गेम मॉड मेनू में संसाधन पैक स्विचर जोड़ें।</string>
     <string name="caramel_instance_advanced_note">ये बदलते हैं कि लॉन्चर इस इंस्टेंस को कैसे शुरू करता है। ये प्रति इंस्टेंस सहेजे जाते हैं और नाम बदलने पर भी रहते हैं।</string>
     <string name="caramel_plus_no_payment">आपने Caramel+ के लिए भुगतान करने का प्रयास किया, लेकिन डेवलपर्स ने अभी तक भुगतान प्रणाली सेट नहीं की है</string>
+    <string name="caramel_news_honey_title">HoneyClient जल्द आ रहा है..</string>
+    <string name="caramel_news_honey_body">एक नया क्लाइंट आ रहा है। HoneyClient क्या बना रहा है, यह देखने के लिए नीचे टैप करें।</string>
+    <string name="caramel_news_honey_meta">घोषणा</string>
+    <string name="caramel_news_honey_button">अधिक जानकारी के लिए मुझे क्लिक करें!</string>
 </resources>
