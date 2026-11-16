@@ -1505,4 +1505,20 @@
     <string name="caramel_checking_updates">正在检查更新…</string>
     <string name="caramel_update_available_version">版本 %1$s 已可用。点击“下载更新”以安装。</string>
     <string name="caramel_update_check_failed">无法检查更新。请检查您的网络连接后重试。</string>
+    <string name="backup_retention_value">%1$d 个备份</string>
+    <string name="launcher_managed_mc_login_desc">在启动器内使用 Microsoft 账户登录 Minecraft，并在每次启动时复用该会话，无需在游戏中再次登录。</string>
+    <string name="keep_game_alive_title">让游戏在后台保持运行</string>
+    <string name="keep_game_alive_desc">在游戏会话期间保持前台服务和唤醒/Wi-Fi 锁定，使 Android 在你切换应用时不会冻结或结束游戏。会添加常驻通知并增加耗电。</string>
+    <string name="bg_image_picker_unavailable">此界面没有可用的图片选择器。</string>
+    <string name="settings_tab_storage">存储</string>
+    <string name="animation_speed">动画速度</string>
+    <string name="animation_speed_value">%1$.1fx</string>
+    <string name="ui_transparency">界面透明度</string>
+    <string name="ui_transparency_value">%1$d%%</string>
+    <string name="performance_preset_title">性能预设</string>
+    <string name="performance_preset_battery">省电</string>
+    <string name="performance_preset_balanced">均衡</string>
+    <string name="performance_preset_performance">性能</string>
+    <string name="performance_preset_note">这会设置下方的开关。单独更改其中任意一个，它会保留你的选择。</string>
+    <string name="file_picker_unavailable">此界面没有可用的文件选择器。</string>
 </resources>

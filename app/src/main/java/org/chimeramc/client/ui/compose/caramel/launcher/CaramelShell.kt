@@ -46,6 +46,7 @@ import org.chimeramc.client.R
 import org.chimeramc.client.ui.compose.caramel.C
 import org.chimeramc.client.ui.compose.caramel.CaramelAvatarPicture
 import org.chimeramc.client.ui.compose.caramel.CaramelBackdrop
+import org.chimeramc.client.ui.compose.caramel.CaramelBackgroundImage
 import org.chimeramc.client.ui.compose.caramel.CaramelLauncherState
 import org.chimeramc.client.ui.compose.caramel.CaramelPill
 import org.chimeramc.client.ui.compose.caramel.CaramelServerInfo
@@ -70,6 +71,7 @@ fun CaramelLauncherFrame(
 ) {
     Box(Modifier.fillMaxSize().background(C.Abyss)) {
         CaramelBackdrop()
+        CaramelBackgroundImage()
         Column(Modifier.fillMaxSize()) {
             CaramelTitleBar(state, onJoinServer)
             Row(

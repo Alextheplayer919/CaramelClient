@@ -1512,4 +1512,20 @@ CaramelClient जारी रखने से पहले माइग्र�
     <string name="caramel_checking_updates">अपडेट की जाँच की जा रही है…</string>
     <string name="caramel_update_available_version">संस्करण %1$s उपलब्ध है। इसे इंस्टॉल करने के लिए अपडेट डाउनलोड करें पर टैप करें।</string>
     <string name="caramel_update_check_failed">अपडेट की जाँच नहीं हो सकी। अपना कनेक्शन जाँचें और फिर से प्रयास करें।</string>
+    <string name="backup_retention_value">%1$d बैकअप</string>
+    <string name="launcher_managed_mc_login_desc">लॉन्चर के अंदर Microsoft खाते से Minecraft में साइन इन करें और हर लॉन्च पर वही सत्र दोबारा इस्तेमाल करें, बजाय गेम में फिर से साइन इन करने के।</string>
+    <string name="keep_game_alive_title">गेम को पृष्ठभूमि में चालू रखें</string>
+    <string name="keep_game_alive_desc">सत्र चलने के दौरान एक फ़ोरग्राउंड सेवा और वेक/Wi-Fi लॉक बनाए रखता है, ताकि ऐप बदलने पर Android गेम को फ़्रीज़ या बंद न करे। यह एक स्थायी सूचना जोड़ता है और अधिक बैटरी लेता है।</string>
+    <string name="bg_image_picker_unavailable">इस स्क्रीन पर कोई छवि चयनकर्ता उपलब्ध नहीं है।</string>
+    <string name="settings_tab_storage">संग्रहण</string>
+    <string name="animation_speed">एनिमेशन गति</string>
+    <string name="animation_speed_value">%1$.1fx</string>
+    <string name="ui_transparency">इंटरफ़ेस पारदर्शिता</string>
+    <string name="ui_transparency_value">%1$d%%</string>
+    <string name="performance_preset_title">प्रदर्शन प्रीसेट</string>
+    <string name="performance_preset_battery">बैटरी</string>
+    <string name="performance_preset_balanced">संतुलित</string>
+    <string name="performance_preset_performance">प्रदर्शन</string>
+    <string name="performance_preset_note">यह नीचे के टॉगल सेट करता है। इनमें से किसी को अलग से बदलें और यह आपकी पसंद बनाए रखता है।</string>
+    <string name="file_picker_unavailable">इस स्क्रीन पर कोई फ़ाइल चयनकर्ता उपलब्ध नहीं है।</string>
 </resources>

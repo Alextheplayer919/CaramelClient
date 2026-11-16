@@ -28,7 +28,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.ComposeView
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -64,6 +63,51 @@ class CaramelSettingsState {
     var reduceMotion by mutableStateOf(false)
     var haptics by mutableStateOf(true)
     var blurIntensity by mutableStateOf(50)
+    /** The motion speed multiplier (0.5..3.0) that scales every launcher animation. */
+    var animationSpeed by mutableStateOf(1f)
+    /** How opaque the glass cards are, 0..100. Lower lets the wallpaper through. */
+    var uiTransparency by mutableStateOf(85)
+    /** True when a custom launcher background image is stored. */
+    var backgroundImageSelected by mutableStateOf(false)
+    var backgroundImageBlur by mutableStateOf(0)
+    var backgroundImageBrightness by mutableStateOf(100)
+    /** How many instance backups to keep, 1..50. */
+    var backupRetention by mutableStateOf(5)
+    /** The chosen [org.chimeramc.client.launcher.settings.PerformancePresetManager.Preset] name. */
+    var performancePreset by mutableStateOf("BALANCED")
+    /** Whether equipped cosmetics are advertised to other Caramel users. */
+    var cosmeticSync by mutableStateOf(true)
+    /** Whether game data lives in the new shared content directory. */
+    var sharedStorageLayout by mutableStateOf(false)
+
+    /** Whether the scheduled world-backup feature is on. */
+    var worldBackupEnabled by mutableStateOf(false)
+    /** The backup interval in whole hours (1..168). */
+    var worldBackupIntervalHours by mutableStateOf(24)
+    /** How many backups of each world to keep. */
+    var worldBackupRetention by mutableStateOf(5)
+    /** The picked destination's display name, or the "no folder chosen" line. */
+    var worldBackupDestination by mutableStateOf("")
+    /** The next-run / last-result line under the schedule controls. */
+    var worldBackupStatus by mutableStateOf("")
+    /** True when the destination is granted, so "Back up now" can run. */
+    var worldBackupReady by mutableStateOf(false)
+
+    /** "Last update: <date>" for the SweetLoader runtime data. */
+    var runtimeDataStatus by mutableStateOf("")
+    /** Whether a runtime-data refresh is in flight, so the button can show it. */
+    var runtimeDataBusy by mutableStateOf(false)
+
+    /** The CurseForge key row: "Configured (abcd…)" or "No key configured". */
+    var curseForgeKeyStatus by mutableStateOf("")
+    /** The CurseForge key button's label: "Set key" or "Change". */
+    var curseForgeKeyAction by mutableStateOf("")
+
+    /** The migration section's status line. */
+    var migrationStatus by mutableStateOf("")
+    /** True when the historical directory can actually be cleaned. */
+    var migrationCleanupAvailable by mutableStateOf(false)
+
     /** The persisted BCP-47 language tag. */
     var languageTag by mutableStateOf("")
     /**
@@ -100,6 +144,26 @@ interface CaramelSettingsActions {
     fun setReduceMotion(reduce: Boolean)
     fun setHaptics(enabled: Boolean)
     fun setBlurIntensity(percent: Int)
+    fun setAnimationSpeed(speed: Float)
+    fun setUiTransparency(percent: Int)
+    fun pickBackgroundImage()
+    fun clearBackgroundImage()
+    fun setBackgroundImageBlur(px: Int)
+    fun setBackgroundImageBrightness(percent: Int)
+    fun setBackupRetention(keep: Int)
+    fun setPerformancePreset(name: String)
+    fun setCosmeticSync(enabled: Boolean)
+    fun setSharedStorageLayout(enabled: Boolean)
+    fun setWorldBackupEnabled(enabled: Boolean)
+    fun setWorldBackupIntervalHours(hours: Int)
+    fun setWorldBackupRetention(count: Int)
+    fun pickWorldBackupDestination()
+    fun runWorldBackupNow()
+    fun refreshRuntimeData()
+    fun editCurseForgeKey()
+    fun cleanHistoricalDirectory()
+    fun exportSettingsBackup()
+    fun importSettingsBackup()
     fun setLanguageTag(tag: String)
     fun setFlag(id: String, value: Boolean)
     fun checkForUpdates()
@@ -148,16 +212,12 @@ private fun SectionHeader(title: String) {
 /** The font keys and their translated labels, in catalogue order. */
 @Composable
 private fun fontCatalogue(): Pair<List<String>, List<String>> {
-    val context = LocalContext.current
-    return remember(context) {
-        val keys = mutableListOf<String>()
-        val labels = mutableListOf<String>()
-        for (entry in org.chimeramc.client.util.LauncherFonts.entries()) {
-            keys.add(entry.key)
-            labels.add(context.getString(entry.labelRes))
-        }
-        keys to labels
-    }
+    // stringResource, not Context.getString: the label must be re-read when the configuration
+    // (locale) changes, which a LocalContext read does not do.
+    val entries = remember { org.chimeramc.client.util.LauncherFonts.entries() }
+    val keys = remember(entries) { entries.map { it.key } }
+    val labels = entries.map { stringResource(it.labelRes) }
+    return keys to labels
 }
 
 /**
@@ -266,6 +326,68 @@ fun CaramelSettingsPanel(
                 { actions.setBlurIntensity((it * 100f).toInt()) },
             )
         }
+        if (matches(stringResource(R.string.animation_speed), stringResource(R.string.animation_speed))) {
+            SliderRow(
+                stringResource(R.string.animation_speed),
+                stringResource(R.string.animation_speed_value, state.animationSpeed),
+                (state.animationSpeed - 0.5f) / 2.5f,
+                { actions.setAnimationSpeed(0.5f + it * 2.5f) },
+            )
+        }
+        if (matches(stringResource(R.string.ui_transparency), stringResource(R.string.ui_transparency))) {
+            SliderRow(
+                stringResource(R.string.ui_transparency),
+                stringResource(R.string.ui_transparency_value, state.uiTransparency),
+                state.uiTransparency / 100f,
+                { actions.setUiTransparency((it * 100f).toInt()) },
+            )
+        }
+
+        // Background image: one row to pick or clear, and the two look controls that only apply
+        // while an image is set, so the panel never offers a slider that does nothing.
+        if (matches(stringResource(R.string.bg_image_title), stringResource(R.string.bg_image_desc))) {
+            SettingRow(
+                stringResource(R.string.bg_image_title),
+                stringResource(
+                    if (state.backgroundImageSelected) R.string.bg_image_selected
+                    else R.string.bg_image_desc
+                ),
+            ) {
+                Row(horizontalArrangement = Arrangement.spacedBy(6.dp)) {
+                    GlassButton(
+                        stringResource(R.string.select_image),
+                        actions::pickBackgroundImage,
+                        height = 34,
+                    )
+                    if (state.backgroundImageSelected) {
+                        GlassButton(
+                            stringResource(R.string.clear),
+                            actions::clearBackgroundImage,
+                            danger = true,
+                            height = 34,
+                        )
+                    }
+                }
+            }
+        }
+        if (state.backgroundImageSelected) {
+            if (matches(stringResource(R.string.bg_image_blur), stringResource(R.string.bg_image_blur))) {
+                SliderRow(
+                    stringResource(R.string.bg_image_blur),
+                    stringResource(R.string.bg_image_blur_value, state.backgroundImageBlur),
+                    state.backgroundImageBlur / 25f,
+                    { actions.setBackgroundImageBlur((it * 25f).toInt()) },
+                )
+            }
+            if (matches(stringResource(R.string.bg_image_brightness), stringResource(R.string.bg_image_brightness))) {
+                SliderRow(
+                    stringResource(R.string.bg_image_brightness),
+                    stringResource(R.string.bg_image_brightness_value, state.backgroundImageBrightness),
+                    (state.backgroundImageBrightness - 1) / 149f,
+                    { actions.setBackgroundImageBrightness((1 + it * 149f).toInt()) },
+                )
+            }
+        }
 
         val languageTitle = stringResource(R.string.language)
         if (matches(languageTitle, languageTitle)) {
@@ -282,10 +404,184 @@ fun CaramelSettingsPanel(
             }
         }
 
+        // The performance preset sets several switches at once, so it lives in its own section
+        // above them: the three choices are the store's own, and the note says what a preset is
+        // (a starting point) rather than implying it pins the individual switches.
+        val presetTitle = stringResource(R.string.performance_preset_title)
+        if (matches(presetTitle, stringResource(R.string.performance_preset_note))) {
+            SectionHeader(presetTitle)
+            SettingRow(presetTitle, stringResource(R.string.performance_preset_note)) {
+                Row(horizontalArrangement = Arrangement.spacedBy(6.dp)) {
+                    val presetNames = listOf(
+                        "BATTERY" to stringResource(R.string.performance_preset_battery),
+                        "BALANCED" to stringResource(R.string.performance_preset_balanced),
+                        "PERFORMANCE" to stringResource(R.string.performance_preset_performance),
+                    )
+                    presetNames.forEach { (id, label) ->
+                        FilterChip(label, state.performancePreset == id, { actions.setPerformancePreset(id) })
+                    }
+                }
+            }
+        }
+
+        // Storage and retention. Both write to stores outside FeatureSettings, so they are drawn
+        // here rather than carried in the registry's flag list.
+        val storageTitle = stringResource(R.string.settings_tab_storage)
+        if (matches(storageTitle, storageTitle)) {
+            SectionHeader(storageTitle)
+            if (matches(stringResource(R.string.backup_retention_title), stringResource(R.string.backup_retention_desc))) {
+                SliderRow(
+                    stringResource(R.string.backup_retention_title),
+                    stringResource(R.string.backup_retention_value, state.backupRetention),
+                    (state.backupRetention - 1) / 49f,
+                    { actions.setBackupRetention((1 + it * 49f).toInt()) },
+                )
+            }
+            if (matches(stringResource(R.string.shared_storage_layout_title), stringResource(R.string.shared_storage_layout_desc))) {
+                ToggleRow(
+                    stringResource(R.string.shared_storage_layout_title),
+                    stringResource(R.string.shared_storage_layout_desc),
+                    state.sharedStorageLayout,
+                ) { actions.setSharedStorageLayout(it) }
+            }
+            if (matches(stringResource(R.string.settings_backup_title), stringResource(R.string.settings_backup_desc))) {
+                SettingRow(
+                    stringResource(R.string.settings_backup_title),
+                    stringResource(R.string.settings_backup_desc),
+                ) {
+                    Row(horizontalArrangement = Arrangement.spacedBy(6.dp)) {
+                        GlassButton(
+                            stringResource(R.string.settings_backup_export),
+                            actions::exportSettingsBackup,
+                            height = 34,
+                        )
+                        GlassButton(
+                            stringResource(R.string.settings_backup_import),
+                            actions::importSettingsBackup,
+                            height = 34,
+                        )
+                    }
+                }
+                Text(stringResource(R.string.settings_backup_note), style = T.Body)
+            }
+        }
+
+        // Scheduled world backups: the switch, the interval, the destination and "Back up now".
+        // The status line under them is the same value the scheduler uses, so the panel cannot
+        // claim a backup is scheduled when the alarm was never set.
+        val worldBackupTitle = stringResource(R.string.settings_world_backup_title)
+        if (matches(worldBackupTitle, stringResource(R.string.settings_world_backup_desc))) {
+            SectionHeader(worldBackupTitle)
+            SettingRow(worldBackupTitle, stringResource(R.string.settings_world_backup_desc)) {
+                CaramelToggle(state.worldBackupEnabled, actions::setWorldBackupEnabled)
+            }
+            if (state.worldBackupEnabled) {
+                if (matches(stringResource(R.string.settings_world_backup_interval), stringResource(R.string.settings_world_backup_interval))) {
+                    SettingRow(stringResource(R.string.settings_world_backup_interval), null) {
+                        Row(horizontalArrangement = Arrangement.spacedBy(6.dp)) {
+                            val intervals = listOf(
+                                24 to stringResource(R.string.settings_world_backup_interval_daily),
+                                72 to stringResource(R.string.settings_world_backup_interval_3_days),
+                                168 to stringResource(R.string.settings_world_backup_interval_weekly),
+                            )
+                            intervals.forEach { (hours, label) ->
+                                FilterChip(
+                                    label,
+                                    state.worldBackupIntervalHours == hours,
+                                    { actions.setWorldBackupIntervalHours(hours) },
+                                )
+                            }
+                        }
+                    }
+                }
+                if (matches(stringResource(R.string.settings_world_backup_destination), stringResource(R.string.settings_world_backup_destination))) {
+                    SettingRow(
+                        stringResource(R.string.settings_world_backup_destination),
+                        state.worldBackupDestination,
+                    ) {
+                        GlassButton(
+                            stringResource(R.string.settings_world_backup_destination_pick),
+                            actions::pickWorldBackupDestination,
+                            height = 34,
+                        )
+                    }
+                }
+                SliderRow(
+                    stringResource(R.string.settings_world_backup_retention),
+                    stringResource(R.string.backup_retention_value, state.worldBackupRetention),
+                    (state.worldBackupRetention - 1) / 49f,
+                    { actions.setWorldBackupRetention((1 + it * 49f).toInt()) },
+                )
+                SettingRow(stringResource(R.string.settings_world_backup_back_up_now), state.worldBackupStatus) {
+                    GlassButton(
+                        stringResource(R.string.settings_world_backup_back_up_now),
+                        actions::runWorldBackupNow,
+                        enabled = state.worldBackupReady,
+                        height = 34,
+                    )
+                }
+            } else {
+                Text(stringResource(R.string.settings_world_backup_disabled), style = T.Body)
+            }
+        }
+
+        // Runtime data and the CurseForge key: both live outside FeatureSettings, so they are
+        // drawn here rather than carried as registry flags.
+        if (matches(stringResource(R.string.sweetloader_sigs_title), stringResource(R.string.sweetloader_sigs_last_update))) {
+            SectionHeader(stringResource(R.string.sweetloader_sigs_title))
+            SettingRow(
+                stringResource(R.string.sweetloader_sigs_update),
+                state.runtimeDataStatus,
+            ) {
+                GlassButton(
+                    stringResource(R.string.sweetloader_sigs_update),
+                    actions::refreshRuntimeData,
+                    enabled = !state.runtimeDataBusy,
+                    height = 34,
+                )
+            }
+        }
+        if (matches(stringResource(R.string.curseforge_api_key_title), state.curseForgeKeyStatus)) {
+            SettingRow(
+                stringResource(R.string.curseforge_api_key_title),
+                state.curseForgeKeyStatus,
+            ) {
+                GlassButton(state.curseForgeKeyAction, actions::editCurseForgeKey, height = 34)
+            }
+        }
+
+        // Migration: the historical-directory cleanup, drawn only when there is something to say.
+        val migrationTitle = stringResource(R.string.settings_tab_migration)
+        if (matches(migrationTitle, migrationTitle)
+            || matches(stringResource(R.string.migration_cleanup_title), stringResource(R.string.migration_cleanup_desc))) {
+            SectionHeader(migrationTitle)
+            SettingRow(
+                stringResource(R.string.migration_cleanup_title),
+                state.migrationStatus,
+            ) {
+                GlassButton(
+                    stringResource(R.string.migration_cleanup_button),
+                    actions::cleanHistoricalDirectory,
+                    danger = true,
+                    enabled = state.migrationCleanupAvailable,
+                    height = 34,
+                )
+            }
+        }
+
         val clientTitle = stringResource(R.string.caramel_section_client)
         val visibleFlags = state.flags.filter { matches(it.title, it.desc) }
-        if (visibleFlags.isNotEmpty()) {
+        val cosmeticSyncTitle = stringResource(R.string.cosmetics_sync_setting_title)
+        val showCosmeticSync = matches(cosmeticSyncTitle, stringResource(R.string.cosmetics_sync_setting_desc))
+        if (visibleFlags.isNotEmpty() || showCosmeticSync) {
             SectionHeader(clientTitle)
+            if (showCosmeticSync) {
+                ToggleRow(
+                    cosmeticSyncTitle,
+                    stringResource(R.string.cosmetics_sync_setting_desc),
+                    state.cosmeticSync,
+                ) { actions.setCosmeticSync(it) }
+            }
             visibleFlags.forEach { flag ->
                 ToggleRow(flag.title, flag.desc, flag.value) { actions.setFlag(flag.id, it) }
             }

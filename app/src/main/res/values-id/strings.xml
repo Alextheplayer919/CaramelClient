@@ -1508,4 +1508,20 @@ Migrasi harus selesai sebelum CaramelClient dapat melanjutkan.</string>
     <string name="caramel_checking_updates">Memeriksa pembaruan…</string>
     <string name="caramel_update_available_version">Versi %1$s tersedia. Ketuk Unduh Pembaruan untuk memasangnya.</string>
     <string name="caramel_update_check_failed">Tidak dapat memeriksa pembaruan. Periksa koneksi Anda dan coba lagi.</string>
+    <string name="backup_retention_value">%1$d cadangan</string>
+    <string name="launcher_managed_mc_login_desc">Masuk ke Minecraft dengan akun Microsoft di dalam launcher dan gunakan kembali sesi itu pada setiap peluncuran, alih-alih masuk lagi di dalam game.</string>
+    <string name="keep_game_alive_title">Biarkan game tetap hidup di latar belakang</string>
+    <string name="keep_game_alive_desc">Menahan layanan latar depan serta kunci bangun/Wi-Fi selama sesi berjalan, agar Android tidak membekukan atau menutup game saat Anda berpindah aplikasi. Menambah notifikasi tetap dan memakai lebih banyak baterai.</string>
+    <string name="bg_image_picker_unavailable">Tidak ada pemilih gambar yang tersedia di layar ini.</string>
+    <string name="settings_tab_storage">Penyimpanan</string>
+    <string name="animation_speed">Kecepatan Animasi</string>
+    <string name="animation_speed_value">%1$.1fx</string>
+    <string name="ui_transparency">Transparansi Antarmuka</string>
+    <string name="ui_transparency_value">%1$d%%</string>
+    <string name="performance_preset_title">Preset performa</string>
+    <string name="performance_preset_battery">Baterai</string>
+    <string name="performance_preset_balanced">Seimbang</string>
+    <string name="performance_preset_performance">Performa</string>
+    <string name="performance_preset_note">Ini mengatur tombol di bawah. Ubah salah satunya secara terpisah dan pilihanmu tetap tersimpan.</string>
+    <string name="file_picker_unavailable">Tidak ada pemilih berkas yang tersedia di layar ini.</string>
 </resources>

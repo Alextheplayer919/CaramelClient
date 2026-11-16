@@ -6,7 +6,9 @@ import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.scaleIn
 import androidx.compose.animation.scaleOut
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Canvas
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -29,7 +31,11 @@ import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.Shape
+import androidx.compose.ui.graphics.asImageBitmap
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 
@@ -60,15 +66,19 @@ fun GlassPanel(
     // so the only honest knob is how much light the layered fills hold. A low strength reads as a
     // near-flat card, a high one as heavier glass; neither claims a blur the platform cannot do.
     val glass = caramelPrefs.glassStrength
+    // "UI Transparency" is the base fill's opacity. It stops at 0.30 rather than 0, because a
+    // fully transparent panel puts its label straight on the backdrop and the text stops being
+    // readable; the last third of the slider is where the surface is already as thin as it can go.
+    val fill = 0.30f + 0.70f * caramelPrefs.uiTransparency.coerceIn(0f, 1f)
     Box(
         modifier
             .shadow(elevation, shape, ambientColor = Color.Black, spotColor = Color(0xFF00010F))
             .clip(shape)
-            .background(C.Navy)
-            .background(tint.copy(alpha = tint.alpha * glass))
+            .background(C.Navy.copy(alpha = fill))
+            .background(tint.copy(alpha = tint.alpha * glass * fill))
             .background(
                 Brush.verticalGradient(
-                    listOf(Color.White.copy(0.075f * glass), Color.White.copy(0.015f * glass)),
+                    listOf(Color.White.copy(0.075f * glass * fill), Color.White.copy(0.015f * glass * fill)),
                 ),
             )
             .border(
@@ -112,6 +122,54 @@ fun CaramelBackdrop(modifier: Modifier = Modifier) {
     }
 }
 
+/** The duration a decorative transition should take, honouring the user's Animation Speed. */
+@Composable
+fun caramelMotionMs(baseMs: Int): Int {
+    val speed = caramelPrefs.animationSpeed.coerceIn(0.5f, 3f)
+    return (baseMs / speed).toInt().coerceAtLeast(1)
+}
+
+/**
+ * Draws the user's chosen launcher background, when there is one.
+ *
+ * <p>Android Compose has no backdrop blur, so "blur" is honest here too: the blur slider scales a
+ * translucent navy scrim over the image (a soft veil) rather than a real blur pass, and brightness
+ * is a colour filter. The image itself is scaled to fill, cropped to the centre. When no image is
+ * stored this draws nothing and the navy backdrop shows through.
+ */
+@Composable
+fun CaramelBackgroundImage(modifier: Modifier = Modifier) {
+    val context = LocalContext.current
+    val pm = remember(context) { org.chimeramc.client.util.PersonalizationManager(context) }
+    // Re-read on every store change: the panel can pick, clear or restyle the image while this
+    // composition is alive, and without the key it would keep drawing the first image it decoded.
+    val generation = CaramelPersonalizationSignal.generation
+    val bitmap = remember(context, generation) {
+        try {
+            if (pm.hasBackgroundImage()) pm.loadBackgroundBitmap() else null
+        } catch (t: Throwable) {
+            null
+        }
+    }
+    if (bitmap == null) return
+    val brightness = pm.getBackgroundImageBrightness() / 100f
+    val veil = (pm.getBackgroundImageBlur() / 25f) * 0.5f
+    Box(modifier.fillMaxSize()) {
+        Image(
+            bitmap = bitmap.asImageBitmap(),
+            contentDescription = null,
+            contentScale = ContentScale.Crop,
+            colorFilter = ColorFilter.tint(
+                Color(0xFF050918).copy(alpha = (1f - brightness).coerceIn(0f, 0.9f)),
+            ),
+            modifier = Modifier.fillMaxSize(),
+        )
+        if (veil > 0f) {
+            Box(Modifier.fillMaxSize().background(Color(0xFF070D22).copy(alpha = veil)))
+        }
+    }
+}
+
 /** Dimmed scrim plus a centred glass modal with a scale/fade entrance, from the pack's `Modal`. */
 @Composable
 fun CaramelModal(
@@ -125,7 +183,9 @@ fun CaramelModal(
     // do while reading a dialog — threw it away. The scrim still swallows the tap so it cannot
     // reach the screen behind, it just no longer closes the dialog.
     BackHandler(enabled = visible) { onDismiss() }
-    AnimatedVisibility(visible, enter = fadeIn(), exit = fadeOut()) {
+    val fade = tween<Float>(durationMillis = caramelMotionMs(160))
+    val scale = tween<Float>(durationMillis = caramelMotionMs(160))
+    AnimatedVisibility(visible, enter = fadeIn(fade), exit = fadeOut(fade)) {
         Box(
             Modifier
                 .fillMaxSize()
@@ -135,8 +195,8 @@ fun CaramelModal(
         ) {
             AnimatedVisibility(
                 visible,
-                enter = scaleIn(initialScale = 0.96f) + fadeIn(),
-                exit = scaleOut(targetScale = 0.97f) + fadeOut(),
+                enter = scaleIn(scale, initialScale = 0.96f) + fadeIn(fade),
+                exit = scaleOut(scale, targetScale = 0.97f) + fadeOut(fade),
             ) {
                 GlassPanel(
                     modifier.clickable(remember { MutableInteractionSource() }, null) {},

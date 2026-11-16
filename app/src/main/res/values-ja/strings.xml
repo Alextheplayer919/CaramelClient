@@ -1481,4 +1481,20 @@ CaramelClient を続行するには移行を完了する必要があります。
     <string name="caramel_checking_updates">アップデートを確認しています…</string>
     <string name="caramel_update_available_version">バージョン %1$s が利用可能です。インストールするには「アップデートをダウンロード」をタップします。</string>
     <string name="caramel_update_check_failed">アップデートを確認できませんでした。接続を確認して再試行してください。</string>
+    <string name="backup_retention_value">バックアップ %1$d 件</string>
+    <string name="launcher_managed_mc_login_desc">ランチャー内で Microsoft アカウントを使って Minecraft にサインインし、起動のたびにそのセッションを再利用します。ゲーム内で再度サインインする必要はありません。</string>
+    <string name="keep_game_alive_title">バックグラウンドでゲームを維持</string>
+    <string name="keep_game_alive_desc">セッション中はフォアグラウンドサービスと wake/Wi-Fi ロックを保持し、アプリを切り替えても Android がゲームを凍結・終了しないようにします。常駐通知が追加され、バッテリー消費が増えます。</string>
+    <string name="bg_image_picker_unavailable">この画面では画像選択を利用できません。</string>
+    <string name="settings_tab_storage">ストレージ</string>
+    <string name="animation_speed">アニメーション速度</string>
+    <string name="animation_speed_value">%1$.1fx</string>
+    <string name="ui_transparency">UI の透明度</string>
+    <string name="ui_transparency_value">%1$d%%</string>
+    <string name="performance_preset_title">パフォーマンス プリセット</string>
+    <string name="performance_preset_battery">バッテリー</string>
+    <string name="performance_preset_balanced">バランス</string>
+    <string name="performance_preset_performance">パフォーマンス</string>
+    <string name="performance_preset_note">下のスイッチをまとめて設定します。個別に変更すると、その選択が保持されます。</string>
+    <string name="file_picker_unavailable">この画面ではファイル選択を利用できません。</string>
 </resources>

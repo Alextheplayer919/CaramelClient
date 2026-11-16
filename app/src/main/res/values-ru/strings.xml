@@ -1523,4 +1523,20 @@
     <string name="caramel_checking_updates">Проверка обновлений…</string>
     <string name="caramel_update_available_version">Доступна версия %1$s. Нажмите «Скачать обновление», чтобы установить её.</string>
     <string name="caramel_update_check_failed">Не удалось проверить обновления. Проверьте подключение и повторите попытку.</string>
+    <string name="backup_retention_value">Резервных копий: %1$d</string>
+    <string name="launcher_managed_mc_login_desc">Войдите в Minecraft с учётной записью Microsoft прямо в лаунчере и используйте этот сеанс при каждом запуске вместо повторного входа в игре.</string>
+    <string name="keep_game_alive_title">Держать игру активной в фоне</string>
+    <string name="keep_game_alive_desc">Удерживает службу переднего плана и блокировки wake/Wi-Fi во время сеанса, чтобы Android не замораживал и не закрывал игру при переключении приложений. Добавляет постоянное уведомление и расходует больше батареи.</string>
+    <string name="bg_image_picker_unavailable">На этом экране выбор изображений недоступен.</string>
+    <string name="settings_tab_storage">Хранилище</string>
+    <string name="animation_speed">Скорость анимации</string>
+    <string name="animation_speed_value">%1$.1fx</string>
+    <string name="ui_transparency">Прозрачность интерфейса</string>
+    <string name="ui_transparency_value">%1$d%%</string>
+    <string name="performance_preset_title">Профиль производительности</string>
+    <string name="performance_preset_battery">Батарея</string>
+    <string name="performance_preset_balanced">Сбалансированный</string>
+    <string name="performance_preset_performance">Производительность</string>
+    <string name="performance_preset_note">Это задаёт переключатели ниже. Измените любой из них отдельно — ваш выбор сохранится.</string>
+    <string name="file_picker_unavailable">На этом экране выбор файлов недоступен.</string>
 </resources>

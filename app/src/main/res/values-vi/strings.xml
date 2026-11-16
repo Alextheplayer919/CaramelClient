@@ -1514,4 +1514,20 @@ Quá trình chuyển đổi phải hoàn tất trước khi CaramelClient có th
     <string name="caramel_checking_updates">Đang kiểm tra bản cập nhật…</string>
     <string name="caramel_update_available_version">Đã có phiên bản %1$s. Nhấn Tải bản cập nhật để cài đặt.</string>
     <string name="caramel_update_check_failed">Không thể kiểm tra bản cập nhật. Hãy kiểm tra kết nối và thử lại.</string>
+    <string name="backup_retention_value">%1$d bản sao lưu</string>
+    <string name="launcher_managed_mc_login_desc">Đăng nhập Minecraft bằng tài khoản Microsoft ngay trong trình khởi chạy và dùng lại phiên đó ở mỗi lần khởi chạy, thay vì đăng nhập lại trong game.</string>
+    <string name="keep_game_alive_title">Giữ game chạy nền</string>
+    <string name="keep_game_alive_desc">Giữ một dịch vụ chạy nền trước và khóa đánh thức/Wi-Fi trong suốt phiên, để Android không đóng băng hay đóng game khi bạn chuyển ứng dụng. Thêm một thông báo thường trực và tốn nhiều pin hơn.</string>
+    <string name="bg_image_picker_unavailable">Không có trình chọn ảnh nào khả dụng trên màn hình này.</string>
+    <string name="settings_tab_storage">Lưu trữ</string>
+    <string name="animation_speed">Tốc độ hoạt ảnh</string>
+    <string name="animation_speed_value">%1$.1fx</string>
+    <string name="ui_transparency">Độ trong suốt giao diện</string>
+    <string name="ui_transparency_value">%1$d%%</string>
+    <string name="performance_preset_title">Cài đặt sẵn hiệu năng</string>
+    <string name="performance_preset_battery">Pin</string>
+    <string name="performance_preset_balanced">Cân bằng</string>
+    <string name="performance_preset_performance">Hiệu năng</string>
+    <string name="performance_preset_note">Mục này đặt các công tắc bên dưới. Nếu bạn thay đổi riêng từng cái, lựa chọn của bạn vẫn được giữ.</string>
+    <string name="file_picker_unavailable">Không có trình chọn tệp nào khả dụng trên màn hình này.</string>
 </resources>

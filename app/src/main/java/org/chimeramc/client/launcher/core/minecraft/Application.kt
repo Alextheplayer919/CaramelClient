@@ -73,6 +73,11 @@ class LauncherApplication : Application() {
             org.chimeramc.client.util.PersonalizationManager(applicationContext)
                 .isHapticFeedbackEnabled()
         )
+        // Same for the animation speed: DynamicAnim reads its multiplier on every press, so seeding
+        // it at process start is what makes the persisted speed apply to the first dialog too.
+        org.chimeramc.client.ui.animation.DynamicAnim.setGlobalSpeedMultiplier(
+            org.chimeramc.client.util.PersonalizationManager(applicationContext).animationSpeed
+        )
         // A migrated instance whose storage-migration foreground service was killed mid-run leaves
         // the running flag set; a fresh process is proof the run died, so record the interruption
         // and clear the flag before the launcher can blind-resume it on the next launch.

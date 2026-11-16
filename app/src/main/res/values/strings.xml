@@ -741,6 +741,13 @@ CaramelClient must complete the migration before continuing.</string>
     <string name="streaming_safe_title">Streaming-safe mode</string>
     <string name="backup_retention_title">Instance backup retention</string>
     <string name="backup_retention_desc">How many backups to keep per instance. Older backups past this number are deleted automatically after each new backup.</string>
+    <string name="backup_retention_value">%1$d backups</string>
+    <string name="launcher_managed_mc_login_desc">Sign in to Minecraft with a Microsoft account inside the launcher and reuse that session on every launch, instead of signing in again in the game.</string>
+    <string name="keep_game_alive_title">Keep the game alive in the background</string>
+    <string name="keep_game_alive_desc">Hold a foreground service and wake/Wi-Fi locks while a session runs, so Android does not freeze or kill the game when you switch apps. Adds an ongoing notification and uses more battery.</string>
+    <string name="bg_image_picker_unavailable">No image picker is available on this screen.</string>
+    <string name="file_picker_unavailable">No file picker is available on this screen.</string>
+    <string name="settings_tab_storage">Storage</string>
     <string name="streaming_safe_desc">Masks account names, world coordinates and server addresses in overlays and in copied debug info, so a stream or a screenshot does not reveal where you are or who you are.</string>
     <string name="low_input_delay_title">Low Input Delay</string>
     <string name="low_input_delay_desc">Reduces input lag the launcher controls: controller profiles use a tightened dead zone and a faster response curve so the same stick travel turns further, controller event handling does no locking, and idle overlay redraws are skipped</string>

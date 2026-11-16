@@ -49,6 +49,7 @@ BATCHES = [
     ROOT / "scripts/translations_caramel_mods_folder.json",
     ROOT / "scripts/translations_caramel_servers.json",
     ROOT / "scripts/translations_caramel_settings.json",
+    ROOT / "scripts/translations_caramel_settings_missing.json",
     ROOT / "scripts/translations_caramel_perf.json",
     ROOT / "scripts/translations_caramel_promo.json",
     ROOT / "scripts/translations_caramel_news_honey.json",

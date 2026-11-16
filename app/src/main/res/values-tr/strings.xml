@@ -1511,4 +1511,20 @@ CaramelClient\'ın devam edebilmesi için taşımanın tamamlanması gerekiyor.<
     <string name="caramel_checking_updates">Güncellemeler denetleniyor…</string>
     <string name="caramel_update_available_version">%1$s sürümü mevcut. Yüklemek için Güncellemeyi indir öğesine dokunun.</string>
     <string name="caramel_update_check_failed">Güncellemeler denetlenemedi. Bağlantınızı kontrol edip yeniden deneyin.</string>
+    <string name="backup_retention_value">%1$d yedek</string>
+    <string name="launcher_managed_mc_login_desc">Minecraft\'a başlatıcı içinden bir Microsoft hesabıyla giriş yapın ve her başlatmada bu oturumu yeniden kullanın; oyunda tekrar giriş yapmanız gerekmez.</string>
+    <string name="keep_game_alive_title">Oyunu arka planda açık tut</string>
+    <string name="keep_game_alive_desc">Bir oturum sürerken ön plan hizmeti ile uyandırma/Wi-Fi kilitlerini tutar; böylece uygulama değiştirdiğinizde Android oyunu dondurmaz veya kapatmaz. Kalıcı bir bildirim ekler ve daha fazla pil tüketir.</string>
+    <string name="bg_image_picker_unavailable">Bu ekranda kullanılabilir bir görsel seçici yok.</string>
+    <string name="settings_tab_storage">Depolama</string>
+    <string name="animation_speed">Animasyon Hızı</string>
+    <string name="animation_speed_value">%1$.1fx</string>
+    <string name="ui_transparency">Arayüz Saydamlığı</string>
+    <string name="ui_transparency_value">%1$d%%</string>
+    <string name="performance_preset_title">Performans ön ayarı</string>
+    <string name="performance_preset_battery">Pil</string>
+    <string name="performance_preset_balanced">Dengeli</string>
+    <string name="performance_preset_performance">Performans</string>
+    <string name="performance_preset_note">Bu, aşağıdaki anahtarları ayarlar. Bunlardan birini tek başına değiştirirseniz seçiminiz korunur.</string>
+    <string name="file_picker_unavailable">Bu ekranda kullanılabilir bir dosya seçici yok.</string>
 </resources>

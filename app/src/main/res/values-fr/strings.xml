@@ -1484,4 +1484,20 @@ La migration doit être terminée avant de continuer avec CaramelClient.</string
     <string name="caramel_checking_updates">Recherche de mises à jour…</string>
     <string name="caramel_update_available_version">La version %1$s est disponible. Appuyez sur Télécharger la mise à jour pour l\'installer.</string>
     <string name="caramel_update_check_failed">Impossible de rechercher des mises à jour. Vérifiez votre connexion et réessayez.</string>
+    <string name="backup_retention_value">%1$d sauvegardes</string>
+    <string name="launcher_managed_mc_login_desc">Connectez-vous à Minecraft avec un compte Microsoft dans le lanceur et réutilisez cette session à chaque lancement, au lieu de vous reconnecter dans le jeu.</string>
+    <string name="keep_game_alive_title">Garder le jeu actif en arrière-plan</string>
+    <string name="keep_game_alive_desc">Maintient un service au premier plan et des verrous d\'éveil/Wi-Fi pendant une session, pour qu\'Android ne gèle pas et ne ferme pas le jeu lorsque vous changez d\'application. Ajoute une notification permanente et consomme plus de batterie.</string>
+    <string name="bg_image_picker_unavailable">Aucun sélecteur d\'images n\'est disponible sur cet écran.</string>
+    <string name="settings_tab_storage">Stockage</string>
+    <string name="animation_speed">Vitesse d\'animation</string>
+    <string name="animation_speed_value">%1$.1fx</string>
+    <string name="ui_transparency">Transparence de l\'interface</string>
+    <string name="ui_transparency_value">%1$d%%</string>
+    <string name="performance_preset_title">Profil de performance</string>
+    <string name="performance_preset_battery">Batterie</string>
+    <string name="performance_preset_balanced">Équilibré</string>
+    <string name="performance_preset_performance">Performance</string>
+    <string name="performance_preset_note">Ceci règle les interrupteurs ci-dessous. Si vous en changez un séparément, votre choix est conservé.</string>
+    <string name="file_picker_unavailable">Aucun sélecteur de fichiers n\'est disponible sur cet écran.</string>
 </resources>
