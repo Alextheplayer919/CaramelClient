@@ -123,7 +123,7 @@ private fun CaramelTitleBar(state: CaramelLauncherState, onJoinServer: (CaramelS
             Spacer(Modifier.width(6.dp))
         }
         Spacer(Modifier.weight(1f))
-        Text(stringResource(R.string.caramel_instances_running, state.runningInstances), style = T.Caption)
+        Text(stringResource(R.string.caramel_instances_running, state.instancesCount), style = T.Caption)
         CaramelPill(onClick = { state.accountMenu = !state.accountMenu }) {
             if (state.signedIn) {
                 CaramelAvatarPicture(state.accountAvatarUrl, 20, online = true)

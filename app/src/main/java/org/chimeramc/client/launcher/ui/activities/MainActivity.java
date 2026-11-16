@@ -32,7 +32,6 @@ import org.chimeramc.client.core.xbox.XboxPeopleHub;
 import org.chimeramc.client.core.xbox.XboxSocial;
 import org.chimeramc.client.core.xbox.CaramelIdentity;
 import org.chimeramc.client.core.minecraft.InstanceOptionsStore;
-import org.chimeramc.client.core.minecraft.MinecraftActivityState;
 import org.chimeramc.client.core.minecraft.PerfFeatureCatalog;
 import org.chimeramc.client.core.minecraft.MinecraftLauncher;
 import org.chimeramc.client.core.mods.Mod;
@@ -327,7 +326,10 @@ public class MainActivity extends BaseActivity implements CaramelLauncherHost.Ac
             s.setFriendsStatus("");
             loadFriends();
         }
-        s.setRunningInstances(MinecraftActivityState.isRunning(this) ? 1 : 0);
+        // The count the title bar shows is the number of instances the launcher knows about, not a
+        // mid-game flag. The old value was "is the game running", which is false almost always, so
+        // the title bar read "0 instances" for a user with a full list of them.
+        s.setInstancesCount(s.getVersions().size());
         s.setLaunchEnabled(selected != null);
         s.setMods(buildMods());
         s.setCosmetics(buildCosmetics());

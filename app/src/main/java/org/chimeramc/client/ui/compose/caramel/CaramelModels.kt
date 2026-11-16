@@ -130,7 +130,13 @@ class CaramelLauncherState {
 
     /** The signed-in account's profile picture URL (Xbox), empty when unknown or signed out. */
     var accountAvatarUrl by mutableStateOf("")
-    var runningInstances by mutableStateOf(0)
+    /**
+     * How many instances the launcher knows about — installed plus imported custom ones.
+     *
+     * <p>This is the number the title bar shows. It used to be a running-game flag, so it read
+     * "0 instances" for every user who was not mid-game, which is everyone almost all of the time.
+     */
+    var instancesCount by mutableStateOf(0)
     var launchEnabled by mutableStateOf(false)
     var launching by mutableStateOf(false)
 
