@@ -1539,4 +1539,6 @@ CaramelClient\'ın devam edebilmesi için taşımanın tamamlanması gerekiyor.<
     <string name="caramel_about_fact_hacks">Bu istemci başta sadece hileler içindi.</string>
     <string name="caramel_about_fact_broken">Bu istemciyi sayısız kez bozduk.</string>
     <string name="caramel_about_fact_best">Elde edebileceğiniz en iyi Bedrock deneyimi.</string>
+    <string name="caramel_loader_unavailable">Bu ön yükleyici henüz yapılmadı.</string>
+    <string name="caramel_loaders_note">Yalnızca SweetLoader hazır. RustyLoader ve LightningLoader henüz hazır değil.</string>
 </resources>

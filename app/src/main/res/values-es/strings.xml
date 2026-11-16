@@ -1512,4 +1512,6 @@ La migración debe completarse antes de continuar con CaramelClient.</string>
     <string name="caramel_about_fact_hacks">Este cliente al principio era solo para hacks.</string>
     <string name="caramel_about_fact_broken">Rompimos este cliente muchísimas veces.</string>
     <string name="caramel_about_fact_best">La mejor experiencia de Bedrock que puedes tener.</string>
+    <string name="caramel_loader_unavailable">Este precargador aún no está creado.</string>
+    <string name="caramel_loaders_note">Solo SweetLoader está creado. RustyLoader y LightningLoader aún no están listos.</string>
 </resources>

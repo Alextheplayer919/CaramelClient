@@ -1540,4 +1540,6 @@ CaramelClient जारी रखने से पहले माइग्र�
     <string name="caramel_about_fact_hacks">यह क्लाइंट शुरू में सिर्फ़ हैक्स के लिए था।</string>
     <string name="caramel_about_fact_broken">हमने इस क्लाइंट को बहुत बार तोड़ा।</string>
     <string name="caramel_about_fact_best">सबसे बेहतरीन Bedrock अनुभव जो आपको मिल सकता है।</string>
+    <string name="caramel_loader_unavailable">यह प्रीलोडर अभी बनाया नहीं गया है।</string>
+    <string name="caramel_loaders_note">केवल SweetLoader बना है। RustyLoader और LightningLoader अभी तैयार नहीं हैं।</string>
 </resources>

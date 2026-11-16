@@ -1533,4 +1533,6 @@
     <string name="caramel_about_fact_hacks">这个客户端最初只是用来做外挂的。</string>
     <string name="caramel_about_fact_broken">我们把这个客户端弄坏过无数次。</string>
     <string name="caramel_about_fact_best">你能获得的最好的 Bedrock 体验。</string>
+    <string name="caramel_loader_unavailable">此预加载器尚未制作。</string>
+    <string name="caramel_loaders_note">目前只做好了 SweetLoader。RustyLoader 和 LightningLoader 尚未就绪。</string>
 </resources>

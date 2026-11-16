@@ -26,11 +26,18 @@ data class CaramelVersion(val id: String, val beta: Boolean) {
     val channel: CaramelChannel get() = if (beta) CaramelChannel.Beta else CaramelChannel.Release
 }
 
-/** The three loaders the pack's launch menu offers. */
-enum class CaramelLoader(val title: String) {
-    Bedrock("Minecraft Bedrock"),
-    Rust("Rust"),
-    Lightning("Lightning"),
+/**
+ * The three preloaders a game can be started with.
+ *
+ * <p>Only [Bedrock] exists: it is the shipped SweetLoader path the launcher actually runs. The
+ * other two are named so the choice is visible and are marked unavailable, because a loader that
+ * has not been built cannot be started — offering it as a working option would be a lie the launch
+ * could not keep.
+ */
+enum class CaramelLoader(val title: String, val available: Boolean) {
+    Bedrock("SweetLoader", true),
+    Rust("RustyLoader", false),
+    Lightning("LightningLoader", false),
 }
 
 /** The instance profile mode: a shared "Open" profile or an isolated one. */

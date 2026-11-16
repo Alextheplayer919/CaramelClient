@@ -1551,4 +1551,6 @@
     <string name="caramel_about_fact_hacks">Изначально этот клиент был только для читов.</string>
     <string name="caramel_about_fact_broken">Мы ломали этот клиент бесчисленное множество раз.</string>
     <string name="caramel_about_fact_best">Лучший опыт Bedrock, какой только возможен.</string>
+    <string name="caramel_loader_unavailable">Этот предзагрузчик ещё не создан.</string>
+    <string name="caramel_loaders_note">Готов только SweetLoader. RustyLoader и LightningLoader ещё не готовы.</string>
 </resources>

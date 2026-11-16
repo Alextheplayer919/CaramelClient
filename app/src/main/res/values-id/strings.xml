@@ -1536,4 +1536,6 @@ Migrasi harus selesai sebelum CaramelClient dapat melanjutkan.</string>
     <string name="caramel_about_fact_hacks">Klien ini awalnya hanya untuk hack.</string>
     <string name="caramel_about_fact_broken">Kami merusak klien ini berkali-kali.</string>
     <string name="caramel_about_fact_best">Pengalaman Bedrock terbaik yang bisa Anda dapatkan.</string>
+    <string name="caramel_loader_unavailable">Pramuat ini belum dibuat.</string>
+    <string name="caramel_loaders_note">Hanya SweetLoader yang sudah dibuat. RustyLoader dan LightningLoader belum siap.</string>
 </resources>

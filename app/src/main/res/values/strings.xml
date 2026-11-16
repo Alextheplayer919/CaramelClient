@@ -2868,6 +2868,8 @@ CaramelClient must complete the migration before continuing.</string>
     <string name="caramel_store_soon_body">Bundles will appear here once the store backend is live.</string>
     <string name="caramel_version">Version</string>
     <string name="caramel_loaders">Loaders</string>
+    <string name="caramel_loader_unavailable">This preloader has not been built yet.</string>
+    <string name="caramel_loaders_note">Only SweetLoader is built. RustyLoader and LightningLoader are not ready yet.</string>
     <string name="caramel_no_versions_match">No versions match</string>
     <string name="caramel_open_config">Open config</string>
     <string name="caramel_close">Close</string>

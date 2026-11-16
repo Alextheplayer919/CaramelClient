@@ -1542,4 +1542,6 @@ Quá trình chuyển đổi phải hoàn tất trước khi CaramelClient có th
     <string name="caramel_about_fact_hacks">Trình khách này ban đầu chỉ để dùng cho hack.</string>
     <string name="caramel_about_fact_broken">Chúng tôi đã làm hỏng trình khách này rất nhiều lần.</string>
     <string name="caramel_about_fact_best">Trải nghiệm Bedrock tốt nhất mà bạn có thể có.</string>
+    <string name="caramel_loader_unavailable">Trình tải trước này chưa được tạo.</string>
+    <string name="caramel_loaders_note">Chỉ SweetLoader đã được tạo. RustyLoader và LightningLoader chưa sẵn sàng.</string>
 </resources>

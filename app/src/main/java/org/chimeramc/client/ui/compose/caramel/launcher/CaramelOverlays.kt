@@ -37,7 +37,7 @@ import org.chimeramc.client.ui.compose.caramel.CaramelProfileDropdown
 import org.chimeramc.client.ui.compose.caramel.CaramelVersionDropdown
 import org.chimeramc.client.ui.compose.caramel.GlassButton
 import org.chimeramc.client.ui.compose.caramel.GlassPanel
-import org.chimeramc.client.ui.compose.caramel.LoaderTile
+import org.chimeramc.client.ui.compose.caramel.CaramelLoaderPicker
 import org.chimeramc.client.ui.compose.caramel.PrimaryButton
 import org.chimeramc.client.ui.compose.caramel.T
 import org.chimeramc.client.ui.compose.caramel.sp_
@@ -70,9 +70,7 @@ fun CaramelLaunchMenuOverlay(state: CaramelLauncherState, onLaunch: () -> Unit) 
                 }
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Text(stringResource(R.string.caramel_loaders), style = T.Title.copy(fontSize = 15.sp_), modifier = Modifier.weight(1f))
-                    Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
-                        CaramelLoader.entries.forEach { LoaderTile(it, state.loader == it, { state.loader = it }) }
-                    }
+                    CaramelLoaderPicker(state.loader, { state.loader = it })
                 }
                 CaramelProfileDropdown(state.profile, { state.profile = it }, width = 328)
                 Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {

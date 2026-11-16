@@ -86,7 +86,7 @@ import org.chimeramc.client.ui.compose.caramel.CaramelVersionDropdown
 import org.chimeramc.client.ui.compose.caramel.FilterChip
 import org.chimeramc.client.ui.compose.caramel.GlassButton
 import org.chimeramc.client.ui.compose.caramel.GlassPanel
-import org.chimeramc.client.ui.compose.caramel.LoaderTile
+
 import org.chimeramc.client.ui.compose.caramel.PrimaryButton
 import org.chimeramc.client.ui.compose.caramel.SearchField
 import org.chimeramc.client.ui.compose.caramel.SettingRow
@@ -815,11 +815,7 @@ fun CaramelInstanceSettingsModal(state: CaramelLauncherState, actions: CaramelLa
                                 CaramelVersionDropdown(state.versions, state.version, onSelect = { state.version = it })
                             }
                             SettingRow(stringResource(R.string.caramel_loader)) {
-                                Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
-                                    org.chimeramc.client.ui.compose.caramel.CaramelLoader.entries.forEach {
-                                        LoaderTile(it, state.loader == it, { state.loader = it })
-                                    }
-                                }
+                                org.chimeramc.client.ui.compose.caramel.CaramelLoaderPicker(state.loader, { state.loader = it })
                             }
                             SettingRow(stringResource(R.string.caramel_profile_mode), stringResource(R.string.caramel_profile_open_desc)) {
                                 CaramelProfileDropdown(state.profile, { state.profile = it }, width = 240)
