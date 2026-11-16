@@ -1497,4 +1497,5 @@
     <string name="caramel_instance_pack_changer">游戏内资源包切换</string>
     <string name="caramel_instance_pack_changer_desc">为此实例在游戏内模组菜单中添加资源包切换器。</string>
     <string name="caramel_instance_advanced_note">这些设置改变启动器启动此实例的方式。按实例保存，重命名后仍然保留。</string>
+    <string name="caramel_plus_no_payment">您尝试为 Caramel+ 付款，但开发者尚未设置支付系统</string>
 </resources>

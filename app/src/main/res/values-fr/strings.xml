@@ -1476,4 +1476,5 @@ La migration doit être terminée avant de continuer avec CaramelClient.</string
     <string name="caramel_instance_pack_changer">Changeur de packs en jeu</string>
     <string name="caramel_instance_pack_changer_desc">Ajoute un sélecteur de packs de ressources au menu de mods en jeu pour cette instance.</string>
     <string name="caramel_instance_advanced_note">Ces réglages changent la façon dont le lanceur démarre cette instance. Ils sont enregistrés par instance et survivent à un renommage.</string>
+    <string name="caramel_plus_no_payment">Vous avez essayé de payer Caramel+ mais les développeurs n\'ont pas encore mis en place de système de paiement</string>
 </resources>

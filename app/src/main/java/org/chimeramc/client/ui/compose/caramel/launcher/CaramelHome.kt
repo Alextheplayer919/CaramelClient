@@ -48,6 +48,7 @@ import androidx.compose.ui.unit.dp
 import org.chimeramc.client.R
 import org.chimeramc.client.ui.compose.caramel.C
 import org.chimeramc.client.ui.compose.caramel.CaramelFriendRow
+import org.chimeramc.client.ui.compose.caramel.CaramelNotice
 import org.chimeramc.client.ui.compose.caramel.CaramelLauncherState
 import org.chimeramc.client.ui.compose.caramel.GlassButton
 import org.chimeramc.client.ui.compose.caramel.GlassPanel
@@ -93,7 +94,7 @@ fun CaramelHomeScreen(
         }
         Column(Modifier.width(374.dp).fillMaxHeight(), verticalArrangement = Arrangement.spacedBy(20.dp)) {
             FriendsCard(state, Modifier.fillMaxWidth().height(320.dp))
-            PromoCard(Modifier.fillMaxWidth().weight(1f))
+            PromoCard(state, Modifier.fillMaxWidth().weight(1f))
         }
     }
 }
@@ -270,7 +271,7 @@ private fun FriendsCard(state: CaramelLauncherState, modifier: Modifier) {
 }
 
 @Composable
-private fun PromoCard(modifier: Modifier) {
+private fun PromoCard(state: CaramelLauncherState, modifier: Modifier) {
     GlassPanel(modifier, RoundedCornerShape(24.dp)) {
         Box(Modifier.matchParentSize().background(Brush.verticalGradient(listOf(C.Caramel.copy(0.26f), Color.Transparent))))
         Column(
@@ -287,7 +288,16 @@ private fun PromoCard(modifier: Modifier) {
                 modifier = Modifier.width(310.dp),
             )
             Spacer(Modifier.weight(1f))
-            PrimaryButton(stringResource(R.string.caramel_get_plus), {}, Modifier.fillMaxWidth(), Tone.Caramel)
+            // No payment method is attached yet, so the button is drawn unavailable: greyed, and a
+            // tap explains why rather than silently doing nothing.
+            val noPayment = stringResource(R.string.caramel_plus_no_payment)
+            PrimaryButton(
+                stringResource(R.string.caramel_get_plus),
+                { state.notice = CaramelNotice(noPayment, warning = true) },
+                Modifier.fillMaxWidth(),
+                Tone.Caramel,
+                muted = true,
+            )
         }
     }
 }

@@ -1506,4 +1506,5 @@ Quá trình chuyển đổi phải hoàn tất trước khi CaramelClient có th
     <string name="caramel_instance_pack_changer">Trình đổi gói trong game</string>
     <string name="caramel_instance_pack_changer_desc">Thêm trình chuyển gói tài nguyên vào menu mod trong game cho bản cài này.</string>
     <string name="caramel_instance_advanced_note">Những mục này thay đổi cách trình khởi chạy mở bản cài này. Được lưu theo từng bản cài và giữ nguyên khi đổi tên.</string>
+    <string name="caramel_plus_no_payment">Bạn đã cố thanh toán cho Caramel+ nhưng các nhà phát triển chưa thiết lập hệ thống thanh toán</string>
 </resources>

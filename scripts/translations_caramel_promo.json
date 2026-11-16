@@ -1,0 +1,32 @@
+{
+  "es": {
+    "caramel_plus_no_payment": "Intentaste pagar Caramel+ pero los desarrolladores aún no han configurado un sistema de pago"
+  },
+  "fr": {
+    "caramel_plus_no_payment": "Vous avez essayé de payer Caramel+ mais les développeurs n'ont pas encore mis en place de système de paiement"
+  },
+  "hi": {
+    "caramel_plus_no_payment": "आपने Caramel+ के लिए भुगतान करने का प्रयास किया, लेकिन डेवलपर्स ने अभी तक भुगतान प्रणाली सेट नहीं की है"
+  },
+  "id": {
+    "caramel_plus_no_payment": "Anda mencoba membayar Caramel+ tetapi pengembang belum menyiapkan sistem pembayaran"
+  },
+  "ja": {
+    "caramel_plus_no_payment": "Caramel+ の支払いを試みましたが、開発者はまだ支払いシステムを設定していません"
+  },
+  "pt": {
+    "caramel_plus_no_payment": "Você tentou pagar pelo Caramel+, mas os desenvolvedores ainda não configuraram um sistema de pagamento"
+  },
+  "ru": {
+    "caramel_plus_no_payment": "Вы попытались оплатить Caramel+, но разработчики ещё не настроили систему оплаты"
+  },
+  "tr": {
+    "caramel_plus_no_payment": "Caramel+ için ödeme yapmayı denediniz ancak geliştiriciler henüz bir ödeme sistemi kurmadı"
+  },
+  "vi": {
+    "caramel_plus_no_payment": "Bạn đã cố thanh toán cho Caramel+ nhưng các nhà phát triển chưa thiết lập hệ thống thanh toán"
+  },
+  "zh-rCN": {
+    "caramel_plus_no_payment": "您尝试为 Caramel+ 付款，但开发者尚未设置支付系统"
+  }
+}

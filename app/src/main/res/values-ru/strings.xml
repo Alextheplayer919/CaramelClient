@@ -1515,4 +1515,5 @@
     <string name="caramel_instance_pack_changer">Смена наборов в игре</string>
     <string name="caramel_instance_pack_changer_desc">Добавить переключатель наборов ресурсов во внутриигровое меню модов для этого экземпляра.</string>
     <string name="caramel_instance_advanced_note">Это меняет то, как лаунчер запускает этот экземпляр. Сохраняется для каждого экземпляра и переживает переименование.</string>
+    <string name="caramel_plus_no_payment">Вы попытались оплатить Caramel+, но разработчики ещё не настроили систему оплаты</string>
 </resources>

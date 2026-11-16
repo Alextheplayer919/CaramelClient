@@ -10,6 +10,7 @@ import org.chimeramc.client.ui.compose.caramel.CaramelLauncherState
 import org.chimeramc.client.ui.compose.caramel.CaramelModal
 import org.chimeramc.client.ui.compose.caramel.CaramelSettingsProvider
 import org.chimeramc.client.ui.compose.caramel.CaramelTab
+import org.chimeramc.client.ui.compose.caramel.CaramelToast
 
 /**
  * The whole Caramel launcher, ported from the pack's `CaramelApp` in `launcher/Shell.kt`.
@@ -70,5 +71,6 @@ fun CaramelLauncherScreen(
             CaramelLauncherSettingsModal(state, settings)
         }
         CaramelInstanceSettingsModal(state, actions)
+        CaramelToast(state)
     }
 }

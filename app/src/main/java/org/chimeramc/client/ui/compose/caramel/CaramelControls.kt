@@ -77,16 +77,19 @@ fun PrimaryButton(
     tone: Tone = Tone.Green,
     icon: ImageVector? = null,
     height: Int = 44,
+    muted: Boolean = false,
 ) {
     val src = remember { MutableInteractionSource() }
     val pressed by src.collectIsPressedAsState()
     val shape = RoundedCornerShape((height / 2.6).dp)
+    val top = if (muted) desaturate(tone.top) else tone.top
+    val bottom = if (muted) desaturate(tone.bottom) else tone.bottom
     Box(
         modifier
             .height(height.dp)
-            .shadow(if (pressed) 16.dp else 10.dp, shape, ambientColor = tone.bottom, spotColor = tone.bottom)
+            .shadow(if (pressed) 16.dp else 10.dp, shape, ambientColor = bottom, spotColor = bottom)
             .clip(shape)
-            .background(Brush.verticalGradient(listOf(tone.top, tone.bottom)))
+            .background(Brush.verticalGradient(listOf(top, bottom)))
             .background(
                 Brush.verticalGradient(
                     listOf(Color.White.copy(if (pressed) 0.28f else 0.20f), Color.Transparent, Color.Transparent),
@@ -105,6 +108,15 @@ fun PrimaryButton(
             Text(text, style = T.Button.copy(color = tone.on))
         }
     }
+}
+
+/**
+ * A greyed version of a tone, for an action that is drawn as unavailable but still answers a tap
+ * with an explanation rather than doing nothing.
+ */
+private fun desaturate(color: Color): Color {
+    val l = 0.299f * color.red + 0.587f * color.green + 0.114f * color.blue
+    return Color(l, l, l, color.alpha)
 }
 
 /** The pack's `GlassButton`: a translucent secondary action. `text == null` makes it square. */

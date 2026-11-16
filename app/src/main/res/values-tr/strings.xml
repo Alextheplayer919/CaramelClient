@@ -1503,4 +1503,5 @@ CaramelClient\'ın devam edebilmesi için taşımanın tamamlanması gerekiyor.<
     <string name="caramel_instance_pack_changer">Oyun içi paket değiştirici</string>
     <string name="caramel_instance_pack_changer_desc">Bu örnek için oyun içi mod menüsüne bir kaynak paketi değiştirici ekle.</string>
     <string name="caramel_instance_advanced_note">Bunlar başlatıcının bu örneği nasıl başlattığını değiştirir. Örnek başına kaydedilir ve yeniden adlandırmadan sonra da kalır.</string>
+    <string name="caramel_plus_no_payment">Caramel+ için ödeme yapmayı denediniz ancak geliştiriciler henüz bir ödeme sistemi kurmadı</string>
 </resources>

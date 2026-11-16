@@ -1473,4 +1473,5 @@ CaramelClient を続行するには移行を完了する必要があります。
     <string name="caramel_instance_pack_changer">ゲーム内パック切り替え</string>
     <string name="caramel_instance_pack_changer_desc">このインスタンスのゲーム内 Mod メニューにリソースパック切り替えを追加します。</string>
     <string name="caramel_instance_advanced_note">これらはランチャーがこのインスタンスを起動する方法を変えます。インスタンスごとに保存され、名前を変更しても保持されます。</string>
+    <string name="caramel_plus_no_payment">Caramel+ の支払いを試みましたが、開発者はまだ支払いシステムを設定していません</string>
 </resources>

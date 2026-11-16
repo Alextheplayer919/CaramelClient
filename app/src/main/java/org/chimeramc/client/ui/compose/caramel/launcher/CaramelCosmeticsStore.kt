@@ -43,6 +43,8 @@ import androidx.compose.ui.text.style.TextAlign
 import org.chimeramc.client.R
 import androidx.compose.ui.unit.dp
 import org.chimeramc.client.ui.compose.caramel.C
+import org.chimeramc.client.ui.compose.caramel.CaramelNotice
+import org.chimeramc.client.ui.compose.caramel.Tone
 import org.chimeramc.client.ui.compose.caramel.CaramelCosmeticInfo
 import org.chimeramc.client.ui.compose.caramel.CaramelLauncherState
 import org.chimeramc.client.ui.compose.caramel.FilterChip
@@ -221,7 +223,14 @@ fun CaramelStoreScreen(state: CaramelLauncherState) {
                         style = T.Body.copy(fontSize = 13.5.sp_),
                     )
                 }
-                PrimaryButton(stringResource(R.string.caramel_learn_more), {}, Modifier.width(200.dp))
+                val noPayment = stringResource(R.string.caramel_plus_no_payment)
+                PrimaryButton(
+                    stringResource(R.string.caramel_get_plus),
+                    { state.notice = CaramelNotice(noPayment, warning = true) },
+                    Modifier.width(200.dp),
+                    Tone.Caramel,
+                    muted = true,
+                )
             }
         }
         EmptyState(

@@ -1500,4 +1500,5 @@ Migrasi harus selesai sebelum CaramelClient dapat melanjutkan.</string>
     <string name="caramel_instance_pack_changer">Pengubah paket dalam game</string>
     <string name="caramel_instance_pack_changer_desc">Tambahkan pengalih paket sumber daya ke menu mod dalam game untuk instans ini.</string>
     <string name="caramel_instance_advanced_note">Ini mengubah cara peluncur memulai instans ini. Disimpan per instans dan tetap ada setelah penggantian nama.</string>
+    <string name="caramel_plus_no_payment">Anda mencoba membayar Caramel+ tetapi pengembang belum menyiapkan sistem pembayaran</string>
 </resources>

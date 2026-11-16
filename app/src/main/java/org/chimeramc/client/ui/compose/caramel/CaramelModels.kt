@@ -42,6 +42,18 @@ enum class CaramelProfileMode(val title: String, val desc: String, val label: St
 /** The six launcher tabs the pack's sidebar carries. */
 enum class CaramelTab { Home, Mods, Servers, Cosmetics, News, Store }
 
+/**
+ * A transient in-app notice — the launcher's toast.
+ *
+ * <p>[text] is already-resolved display text (the caller reads the string resource), and [warning]
+ * picks the leading mark: a red "!" in a rounded square for something that did not work, a blue
+ * check for something that did. The notice clears itself, so a caller only ever raises one.
+ */
+data class CaramelNotice(
+    val text: String,
+    val warning: Boolean = false,
+)
+
 /** One mod row: the fields the Mods grid and the instance-settings list draw. */
 data class CaramelModInfo(
     val name: String,
@@ -217,6 +229,14 @@ class CaramelLauncherState {
 
     /** Whether the Add server modal is open. */
     var addServer by mutableStateOf(false)
+
+    /**
+     * The in-app notice currently on screen, or null when none is.
+     *
+     * <p>This is the launcher's toast: a transient line that appears over the frame and clears
+     * itself. It is deliberately part of the state so a host action can raise one from anywhere.
+     */
+    var notice by mutableStateOf<CaramelNotice?>(null)
 
     /** The name typed into the Add server modal. */
     var serverDraftName by mutableStateOf("")
