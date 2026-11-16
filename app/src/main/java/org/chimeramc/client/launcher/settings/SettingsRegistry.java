@@ -227,6 +227,27 @@ public final class SettingsRegistry {
                 list("logcat", "log", "debug"),
                 FeatureSettings::isLogcatOverlayEnabled,
                 FeatureSettings::setLogcatOverlayEnabled, false));
+        add(out, byId, new Setting("launcher_managed_login",
+                Section.BASIC, Kind.TOGGLE,
+                org.chimeramc.client.R.string.launcher_managed_mc_login,
+                org.chimeramc.client.R.string.launcher_managed_mc_login_desc,
+                list("microsoft", "login", "sign in", "account", "xbox"),
+                FeatureSettings::isLauncherManagedMcLoginEnabled,
+                FeatureSettings::setLauncherManagedMcLoginEnabled, false));
+        add(out, byId, new Setting("keep_game_alive",
+                Section.BASIC, Kind.TOGGLE,
+                org.chimeramc.client.R.string.keep_game_alive_title,
+                org.chimeramc.client.R.string.keep_game_alive_desc,
+                list("background", "foreground", "service", "notification"),
+                FeatureSettings::isForegroundServiceEnabled,
+                FeatureSettings::setForegroundServiceEnabled, false));
+        add(out, byId, new Setting("game_performance_mode",
+                Section.BASIC, Kind.TOGGLE,
+                org.chimeramc.client.R.string.optifine_mode_title,
+                org.chimeramc.client.R.string.optifine_mode_desc,
+                list("performance", "fps", "allocator", "refresh", "optifine"),
+                FeatureSettings::isOptifineModeEnabled,
+                FeatureSettings::setOptifineModeEnabled, false));
 
         add(out, byId, new Setting("guest_mode",
                 Section.PERSONALIZE, Kind.TOGGLE,

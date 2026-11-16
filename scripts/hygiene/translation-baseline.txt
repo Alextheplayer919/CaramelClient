@@ -27,8 +27,6 @@ values-es:aim_crosshair_style_dot
 values-es:aim_flash_desc
 values-es:aim_sensitivity_desc
 values-es:aim_smoothing_desc
-values-es:animation_speed
-values-es:animation_speed_value
 values-es:armor_hud_no_data
 values-es:armor_hud_self
 values-es:armor_hud_target
@@ -918,11 +916,6 @@ values-es:pack_changer_restarting
 values-es:pack_changer_status
 values-es:pack_changer_title
 values-es:pack_changer_write_failed
-values-es:performance_preset_balanced
-values-es:performance_preset_battery
-values-es:performance_preset_note
-values-es:performance_preset_performance
-values-es:performance_preset_title
 values-es:playtime_label
 values-es:profile_sheet_description
 values-es:profile_signed_out
@@ -1163,8 +1156,6 @@ values-es:third_person_hint
 values-es:trajectory_prediction_scope_note
 values-es:ui_customization_desc
 values-es:ui_customization_title
-values-es:ui_transparency
-values-es:ui_transparency_value
 values-es:vip_category_misc
 values-es:vip_category_visuals
 values-es:vip_configure
@@ -1302,8 +1293,6 @@ values-fr:aim_crosshair_style_dot
 values-fr:aim_flash_desc
 values-fr:aim_sensitivity_desc
 values-fr:aim_smoothing_desc
-values-fr:animation_speed
-values-fr:animation_speed_value
 values-fr:armor_hud_no_data
 values-fr:armor_hud_self
 values-fr:armor_hud_target
@@ -2193,11 +2182,6 @@ values-fr:pack_changer_restarting
 values-fr:pack_changer_status
 values-fr:pack_changer_title
 values-fr:pack_changer_write_failed
-values-fr:performance_preset_balanced
-values-fr:performance_preset_battery
-values-fr:performance_preset_note
-values-fr:performance_preset_performance
-values-fr:performance_preset_title
 values-fr:playtime_label
 values-fr:profile_sheet_description
 values-fr:profile_signed_out
@@ -2438,8 +2422,6 @@ values-fr:third_person_hint
 values-fr:trajectory_prediction_scope_note
 values-fr:ui_customization_desc
 values-fr:ui_customization_title
-values-fr:ui_transparency
-values-fr:ui_transparency_value
 values-fr:vip_category_misc
 values-fr:vip_category_visuals
 values-fr:vip_configure
@@ -2577,8 +2559,6 @@ values-hi:aim_crosshair_style_dot
 values-hi:aim_flash_desc
 values-hi:aim_sensitivity_desc
 values-hi:aim_smoothing_desc
-values-hi:animation_speed
-values-hi:animation_speed_value
 values-hi:armor_hud_no_data
 values-hi:armor_hud_self
 values-hi:armor_hud_target
@@ -3468,11 +3448,6 @@ values-hi:pack_changer_restarting
 values-hi:pack_changer_status
 values-hi:pack_changer_title
 values-hi:pack_changer_write_failed
-values-hi:performance_preset_balanced
-values-hi:performance_preset_battery
-values-hi:performance_preset_note
-values-hi:performance_preset_performance
-values-hi:performance_preset_title
 values-hi:playtime_label
 values-hi:profile_sheet_description
 values-hi:profile_signed_out
@@ -3713,8 +3688,6 @@ values-hi:third_person_hint
 values-hi:trajectory_prediction_scope_note
 values-hi:ui_customization_desc
 values-hi:ui_customization_title
-values-hi:ui_transparency
-values-hi:ui_transparency_value
 values-hi:vip_category_misc
 values-hi:vip_category_visuals
 values-hi:vip_configure
@@ -3852,8 +3825,6 @@ values-id:aim_crosshair_style_dot
 values-id:aim_flash_desc
 values-id:aim_sensitivity_desc
 values-id:aim_smoothing_desc
-values-id:animation_speed
-values-id:animation_speed_value
 values-id:armor_hud_no_data
 values-id:armor_hud_self
 values-id:armor_hud_target
@@ -4743,11 +4714,6 @@ values-id:pack_changer_restarting
 values-id:pack_changer_status
 values-id:pack_changer_title
 values-id:pack_changer_write_failed
-values-id:performance_preset_balanced
-values-id:performance_preset_battery
-values-id:performance_preset_note
-values-id:performance_preset_performance
-values-id:performance_preset_title
 values-id:playtime_label
 values-id:profile_sheet_description
 values-id:profile_signed_out
@@ -4988,8 +4954,6 @@ values-id:third_person_hint
 values-id:trajectory_prediction_scope_note
 values-id:ui_customization_desc
 values-id:ui_customization_title
-values-id:ui_transparency
-values-id:ui_transparency_value
 values-id:vip_category_misc
 values-id:vip_category_visuals
 values-id:vip_configure
@@ -5127,8 +5091,6 @@ values-ja:aim_crosshair_style_dot
 values-ja:aim_flash_desc
 values-ja:aim_sensitivity_desc
 values-ja:aim_smoothing_desc
-values-ja:animation_speed
-values-ja:animation_speed_value
 values-ja:armor_hud_no_data
 values-ja:armor_hud_self
 values-ja:armor_hud_target
@@ -6018,11 +5980,6 @@ values-ja:pack_changer_restarting
 values-ja:pack_changer_status
 values-ja:pack_changer_title
 values-ja:pack_changer_write_failed
-values-ja:performance_preset_balanced
-values-ja:performance_preset_battery
-values-ja:performance_preset_note
-values-ja:performance_preset_performance
-values-ja:performance_preset_title
 values-ja:playtime_label
 values-ja:profile_sheet_description
 values-ja:profile_signed_out
@@ -6263,8 +6220,6 @@ values-ja:third_person_hint
 values-ja:trajectory_prediction_scope_note
 values-ja:ui_customization_desc
 values-ja:ui_customization_title
-values-ja:ui_transparency
-values-ja:ui_transparency_value
 values-ja:vip_category_misc
 values-ja:vip_category_visuals
 values-ja:vip_configure
@@ -6402,8 +6357,6 @@ values-pt:aim_crosshair_style_dot
 values-pt:aim_flash_desc
 values-pt:aim_sensitivity_desc
 values-pt:aim_smoothing_desc
-values-pt:animation_speed
-values-pt:animation_speed_value
 values-pt:armor_hud_no_data
 values-pt:armor_hud_self
 values-pt:armor_hud_target
@@ -7293,11 +7246,6 @@ values-pt:pack_changer_restarting
 values-pt:pack_changer_status
 values-pt:pack_changer_title
 values-pt:pack_changer_write_failed
-values-pt:performance_preset_balanced
-values-pt:performance_preset_battery
-values-pt:performance_preset_note
-values-pt:performance_preset_performance
-values-pt:performance_preset_title
 values-pt:playtime_label
 values-pt:profile_sheet_description
 values-pt:profile_signed_out
@@ -7538,8 +7486,6 @@ values-pt:third_person_hint
 values-pt:trajectory_prediction_scope_note
 values-pt:ui_customization_desc
 values-pt:ui_customization_title
-values-pt:ui_transparency
-values-pt:ui_transparency_value
 values-pt:vip_category_misc
 values-pt:vip_category_visuals
 values-pt:vip_configure
@@ -7677,8 +7623,6 @@ values-ru:aim_crosshair_style_dot
 values-ru:aim_flash_desc
 values-ru:aim_sensitivity_desc
 values-ru:aim_smoothing_desc
-values-ru:animation_speed
-values-ru:animation_speed_value
 values-ru:armor_hud_no_data
 values-ru:armor_hud_self
 values-ru:armor_hud_target
@@ -8568,11 +8512,6 @@ values-ru:pack_changer_restarting
 values-ru:pack_changer_status
 values-ru:pack_changer_title
 values-ru:pack_changer_write_failed
-values-ru:performance_preset_balanced
-values-ru:performance_preset_battery
-values-ru:performance_preset_note
-values-ru:performance_preset_performance
-values-ru:performance_preset_title
 values-ru:playtime_label
 values-ru:profile_sheet_description
 values-ru:profile_signed_out
@@ -8813,8 +8752,6 @@ values-ru:third_person_hint
 values-ru:trajectory_prediction_scope_note
 values-ru:ui_customization_desc
 values-ru:ui_customization_title
-values-ru:ui_transparency
-values-ru:ui_transparency_value
 values-ru:vip_category_misc
 values-ru:vip_category_visuals
 values-ru:vip_configure
@@ -8952,8 +8889,6 @@ values-tr:aim_crosshair_style_dot
 values-tr:aim_flash_desc
 values-tr:aim_sensitivity_desc
 values-tr:aim_smoothing_desc
-values-tr:animation_speed
-values-tr:animation_speed_value
 values-tr:armor_hud_no_data
 values-tr:armor_hud_self
 values-tr:armor_hud_target
@@ -9843,11 +9778,6 @@ values-tr:pack_changer_restarting
 values-tr:pack_changer_status
 values-tr:pack_changer_title
 values-tr:pack_changer_write_failed
-values-tr:performance_preset_balanced
-values-tr:performance_preset_battery
-values-tr:performance_preset_note
-values-tr:performance_preset_performance
-values-tr:performance_preset_title
 values-tr:playtime_label
 values-tr:profile_sheet_description
 values-tr:profile_signed_out
@@ -10088,8 +10018,6 @@ values-tr:third_person_hint
 values-tr:trajectory_prediction_scope_note
 values-tr:ui_customization_desc
 values-tr:ui_customization_title
-values-tr:ui_transparency
-values-tr:ui_transparency_value
 values-tr:vip_category_misc
 values-tr:vip_category_visuals
 values-tr:vip_configure
@@ -10227,8 +10155,6 @@ values-vi:aim_crosshair_style_dot
 values-vi:aim_flash_desc
 values-vi:aim_sensitivity_desc
 values-vi:aim_smoothing_desc
-values-vi:animation_speed
-values-vi:animation_speed_value
 values-vi:armor_hud_no_data
 values-vi:armor_hud_self
 values-vi:armor_hud_target
@@ -11118,11 +11044,6 @@ values-vi:pack_changer_restarting
 values-vi:pack_changer_status
 values-vi:pack_changer_title
 values-vi:pack_changer_write_failed
-values-vi:performance_preset_balanced
-values-vi:performance_preset_battery
-values-vi:performance_preset_note
-values-vi:performance_preset_performance
-values-vi:performance_preset_title
 values-vi:playtime_label
 values-vi:profile_sheet_description
 values-vi:profile_signed_out
@@ -11363,8 +11284,6 @@ values-vi:third_person_hint
 values-vi:trajectory_prediction_scope_note
 values-vi:ui_customization_desc
 values-vi:ui_customization_title
-values-vi:ui_transparency
-values-vi:ui_transparency_value
 values-vi:vip_category_misc
 values-vi:vip_category_visuals
 values-vi:vip_configure
@@ -11502,8 +11421,6 @@ values-zh-rCN:aim_crosshair_style_dot
 values-zh-rCN:aim_flash_desc
 values-zh-rCN:aim_sensitivity_desc
 values-zh-rCN:aim_smoothing_desc
-values-zh-rCN:animation_speed
-values-zh-rCN:animation_speed_value
 values-zh-rCN:armor_hud_no_data
 values-zh-rCN:armor_hud_self
 values-zh-rCN:armor_hud_target
@@ -12390,11 +12307,6 @@ values-zh-rCN:pack_changer_restarting
 values-zh-rCN:pack_changer_status
 values-zh-rCN:pack_changer_title
 values-zh-rCN:pack_changer_write_failed
-values-zh-rCN:performance_preset_balanced
-values-zh-rCN:performance_preset_battery
-values-zh-rCN:performance_preset_note
-values-zh-rCN:performance_preset_performance
-values-zh-rCN:performance_preset_title
 values-zh-rCN:playtime_label
 values-zh-rCN:profile_sheet_description
 values-zh-rCN:profile_signed_out
@@ -12635,8 +12547,6 @@ values-zh-rCN:third_person_hint
 values-zh-rCN:trajectory_prediction_scope_note
 values-zh-rCN:ui_customization_desc
 values-zh-rCN:ui_customization_title
-values-zh-rCN:ui_transparency
-values-zh-rCN:ui_transparency_value
 values-zh-rCN:vip_category_misc
 values-zh-rCN:vip_category_visuals
 values-zh-rCN:vip_configure

@@ -1,11 +1,16 @@
 package org.chimeramc.client.ui.compose.caramel
 
+import android.widget.Toast
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
@@ -18,6 +23,10 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.geometry.CornerRadius
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
@@ -25,6 +34,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.unit.dp
+import org.chimeramc.client.R
 import kotlin.math.PI
 import kotlin.math.cos
 import kotlin.math.sin
@@ -85,19 +95,39 @@ fun LoaderGlyph(loader: CaramelLoader, modifier: Modifier = Modifier.size(28.dp)
     }
 }
 
-/** A selectable loader tile: the glyph in a rounded square, with a green tick when selected. */
+/**
+ * A selectable loader tile: the glyph in a rounded square, with a green tick when selected.
+ *
+ * <p>An unavailable loader (one that has not been built yet) is drawn greyed and inert, and says so
+ * on a long press, so the choice is visible without pretending it can start a game. The shipped
+ * SweetLoader is the only selectable one, which is the truth about this build.
+ */
 @Composable
 fun LoaderTile(loader: CaramelLoader, selected: Boolean, onClick: () -> Unit, modifier: Modifier = Modifier) {
     val shape = RoundedCornerShape(CaramelDimens.RadiusControl)
-    Box(modifier.size(44.dp)) {
-        Box(
-            Modifier
-                .size(44.dp)
-                .background(Color.White.copy(if (selected) 0.12f else 0.07f), shape)
-                .border(if (selected) 1.6.dp else 1.dp, if (selected) C.Green else Color.White.copy(0.14f), shape)
-                .clickable(remember { MutableInteractionSource() }, null, onClick = onClick),
-            Alignment.Center,
-        ) { LoaderGlyph(loader, Modifier.size(28.dp)) }
+    val context = LocalContext.current
+    val unavailable = stringResource(R.string.caramel_loader_unavailable)
+    val source = remember { MutableInteractionSource() }
+    Box(
+        modifier
+            .size(44.dp)
+            .background(Color.White.copy(if (selected) 0.12f else 0.07f), shape)
+            .border(
+                if (selected) 1.6.dp else 1.dp,
+                if (selected) C.Green else Color.White.copy(0.14f),
+                shape,
+            )
+            .clickable(source, null, enabled = loader.available, onClick = onClick)
+            .pointerInput(loader) {
+                detectTapGestures(onLongPress = {
+                    if (!loader.available) Toast.makeText(context, unavailable, Toast.LENGTH_SHORT).show()
+                })
+            },
+        Alignment.Center,
+    ) {
+        Box(Modifier.alpha(if (loader.available) 1f else 0.35f)) {
+            LoaderGlyph(loader, Modifier.size(28.dp))
+        }
         if (selected) {
             Box(
                 Modifier
@@ -107,6 +137,24 @@ fun LoaderTile(loader: CaramelLoader, selected: Boolean, onClick: () -> Unit, mo
                     .border(1.5.dp, C.Navy, CircleShape),
                 Alignment.Center,
             ) { Icon(Icons.Rounded.Check, null, Modifier.size(9.dp), C.OnGreen) }
+        }
+    }
+}
+
+/**
+ * The loader choice: one tile per preloader, plus an honest note when some are not built.
+ *
+ * <p>Both the launch menu and the instance settings draw the same picker, so the note that explains
+ * the greyed tiles cannot be shown in one place and forgotten in the other.
+ */
+@Composable
+fun CaramelLoaderPicker(selected: CaramelLoader, onSelect: (CaramelLoader) -> Unit, modifier: Modifier = Modifier) {
+    Column(modifier, verticalArrangement = Arrangement.spacedBy(8.dp)) {
+        Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
+            CaramelLoader.entries.forEach { LoaderTile(it, selected == it, { onSelect(it) }) }
+        }
+        if (CaramelLoader.entries.any { !it.available }) {
+            Text(stringResource(R.string.caramel_loaders_note), style = T.Caption)
         }
     }
 }

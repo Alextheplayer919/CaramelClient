@@ -1,5 +1,6 @@
 package org.chimeramc.client.ui.compose.caramel.launcher
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -34,6 +35,7 @@ import androidx.compose.material.icons.rounded.Check
 import androidx.compose.material.icons.rounded.Close
 import androidx.compose.material.icons.rounded.ContentCopy
 import androidx.compose.material.icons.rounded.Delete
+import androidx.compose.material.icons.rounded.ErrorOutline
 import androidx.compose.material.icons.rounded.Extension
 import androidx.compose.material.icons.rounded.Folder
 import androidx.compose.material.icons.rounded.Group
@@ -42,6 +44,7 @@ import androidx.compose.material.icons.rounded.MoreHoriz
 import androidx.compose.material.icons.rounded.Person
 import androidx.compose.material.icons.rounded.Public
 import androidx.compose.material.icons.rounded.RocketLaunch
+import androidx.compose.material.icons.rounded.Search
 import androidx.compose.material.icons.rounded.Settings
 import androidx.compose.material.icons.rounded.SportsEsports
 import androidx.compose.material.icons.rounded.SwapHoriz
@@ -59,15 +62,21 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import org.chimeramc.client.R
 import org.chimeramc.client.ui.compose.caramel.C
-import org.chimeramc.client.ui.compose.caramel.CaramelAvatar
+import org.chimeramc.client.ui.compose.caramel.CaramelAvatarPicture
+import org.chimeramc.client.ui.compose.caramel.CaramelFriendRow
+import org.chimeramc.client.ui.compose.caramel.CaramelFoundUser
 import org.chimeramc.client.ui.compose.caramel.CaramelLauncherState
 import org.chimeramc.client.ui.compose.caramel.CaramelModal
+import org.chimeramc.client.ui.compose.caramel.CaramelSettingsPanel
+import org.chimeramc.client.ui.compose.caramel.CaramelSettingsProvider
 import org.chimeramc.client.ui.compose.caramel.CaramelProfileDropdown
 import org.chimeramc.client.ui.compose.caramel.CaramelScreenshotInfo
 import org.chimeramc.client.ui.compose.caramel.CaramelTab
@@ -77,7 +86,7 @@ import org.chimeramc.client.ui.compose.caramel.CaramelVersionDropdown
 import org.chimeramc.client.ui.compose.caramel.FilterChip
 import org.chimeramc.client.ui.compose.caramel.GlassButton
 import org.chimeramc.client.ui.compose.caramel.GlassPanel
-import org.chimeramc.client.ui.compose.caramel.LoaderTile
+
 import org.chimeramc.client.ui.compose.caramel.PrimaryButton
 import org.chimeramc.client.ui.compose.caramel.SearchField
 import org.chimeramc.client.ui.compose.caramel.SettingRow
@@ -111,10 +120,10 @@ fun CaramelAppMenu(state: CaramelLauncherState, actions: CaramelLauncherHost.Act
                     state.appMenu = false; state.instanceSettings = true
                 }
                 CaramelMenuItem(stringResource(R.string.caramel_menu_release_notes), Icons.Rounded.Article) {
-                    state.appMenu = false; state.tab = CaramelTab.News
+                    state.appMenu = false; state.releaseNotesOpen = true
                 }
                 CaramelMenuItem(stringResource(R.string.caramel_menu_about), Icons.Rounded.Info) {
-                    state.appMenu = false; actions.openAccounts()
+                    state.appMenu = false; state.aboutOpen = true
                 }
                 Box(Modifier.fillMaxWidth().padding(vertical = 6.dp, horizontal = 6.dp).height(1.dp).background(Color.White.copy(0.1f)))
                 CaramelMenuItem(stringResource(R.string.caramel_menu_quit), Icons.Rounded.Close, danger = true) {
@@ -137,7 +146,7 @@ fun CaramelAccountMenu(state: CaramelLauncherState, actions: CaramelLauncherHost
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.spacedBy(12.dp),
                 ) {
-                    CaramelAvatar(44, online = state.signedIn)
+                    CaramelAvatarPicture(state.accountAvatarUrl, 44, online = state.signedIn)
                     Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
                         Text(
                             if (state.signedIn) state.accountName else stringResource(R.string.not_signed_in),
@@ -181,7 +190,7 @@ fun CaramelScreenshotsModal(state: CaramelLauncherState, actions: CaramelLaunche
                 stringResource(R.string.caramel_screenshots_sub, shots.size, state.profile.title),
                 { state.screenshotsModal = false },
             ) {
-                GlassButton(stringResource(R.string.caramel_open_folder), actions::openScreenshots, icon = Icons.Rounded.Folder, height = 32)
+                GlassButton(stringResource(R.string.caramel_open_folder), actions::openScreenshotsFolder, icon = Icons.Rounded.Folder, height = 32)
             }
             Row(Modifier.padding(start = 32.dp, bottom = 12.dp), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                 listOf(R.string.caramel_filter_all, R.string.caramel_filter_today, R.string.caramel_filter_this_week)
@@ -194,7 +203,6 @@ fun CaramelScreenshotsModal(state: CaramelLauncherState, actions: CaramelLaunche
                     Modifier.fillMaxWidth().weight(1f).padding(horizontal = 32.dp),
                 )
             } else {
-                val tints = listOf(C.Blue, C.Caramel, C.Green, Color(0xFF966EFF), C.Red, Color(0xFF4AC8E6))
                 LazyVerticalGrid(
                     GridCells.Fixed(4),
                     Modifier.weight(1f).padding(horizontal = 32.dp),
@@ -207,12 +215,12 @@ fun CaramelScreenshotsModal(state: CaramelLauncherState, actions: CaramelLaunche
                             Modifier.clickable(remember { MutableInteractionSource() }, null) { state.selectedScreenshot = s },
                             verticalArrangement = Arrangement.spacedBy(6.dp),
                         ) {
-                            val tint = tints[(s.name.hashCode() and 0x7fffffff) % 6]
                             Box(
                                 Modifier.fillMaxWidth().height(118.dp).clip(RoundedCornerShape(14.dp))
-                                    .background(Brush.verticalGradient(listOf(tint.copy(0.55f), C.Navy)))
                                     .border(if (selected) 2.dp else 1.dp, if (selected) C.Blue else Color.White.copy(0.16f), RoundedCornerShape(14.dp)),
-                            )
+                            ) {
+                                CaramelScreenshotThumbnail(s.path, s.name, Modifier.fillMaxSize())
+                            }
                             Text(s.name, style = T.Caption, maxLines = 1)
                         }
                     }
@@ -230,7 +238,7 @@ fun CaramelScreenshotsModal(state: CaramelLauncherState, actions: CaramelLaunche
                     style = T.Label,
                     modifier = Modifier.weight(1f),
                 )
-                GlassButton(stringResource(R.string.caramel_open_folder), actions::openScreenshots, icon = Icons.Rounded.Folder)
+                GlassButton(stringResource(R.string.caramel_open_folder), actions::openScreenshotsFolder, icon = Icons.Rounded.Folder)
                 GlassButton(
                     stringResource(R.string.delete),
                     { sel?.let(actions::deleteScreenshot) },
@@ -241,6 +249,147 @@ fun CaramelScreenshotsModal(state: CaramelLauncherState, actions: CaramelLaunche
         }
     }
 }
+
+/**
+ * The "all news" modal.
+ *
+ * <p>"View all news" used to be a label with no click, so the press did nothing. It now opens this
+ * list of every changelog entry the Home row truncates to three; an unreadable feed leaves the list
+ * empty and the modal shows its empty state rather than a fabricated post.
+ */
+@Composable
+fun CaramelNewsModal(state: CaramelLauncherState, actions: CaramelLauncherHost.Actions) {
+    CaramelModal(state.newsAll, { state.newsAll = false }, Modifier.size(760.dp, 700.dp)) {
+        val posts = state.news
+        Column(Modifier.fillMaxSize()) {
+            CaramelModalHeader(
+                stringResource(R.string.caramel_news_title),
+                stringResource(R.string.caramel_news_sub),
+                { state.newsAll = false },
+            ) {
+                GlassButton(
+                    stringResource(R.string.caramel_view_all),
+                    { state.newsAll = false; state.tab = CaramelTab.News },
+                    icon = Icons.Rounded.Article,
+                    height = 32,
+                )
+            }
+            if (posts.isEmpty()) {
+                EmptyState(
+                    stringResource(R.string.caramel_no_news_title),
+                    stringResource(R.string.caramel_no_news_body),
+                    Modifier.fillMaxWidth().weight(1f).padding(horizontal = 32.dp),
+                )
+            } else {
+                val tints = listOf(C.Caramel, C.Blue, C.Green, Color(0xFF966EFF), C.Red, Color(0xFF4AC8E6))
+                LazyColumn(
+                    Modifier.weight(1f).padding(horizontal = 32.dp),
+                    verticalArrangement = Arrangement.spacedBy(12.dp),
+                ) {
+                    items(posts, key = { it.title + it.meta }) { post ->
+                        val tint = tints[(post.title.hashCode() and 0x7fffffff) % tints.size]
+                        GlassPanel(Modifier.fillMaxWidth(), RoundedCornerShape(20.dp), elevation = 6.dp) {
+                            Row(Modifier.padding(12.dp), horizontalArrangement = Arrangement.spacedBy(14.dp)) {
+                                Box(
+                                    Modifier.size(150.dp, 106.dp).background(
+                                        Brush.verticalGradient(listOf(tint.copy(0.5f), tint.copy(0.1f))),
+                                        RoundedCornerShape(12.dp),
+                                    ),
+                                )
+                                Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(6.dp)) {
+                                    if (post.featured) StatusLabel(stringResource(R.string.caramel_featured), C.Caramel)
+                                    Text(post.title, style = T.Subtitle.copy(fontSize = 15.sp_), maxLines = 2)
+                                    Text(post.summary, style = T.Body, maxLines = 3)
+                                    Text(post.meta, style = T.Caption)
+                                    if (post.actionLabel.isNotEmpty() && post.actionUrl.isNotEmpty()) {
+                                        PrimaryButton(
+                                            post.actionLabel,
+                                            { state.webTitle = post.title; state.webUrl = post.actionUrl },
+                                            tone = Tone.Yellow,
+                                            height = 34,
+                                        )
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
+/**
+ * The Release notes popup: what the build the user is running actually changed.
+ *
+ * <p>The menu item used to jump to the News tab, which is a feed of posts rather than this release's
+ * notes, so "Release notes" did not show release notes. This reads the same bundled
+ * `launcher/changelog.json` the first-run card does and groups it as Added / Changed / Fixed, with
+ * the version, headline and date from the document. An unreadable document shows the empty line
+ * rather than a fabricated list.
+ */
+@Composable
+fun CaramelReleaseNotesModal(state: CaramelLauncherState) {
+    CaramelModal(state.releaseNotesOpen, { state.releaseNotesOpen = false }, Modifier.size(680.dp, 640.dp)) {
+        val notes = state.releaseNotes
+        Column(Modifier.fillMaxSize()) {
+            CaramelModalHeader(
+                stringResource(R.string.caramel_menu_release_notes),
+                if (notes.version.isEmpty()) null
+                else stringResource(R.string.changelog_version, notes.version),
+                { state.releaseNotesOpen = false },
+            )
+            if (notes.isEmpty) {
+                EmptyState(
+                    stringResource(R.string.changelog_title),
+                    stringResource(R.string.changelog_popup_empty),
+                    Modifier.fillMaxWidth().weight(1f).padding(horizontal = 32.dp),
+                )
+            } else {
+                LazyColumn(
+                    Modifier.weight(1f).padding(horizontal = 32.dp),
+                    verticalArrangement = Arrangement.spacedBy(18.dp),
+                ) {
+                    item {
+                        Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                            if (notes.headline.isNotEmpty()) {
+                                Text(notes.headline, style = T.Subtitle.copy(fontSize = 17.sp_))
+                            }
+                            if (notes.dateLine.isNotEmpty()) Text(notes.dateLine, style = T.Caption)
+                            if (notes.summary.isNotEmpty()) Text(notes.summary, style = T.Body)
+                        }
+                    }
+                    items(notes.sections, key = { it.title }) { section ->
+                        Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                            Text(releaseSectionLabel(section.title), style = T.Label.copy(color = C.Caramel))
+                            section.lines.forEach { line ->
+                                Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
+                                    Box(
+                                        Modifier.padding(top = 7.dp).size(5.dp)
+                                            .background(C.Text3, CircleShape),
+                                    )
+                                    Text(line, style = T.Body, modifier = Modifier.weight(1f))
+                                }
+                            }
+                        }
+                    }
+                    item { Spacer(Modifier.height(12.dp)) }
+                }
+            }
+        }
+    }
+}
+
+/** The translated heading for a release-note section key. */
+@Composable
+private fun releaseSectionLabel(key: String): String = stringResource(
+    when (key) {
+        CaramelReleaseNotesLoader.KIND_ADDED -> R.string.changelog_popup_added
+        CaramelReleaseNotesLoader.KIND_CHANGED -> R.string.changelog_popup_changed
+        CaramelReleaseNotesLoader.KIND_FIXED -> R.string.changelog_popup_fixed
+        else -> R.string.changelog_popup_more
+    },
+)
 
 /** The Friends modal: the active account's real Xbox Live friends, loaded by the activity. */
 @Composable
@@ -270,13 +419,37 @@ fun CaramelFriendsModal(state: CaramelLauncherState, actions: CaramelLauncherHos
                     Modifier.fillMaxWidth().weight(1f).padding(horizontal = 24.dp),
                 )
             } else {
-                LazyColumn(Modifier.weight(1f).padding(horizontal = 24.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                    item {
-                        Text(
-                            stringResource(R.string.caramel_no_friends_body),
-                            style = T.Body,
-                            modifier = Modifier.padding(start = 8.dp, top = 6.dp),
-                        )
+                val query = q.trim()
+                val visible = if (query.isEmpty()) state.friends
+                else state.friends.filter { it.gamertag.contains(query, ignoreCase = true) }
+                if (visible.isEmpty()) {
+                    val noneAtAll = state.friends.isEmpty()
+                    val title = stringResource(
+                        if (noneAtAll) R.string.caramel_no_friends_title
+                        else R.string.caramel_no_friends_match
+                    )
+                    val matchBody = stringResource(R.string.caramel_no_friends_match_body)
+                    val body = if (noneAtAll) {
+                        stringResource(R.string.caramel_no_friends_body)
+                    } else {
+                        state.friendsStatus.ifEmpty { matchBody }
+                    }
+                    EmptyState(
+                        title,
+                        body,
+                        Modifier.fillMaxWidth().weight(1f).padding(horizontal = 24.dp),
+                    )
+                } else {
+                    LazyColumn(
+                        Modifier.weight(1f).padding(horizontal = 24.dp),
+                        verticalArrangement = Arrangement.spacedBy(8.dp),
+                    ) {
+                        if (state.friendsStatus.isNotEmpty()) {
+                            item {
+                                Text(state.friendsStatus, style = T.Body, modifier = Modifier.padding(start = 8.dp, top = 6.dp))
+                            }
+                        }
+                        items(visible) { friend -> CaramelFriendRow(friend) }
                     }
                 }
             }
@@ -284,26 +457,41 @@ fun CaramelFriendsModal(state: CaramelLauncherState, actions: CaramelLauncherHos
     }
 }
 
-/** The Microsoft sign-in modal: the device code the activity is polling. */
+/**
+ * The Microsoft sign-in modal.
+ *
+ * <p>It carries the whole device-code flow: the button starts it, the code and the pre-filled link
+ * appear as soon as Microsoft issues them, and a failure shows why instead of closing silently.
+ * Before this the modal only ever showed a code the flow never had time to hand over, so the button
+ * looked dead and the modal closed on its own.
+ */
 @Composable
 fun CaramelAddAccountModal(state: CaramelLauncherState, actions: CaramelLauncherHost.Actions) {
-    CaramelModal(state.addAccount, { state.addAccount = false }, Modifier.size(460.dp, 520.dp)) {
+    CaramelModal(state.addAccount, { state.addAccount = false }, Modifier.size(460.dp, 560.dp)) {
         Column(Modifier.fillMaxSize()) {
             CaramelModalHeader(
                 stringResource(R.string.caramel_add_account_title),
                 stringResource(R.string.caramel_add_account_sub),
                 { state.addAccount = false },
             )
-            Column(Modifier.weight(1f).padding(horizontal = 32.dp), verticalArrangement = Arrangement.spacedBy(16.dp)) {
+            Column(
+                Modifier.weight(1f).padding(horizontal = 32.dp).verticalScroll(rememberScrollState()),
+                verticalArrangement = Arrangement.spacedBy(16.dp),
+            ) {
                 Row(
                     Modifier.fillMaxWidth().height(56.dp).clip(RoundedCornerShape(16.dp))
-                        .background(Color.White)
-                        .clickable(remember { MutableInteractionSource() }, null, onClick = actions::startSignIn),
+                        .background(if (state.signInRunning) Color.White.copy(0.6f) else Color.White)
+                        .clickable(
+                            remember { MutableInteractionSource() }, null,
+                            enabled = !state.signInRunning,
+                            onClick = actions::startSignIn,
+                        ),
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.Center,
                 ) {
                     Text(
-                        stringResource(R.string.caramel_sign_in_microsoft),
+                        if (state.signInRunning) stringResource(R.string.caramel_sign_in_starting)
+                        else stringResource(R.string.caramel_sign_in_microsoft),
                         style = T.Label.copy(color = Color(0xFF1C2446), fontSize = 14.5.sp_),
                     )
                 }
@@ -316,10 +504,43 @@ fun CaramelAddAccountModal(state: CaramelLauncherState, actions: CaramelLauncher
                     Modifier.fillMaxWidth().clip(RoundedCornerShape(18.dp)).background(Color(0x78040A1A))
                         .border(1.dp, Color.White.copy(0.16f), RoundedCornerShape(18.dp)).padding(20.dp),
                     horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.spacedBy(12.dp),
                 ) {
                     val code = state.deviceCode.ifEmpty { "\u2014\u2014\u2014\u2014" }
                     Text(code, style = T.Display.copy(fontSize = 30.sp_, letterSpacing = 3.sp_))
                     if (state.busyMessage.isNotEmpty()) Text(state.busyMessage, style = T.Body)
+                    if (state.deviceCode.isNotEmpty()) {
+                        Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
+                            GlassButton(
+                                stringResource(R.string.ms_device_code_open_browser),
+                                actions::openDeviceCodePage,
+                                icon = Icons.Rounded.Public,
+                                height = 34,
+                            )
+                            GlassButton(
+                                stringResource(R.string.ms_device_code_copy),
+                                actions::copyDeviceCode,
+                                icon = Icons.Rounded.ContentCopy,
+                                height = 34,
+                            )
+                        }
+                    }
+                }
+                if (state.signInError.isNotEmpty()) {
+                    Row(
+                        Modifier.fillMaxWidth().clip(RoundedCornerShape(14.dp))
+                            .background(C.Red.copy(0.14f))
+                            .border(1.dp, C.Red.copy(0.45f), RoundedCornerShape(14.dp))
+                            .padding(horizontal = 16.dp, vertical = 12.dp),
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(10.dp),
+                    ) {
+                        Icon(Icons.Rounded.ErrorOutline, null, Modifier.size(16.dp), C.Red)
+                        Text(
+                            stringResource(R.string.ms_login_failed_detail, state.signInError),
+                            style = T.Body.copy(color = C.Red),
+                        )
+                    }
                 }
                 Text(
                     stringResource(R.string.caramel_device_code_hint),
@@ -331,7 +552,13 @@ fun CaramelAddAccountModal(state: CaramelLauncherState, actions: CaramelLauncher
             Row(Modifier.fillMaxWidth().padding(24.dp, 18.dp), verticalAlignment = Alignment.CenterVertically) {
                 GlassButton(stringResource(R.string.cancel), { state.addAccount = false })
                 Spacer(Modifier.weight(1f))
-                Text(stringResource(R.string.caramel_waiting_sign_in), style = T.Body)
+                Text(
+                    stringResource(
+                        if (state.signInRunning) R.string.caramel_waiting_sign_in
+                        else R.string.caramel_sign_in_idle
+                    ),
+                    style = T.Body,
+                )
             }
         }
     }
@@ -353,7 +580,7 @@ fun CaramelAccountSettingsModal(state: CaramelLauncherState, actions: CaramelLau
             CaramelRule()
             Column(Modifier.weight(1f).padding(32.dp), verticalArrangement = Arrangement.spacedBy(22.dp)) {
                 Row(horizontalArrangement = Arrangement.spacedBy(18.dp), verticalAlignment = Alignment.CenterVertically) {
-                    CaramelAvatar(88)
+                    CaramelAvatarPicture(state.accountAvatarUrl, 88, online = state.signedIn)
                     Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(4.dp)) {
                         Text(
                             if (state.signedIn) state.accountName else stringResource(R.string.not_signed_in),
@@ -384,78 +611,159 @@ fun CaramelAccountSettingsModal(state: CaramelLauncherState, actions: CaramelLau
     }
 }
 
-/** The add-friend modal. Xbox Live has no client-side add, so the request is a link-out. */
+/**
+ * The add-friend modal.
+ *
+ * <p>It used to be a shell: the field accepted text, a green "found" banner sat under it whether or
+ * not anything had been found, and "Send request" only closed the modal. Now the lookup resolves the
+ * typed gamertag against the real Xbox Live profile service, the found banner appears only when an
+ * account was actually resolved, a Caramel badge appears beside it only when that account's xuid has
+ * been heard on a Caramel-only protocol (see [org.chimeramc.client.core.cosmetics.CaramelUserDirectory]),
+ * and "Send request" issues the real follow call.
+ */
 @Composable
-fun CaramelAddFriendModal(state: CaramelLauncherState) {
-    CaramelModal(state.addFriend, { state.addFriend = false }, Modifier.size(400.dp, 300.dp)) {
-        var user by remember { mutableStateOf("") }
-        Column(Modifier.fillMaxSize().padding(28.dp), verticalArrangement = Arrangement.spacedBy(16.dp)) {
+fun CaramelAddFriendModal(state: CaramelLauncherState, actions: CaramelLauncherHost.Actions) {
+    CaramelModal(state.addFriend, { state.addFriend = false; actions.resetFriendSearch() }, Modifier.size(430.dp, 420.dp)) {
+        Column(Modifier.fillMaxSize().padding(28.dp), verticalArrangement = Arrangement.spacedBy(14.dp)) {
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Column(Modifier.weight(1f)) {
                     Text(stringResource(R.string.caramel_add_friend_title), style = T.Title.copy(fontSize = 18.sp_))
                     Text(stringResource(R.string.caramel_add_friend_sub), style = T.Body)
                 }
-                GlassButton(null, { state.addFriend = false }, icon = Icons.Rounded.Close, height = 32)
+                GlassButton(null, { state.addFriend = false; actions.resetFriendSearch() }, icon = Icons.Rounded.Close, height = 32)
             }
-            CaramelTextField(user, { user = it }, Modifier.fillMaxWidth(), stringResource(R.string.caramel_username), Icons.Rounded.Person)
-            Row(
-                Modifier.fillMaxWidth().height(40.dp).clip(RoundedCornerShape(12.dp)).background(C.Green.copy(0.11f))
-                    .border(1.dp, C.Green.copy(0.4f), RoundedCornerShape(12.dp)).padding(horizontal = 16.dp),
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.spacedBy(10.dp),
-            ) {
-                Icon(Icons.Rounded.Check, null, Modifier.size(15.dp), C.Green)
-                Text(
-                    stringResource(R.string.caramel_friend_found, user),
-                    style = T.Label.copy(fontWeight = FontWeight.Medium, fontSize = 12.5.sp_),
+            CaramelTextField(
+                state.friendQuery,
+                {
+                    state.friendQuery = it
+                    // A new name invalidates the previous result, so the found banner and the badge
+                    // never describe the account that was typed before.
+                    state.friendFound = null
+                    state.friendFoundIsCaramel = false
+                    state.friendSearchError = ""
+                    state.friendRequestResult = ""
+                },
+                Modifier.fillMaxWidth(),
+                stringResource(R.string.caramel_username),
+                Icons.Rounded.Person,
+            )
+            Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(10.dp)) {
+                PrimaryButton(
+                    stringResource(if (state.friendSearchRunning) R.string.caramel_searching else R.string.caramel_search),
+                    { actions.searchFriend(state.friendQuery) },
+                    Modifier.weight(1f),
+                    height = 38,
+                )
+            }
+            val found = state.friendFound
+            when {
+                state.friendSearchError.isNotEmpty() -> ResultBanner(state.friendSearchError, C.Red, Icons.Rounded.Close)
+                state.friendSearchRunning -> ResultBanner(stringResource(R.string.caramel_searching), C.Blue, Icons.Rounded.Search)
+                found != null -> FoundAccountRow(found, state.friendFoundIsCaramel)
+                state.friendSearchError.isEmpty() && state.friendQuery.trim().isNotEmpty() -> Unit
+            }
+            if (state.friendRequestResult.isNotEmpty()) {
+                ResultBanner(
+                    state.friendRequestResult,
+                    if (state.friendRequestSucceeded) C.Green else C.Red,
+                    if (state.friendRequestSucceeded) Icons.Rounded.Check else Icons.Rounded.Close,
                 )
             }
             Spacer(Modifier.weight(1f))
             Row(horizontalArrangement = Arrangement.spacedBy(14.dp)) {
-                GlassButton(stringResource(R.string.cancel), { state.addFriend = false }, Modifier.width(140.dp), height = 38)
-                PrimaryButton(stringResource(R.string.caramel_send_request), { state.addFriend = false }, Modifier.weight(1f), height = 38)
+                GlassButton(stringResource(R.string.cancel), { state.addFriend = false; actions.resetFriendSearch() }, Modifier.width(140.dp), height = 38)
+                PrimaryButton(
+                    stringResource(R.string.caramel_send_request),
+                    { actions.sendFriendRequest() },
+                    Modifier.weight(1f),
+                    height = 38,
+                )
             }
         }
     }
 }
 
-/** The launcher settings panel: the real preferences the activity reads back. */
+/** The resolved account: its picture, gamertag and, only when confirmed, the Caramel badge. */
 @Composable
-fun CaramelLauncherSettingsPanel(state: CaramelLauncherState, actions: CaramelLauncherHost.Actions, close: () -> Unit) {
-    var reduceMotion by remember { mutableStateOf(false) }
-    var checkUpdates by remember { mutableStateOf(true) }
-    var blur by remember { mutableStateOf(0.6f) }
-    var scale by remember { mutableStateOf(0.4f) }
-    var accent by remember { mutableStateOf(0) }
-    Column(Modifier.fillMaxSize().padding(28.dp), verticalArrangement = Arrangement.spacedBy(20.dp)) {
-        Row(verticalAlignment = Alignment.CenterVertically) {
-            Text(stringResource(R.string.caramel_launcher_settings_title), style = T.Display, modifier = Modifier.weight(1f))
-            GlassButton(null, close, icon = Icons.Rounded.Close, height = 32)
-        }
-        Text(stringResource(R.string.caramel_appearance), style = T.Title)
-        Row(horizontalArrangement = Arrangement.spacedBy(14.dp)) {
-            listOf(C.Caramel, C.Blue, C.Green, Color(0xFF966EFF), C.Red, Color(0xFF4AC8E6)).forEachIndexed { i, col ->
-                Box(
-                    Modifier.size(34.dp).background(col, CircleShape)
-                        .border(2.dp, if (i == accent) Color.White else Color.White.copy(0.15f), CircleShape)
-                        .clickable(remember { MutableInteractionSource() }, null) { accent = i },
-                )
+private fun FoundAccountRow(user: CaramelFoundUser, isCaramel: Boolean) {
+    Row(
+        Modifier.fillMaxWidth().height(52.dp).clip(RoundedCornerShape(12.dp)).background(C.Green.copy(0.11f))
+            .border(1.dp, C.Green.copy(0.4f), RoundedCornerShape(12.dp)).padding(horizontal = 14.dp),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(10.dp),
+    ) {
+        CaramelAvatarPicture(user.avatarUrl, 30)
+        Text(user.gamertag, style = T.Label.copy(fontWeight = FontWeight.Medium), modifier = Modifier.weight(1f))
+        if (isCaramel) CaramelUserBadge()
+        Icon(Icons.Rounded.Check, null, Modifier.size(16.dp), C.Green)
+    }
+}
+
+/** The CaramelClient mark beside a confirmed Caramel user's name. */
+@Composable
+private fun CaramelUserBadge() {
+    val painter = painterResource(R.drawable.ic_caramel_badge)
+    Row(
+        Modifier.height(20.dp).clip(RoundedCornerShape(50)).background(C.Caramel.copy(0.16f))
+            .border(1.dp, C.Caramel.copy(0.5f), RoundedCornerShape(50)).padding(horizontal = 8.dp),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(4.dp),
+    ) {
+        Image(painter, contentDescription = stringResource(R.string.caramel_user_badge), modifier = Modifier.size(13.dp))
+        Text(stringResource(R.string.caramel_user_badge), style = T.Chip.copy(color = C.Caramel))
+    }
+}
+
+/** A one-line result banner with a leading icon, used for lookup and request outcomes. */
+@Composable
+private fun ResultBanner(text: String, tint: Color, icon: ImageVector) {
+    Row(
+        Modifier.fillMaxWidth().clip(RoundedCornerShape(12.dp)).background(tint.copy(0.11f))
+            .border(1.dp, tint.copy(0.4f), RoundedCornerShape(12.dp)).padding(horizontal = 14.dp, vertical = 10.dp),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(10.dp),
+    ) {
+        Icon(icon, null, Modifier.size(15.dp), tint)
+        Text(text, style = T.Label.copy(fontWeight = FontWeight.Medium, fontSize = 12.5.sp_))
+    }
+}
+
+/**
+ * The launcher's settings modal.
+ *
+ * <p>It used to hold its own `remember { mutableStateOf(...) }` copies of every control, so moving a
+ * slider changed a number on screen and wrote nothing anywhere — the settings did nothing. The real
+ * panel is [CaramelSettingsPanel], driven by the activity's [CaramelSettingsProvider], so every
+ * control here writes to the same store the full-screen settings screen does.
+ */
+@Composable
+fun CaramelLauncherSettingsModal(state: CaramelLauncherState, settings: CaramelSettingsProvider?) {
+    if (settings == null) {
+        // No store was handed over (a host that mounted the launcher without one): say so rather
+        // than drawing controls that cannot work.
+        Column(Modifier.fillMaxSize().padding(28.dp), verticalArrangement = Arrangement.spacedBy(16.dp)) {
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Text(stringResource(R.string.caramel_launcher_settings_title), style = T.Display, modifier = Modifier.weight(1f))
+                GlassButton(null, { state.launcherSettings = false }, icon = Icons.Rounded.Close, height = 32)
             }
+            EmptyState(
+                stringResource(R.string.caramel_settings_unavailable_title),
+                stringResource(R.string.caramel_settings_unavailable_body),
+                Modifier.fillMaxWidth().weight(1f),
+            )
         }
-        SliderRow(stringResource(R.string.caramel_glass_blur), "${(blur * 40).toInt()}", blur, { blur = it })
-        SliderRow(stringResource(R.string.caramel_interface_scale), "${(80 + scale * 50).toInt()}%", scale, { scale = it })
-        SettingRow(stringResource(R.string.caramel_reduce_motion), stringResource(R.string.caramel_reduce_motion_desc)) {
-            CaramelToggle(reduceMotion, { reduceMotion = it })
+        return
+    }
+    val settingsState = settings.settingsState()
+    Column(Modifier.fillMaxSize().padding(28.dp), verticalArrangement = Arrangement.spacedBy(16.dp)) {
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            Column(Modifier.weight(1f)) {
+                Text(stringResource(R.string.caramel_launcher_settings_title), style = T.Display)
+                Text(stringResource(R.string.caramel_settings_sub), style = T.Body)
+            }
+            GlassButton(null, { state.launcherSettings = false }, icon = Icons.Rounded.Close, height = 32)
         }
-        SettingRow(stringResource(R.string.caramel_menu_check_updates), stringResource(R.string.caramel_check_updates_desc)) {
-            CaramelToggle(checkUpdates, { checkUpdates = it })
-        }
-        Spacer(Modifier.weight(1f))
-        Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
-            GlassButton(stringResource(R.string.caramel_menu_check_updates), actions::openSettings, icon = Icons.Rounded.RocketLaunch)
-            Spacer(Modifier.weight(1f))
-            PrimaryButton(stringResource(R.string.save), close, Modifier.width(140.dp), height = 40)
-        }
+        CaramelSettingsPanel(settingsState, settings.settingsActions(), Modifier.weight(1f))
     }
 }
 
@@ -507,24 +815,42 @@ fun CaramelInstanceSettingsModal(state: CaramelLauncherState, actions: CaramelLa
                                 CaramelVersionDropdown(state.versions, state.version, onSelect = { state.version = it })
                             }
                             SettingRow(stringResource(R.string.caramel_loader)) {
-                                Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
-                                    org.chimeramc.client.ui.compose.caramel.CaramelLoader.entries.forEach {
-                                        LoaderTile(it, state.loader == it, { state.loader = it })
-                                    }
-                                }
+                                org.chimeramc.client.ui.compose.caramel.CaramelLoaderPicker(state.loader, { state.loader = it })
                             }
                             SettingRow(stringResource(R.string.caramel_profile_mode), stringResource(R.string.caramel_profile_open_desc)) {
                                 CaramelProfileDropdown(state.profile, { state.profile = it }, width = 240)
                             }
                         }
+                        1 -> {
+                            Text(stringResource(R.string.caramel_section_game), style = T.Title)
+                            SettingRow(
+                                stringResource(R.string.caramel_instance_launch_vertical),
+                                stringResource(R.string.caramel_instance_launch_vertical_desc),
+                            ) { CaramelToggle(state.instanceLaunchVertical, { actions.setInstanceLaunchVertical(it) }) }
+                            SettingRow(
+                                stringResource(R.string.caramel_instance_pack_changer),
+                                stringResource(R.string.caramel_instance_pack_changer_desc),
+                            ) { CaramelToggle(state.instancePackChanger, { actions.setInstancePackChanger(it) }) }
+                        }
+                        2 -> CaramelPerformanceTab(state, actions)
                         3 -> {
-                            Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
+                            Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(10.dp)) {
+                                Text(
+                                    stringResource(R.string.enabled_mods) + " " +
+                                        state.mods.count { it.enabled } + "/" + state.mods.size,
+                                    style = T.Label,
+                                )
+                                Box(Modifier.weight(1f))
                                 GlassButton(stringResource(R.string.caramel_open_mods_folder), actions::openModsFolder, icon = Icons.Rounded.Folder)
                             }
                             if (state.mods.isEmpty()) {
-                                Text(stringResource(R.string.caramel_no_mods_title), style = T.Body)
+                                EmptyState(
+                                    stringResource(R.string.empty_mods_title),
+                                    stringResource(R.string.empty_mods_message),
+                                    Modifier.fillMaxWidth(),
+                                )
                             } else {
-                                state.mods.take(8).forEach { m ->
+                                state.mods.forEach { m ->
                                     Row(
                                         Modifier.fillMaxWidth().clip(RoundedCornerShape(13.dp)).background(Color.White.copy(0.06f))
                                             .border(1.dp, Color.White.copy(0.12f), RoundedCornerShape(13.dp)).padding(12.dp),
@@ -536,7 +862,10 @@ fun CaramelInstanceSettingsModal(state: CaramelLauncherState, actions: CaramelLa
                                         }
                                         Column(Modifier.weight(1f)) {
                                             Text(m.name, style = T.Label)
-                                            Text(stringResource(R.string.caramel_mod_version, m.version), style = T.Caption)
+                                            Text(
+                                                if (m.version.isEmpty()) m.author else stringResource(R.string.caramel_mod_version, m.version),
+                                                style = T.Caption,
+                                            )
                                         }
                                         CaramelToggle(m.enabled, { actions.toggleMod(m, it) })
                                     }
@@ -545,7 +874,15 @@ fun CaramelInstanceSettingsModal(state: CaramelLauncherState, actions: CaramelLa
                         }
                         else -> {
                             Text(stringResource(R.string.caramel_section_advanced), style = T.Title)
-                            Text(stringResource(R.string.caramel_verbose_logging_desc), style = T.Body)
+                            SettingRow(
+                                stringResource(R.string.caramel_instance_shader_compat),
+                                stringResource(R.string.caramel_instance_shader_compat_desc),
+                            ) { CaramelToggle(state.instanceShaderCompat, { actions.setInstanceShaderCompat(it) }) }
+                            SettingRow(
+                                stringResource(R.string.caramel_instance_isolation),
+                                stringResource(R.string.caramel_instance_isolation_desc),
+                            ) { CaramelToggle(state.instanceIsolation, { actions.setInstanceIsolation(it) }) }
+                            Text(stringResource(R.string.caramel_instance_advanced_note), style = T.Body)
                         }
                     }
                 }

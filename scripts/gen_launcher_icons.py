@@ -5,7 +5,7 @@ The launcher icon is four layers per density, and a hand-edit to one density is 
 out of step. This script is the one place the art is rasterised, so a new icon is a new source PNG
 and one run.
 
-    resources/branding/app_icon_512.png          <- the source, committed
+    resources/branding/app_icon_512.png          <- the launcher-icon source, committed
       |
       +-- drawable-<density>/ic_launcher_foreground.png   the adaptive-icon foreground
       +-- drawable-<density>/ic_launcher_mono.png         the themed-icon silhouette
@@ -13,7 +13,20 @@ and one run.
       +-- drawable/ic_launcher_background.xml             the background gradient
       +-- docs/public/appicon.png                         the docs site favicon and nav logo
 
-Two things about the adaptive layers are deliberate:
+    resources/branding/app_mark_512.png          <- the in-app mark source, committed
+      |
+      +-- drawable-<density>/ic_caramel_logo.png          the in-app brand mark (hero, splash, shell)
+      +-- drawable-<density>/ic_caramel_mod.png           the mod-list glyph
+      +-- drawable-nodpi/ic_caramel_badge.png             the "a Caramel user" badge
+      +-- drawable-<density>/ic_caramel_mono.png          the notification/tile small icon
+
+The two sources are different art on purpose. The launcher icon is the app tile: a solid rounded
+square, so it survives any mask the launcher applies. The in-app mark is the same apple with a
+transparent surround, drawn *on* the client's own navy surfaces (hero, splash, title bar, a
+notification) where a solid tile would read as a pasted screenshot rather than a logo. Both are the
+same apple, so the app and the icon cannot drift to two different brands.
+
+Three things are deliberate:
 
 * The foreground is **overscaled** past the 108dp canvas. An adaptive icon is meant to be cropped by
   whatever mask the launcher uses, and the source art has its own rounded corners; drawn at 1.0 the
@@ -23,6 +36,16 @@ Two things about the adaptive layers are deliberate:
 * The background is the art's own top and bottom edge colour, sampled at generation time rather than
   picked by hand. It is only ever visible if a mask is squarer than the art's own corners, and when
   it is visible it has to look like the art continued, not like a different tile.
+
+The in-app layers come from the transparent mark source:
+
+* `ic_caramel_logo` is the mark on a square canvas, the shape every call site assumes (`Modifier
+  .size(n)` and `layout_width/height` both size the box, not the mark).
+* `ic_caramel_mod` is the same mark, smaller, for a list tile.
+* `ic_caramel_badge` is a single small nodpi bitmap: a badge beside a player's name is drawn at
+  12-14dp and Android would only ever pick one bucket for it.
+* `ic_caramel_mono` is the notification/tile small icon. The platform masks a small icon to its
+  alpha channel, so the mark is emitted as a white silhouette rather than as colour.
 
 Usage:
     python3 scripts/gen_launcher_icons.py --source resources/branding/app_icon_512.png
@@ -44,6 +67,23 @@ DEFAULT_SOURCE = ROOT / "resources/branding/app_icon_512.png"
 # from the app.
 DOCS_ICON = ROOT / "docs/public/appicon.png"
 DOCS_ICON_SIZE = 512
+
+# The in-app brand mark: the same apple with a transparent surround, so it can be drawn on the
+# client's own navy surfaces instead of reading as a pasted app tile. It is a second committed source
+# rather than a derivation of the launcher art, because the launcher art is opaque by design.
+MARK_SOURCE = ROOT / "resources/branding/app_mark_512.png"
+
+# dp size of each in-app layer, and how much of the square canvas the mark's longer side fills. The
+# fills match the sizes the layouts already reserve, so swapping the art does not move anything.
+MARK_DP = 96
+MARK_FILL = 0.88
+MOD_DP = 48
+MOD_FILL = 0.90
+MONO_DP = 24
+MONO_FILL = 0.92
+# A badge beside a player's name is 12-14dp and always resolves to one bucket, so it is a single
+# nodpi bitmap rather than a density set.
+BADGE_PX = 48
 
 # density folder -> scale factor. `mdpi` is 1x; the icon is 48dp square and the adaptive canvas is
 # 108dp, per the platform spec.
@@ -114,6 +154,50 @@ def adaptive_mono(art: Image.Image, size: int) -> Image.Image:
     return out
 
 
+def mark_source(path: pathlib.Path) -> Image.Image:
+    """The in-app mark source, trimmed to the mark's own bounding box.
+
+    The committed source is a fixed 512 canvas; trimming here means every layer is derived from the
+    mark's real extent, so a future re-export with a different margin does not change the drawn size.
+    """
+    if not path.is_file():
+        sys.exit(f"mark source not found: {path}")
+    art = Image.open(path).convert("RGBA")
+    box = art.getchannel("A").getbbox()
+    if box is None:
+        sys.exit(f"mark source is fully transparent: {path}")
+    return art.crop(box)
+
+
+def mark_scaled(mark: Image.Image, fill: float, canvas_px: int) -> Image.Image:
+    """The mark centred on a transparent square canvas, its longer side at `fill` of the canvas.
+
+    Every in-app layer is square because every call site sizes the drawable with one value
+    (`Modifier.size(n)`, `layout_width/height`), so a square canvas keeps the drawn size predictable
+    instead of letterboxing the mark inside a box the caller thought was the mark.
+    """
+    target = max(1, round(canvas_px * fill))
+    scale = target / max(mark.width, mark.height)
+    drawn = mark.resize((max(1, round(mark.width * scale)), max(1, round(mark.height * scale))),
+                        Image.LANCZOS)
+    canvas = Image.new("RGBA", (canvas_px, canvas_px), (0, 0, 0, 0))
+    canvas.paste(drawn, ((canvas_px - drawn.width) // 2, (canvas_px - drawn.height) // 2))
+    return canvas
+
+
+def mark_silhouette(mark: Image.Image, fill: float, canvas_px: int) -> Image.Image:
+    """The mark as a white silhouette on a transparent square canvas.
+
+    A notification or a Quick Settings tile masks its small icon to the alpha channel, so the colour
+    is discarded by the platform anyway. Emitting white keeps the tile legible on both a light and a
+    dark shade rather than relying on the source art's own contrast.
+    """
+    scaled = mark_scaled(mark, fill, canvas_px)
+    out = Image.new("RGBA", scaled.size, (255, 255, 255, 0))
+    out.putalpha(scaled.getchannel("A"))
+    return out
+
+
 def edge_colours(art: Image.Image) -> tuple[tuple[int, int, int], tuple[int, int, int]]:
     """The art's mean top-edge and bottom-edge colour, over the opaque middle of the edge.
 
@@ -177,14 +261,37 @@ def covered(icon: Image.Image) -> tuple[bool, str]:
     return low == 255, f"min alpha in the safe zone is {low}"
 
 
+def emit(layers: dict[pathlib.Path, Image.Image], check: bool, written: list[str],
+         problems: list[str]) -> None:
+    """Write each layer, or verify it byte-for-byte against what generation would produce."""
+    for path, image in layers.items():
+        rel = path.relative_to(ROOT)
+        if check:
+            if not path.is_file():
+                problems.append(f"{rel} is missing")
+                continue
+            have = Image.open(path)
+            if have.size != image.size:
+                problems.append(f"{rel} is {have.size}, expected {image.size}")
+                continue
+            if have.convert("RGBA").tobytes() != image.tobytes():
+                problems.append(f"{rel} is stale; regenerate")
+        else:
+            path.parent.mkdir(parents=True, exist_ok=True)
+            image.save(path, optimize=True)
+            written.append(str(rel))
+
+
 def main() -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument("--source", type=pathlib.Path, default=DEFAULT_SOURCE)
+    parser.add_argument("--mark-source", type=pathlib.Path, default=MARK_SOURCE)
     parser.add_argument("--check", action="store_true",
                         help="verify the committed set instead of writing it")
     args = parser.parse_args()
 
     art = source_art(args.source)
+    mark = mark_source(args.mark_source)
     written: list[str] = []
     problems: list[str] = []
 
@@ -198,22 +305,7 @@ def main() -> int:
                 adaptive_foreground(art, adaptive_size),
             RES / f"drawable-{density}/ic_launcher_mono.png": adaptive_mono(art, adaptive_size),
         }
-        for path, image in layers.items():
-            if args.check:
-                if not path.is_file():
-                    problems.append(f"{path.relative_to(ROOT)} is missing")
-                    continue
-                have = Image.open(path)
-                if have.size != image.size:
-                    problems.append(
-                        f"{path.relative_to(ROOT)} is {have.size}, expected {image.size}")
-                    continue
-                if have.convert("RGBA").tobytes() != image.tobytes():
-                    problems.append(f"{path.relative_to(ROOT)} is stale; regenerate")
-            else:
-                path.parent.mkdir(parents=True, exist_ok=True)
-                image.save(path, optimize=True)
-                written.append(str(path.relative_to(ROOT)))
+        emit(layers, args.check, written, problems)
 
         ok, why = covered(adaptive_foreground(art, adaptive_size))
         if not ok:
@@ -239,6 +331,19 @@ def main() -> int:
         DOCS_ICON.parent.mkdir(parents=True, exist_ok=True)
         docs_icon.save(DOCS_ICON, optimize=True)
         written.append(str(DOCS_ICON.relative_to(ROOT)))
+
+    for density, scale in DENSITIES:
+        emit({
+            RES / f"drawable-{density}/ic_caramel_logo.png":
+                mark_scaled(mark, MARK_FILL, round(MARK_DP * scale)),
+            RES / f"drawable-{density}/ic_caramel_mod.png":
+                mark_scaled(mark, MOD_FILL, round(MOD_DP * scale)),
+            RES / f"drawable-{density}/ic_caramel_mono.png":
+                mark_silhouette(mark, MONO_FILL, round(MONO_DP * scale)),
+        }, args.check, written, problems)
+
+    emit({RES / "drawable-nodpi/ic_caramel_badge.png": mark_scaled(mark, 1.0, BADGE_PX)},
+         args.check, written, problems)
 
     if problems:
         print("launcher icon set is not sound:")

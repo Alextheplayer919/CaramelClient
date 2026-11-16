@@ -1,0 +1,42 @@
+{
+  "es": {
+    "caramel_no_favourite_cosmetics_title": "Aún no hay favoritos",
+    "caramel_no_favourite_cosmetics_body": "Toca la estrella de un cosmético para guardarlo aquí."
+  },
+  "fr": {
+    "caramel_no_favourite_cosmetics_title": "Pas encore de favoris",
+    "caramel_no_favourite_cosmetics_body": "Touchez l’étoile d’un cosmétique pour le garder ici."
+  },
+  "hi": {
+    "caramel_no_favourite_cosmetics_title": "अभी कोई पसंदीदा नहीं",
+    "caramel_no_favourite_cosmetics_body": "किसी कॉस्मेटिक को यहाँ रखने के लिए उस पर तारा दबाएँ।"
+  },
+  "id": {
+    "caramel_no_favourite_cosmetics_title": "Belum ada favorit",
+    "caramel_no_favourite_cosmetics_body": "Ketuk bintang pada kosmetik untuk menyimpannya di sini."
+  },
+  "ja": {
+    "caramel_no_favourite_cosmetics_title": "お気に入りはまだありません",
+    "caramel_no_favourite_cosmetics_body": "コスメの星をタップするとここに保存されます。"
+  },
+  "pt": {
+    "caramel_no_favourite_cosmetics_title": "Ainda sem favoritos",
+    "caramel_no_favourite_cosmetics_body": "Toque na estrela de um cosmético para guardá-lo aqui."
+  },
+  "ru": {
+    "caramel_no_favourite_cosmetics_title": "Избранного пока нет",
+    "caramel_no_favourite_cosmetics_body": "Нажмите звёздочку на косметике, чтобы сохранить её здесь."
+  },
+  "tr": {
+    "caramel_no_favourite_cosmetics_title": "Henüz favori yok",
+    "caramel_no_favourite_cosmetics_body": "Bir kozmetiği burada tutmak için yıldıza dokunun."
+  },
+  "vi": {
+    "caramel_no_favourite_cosmetics_title": "Chưa có mục yêu thích",
+    "caramel_no_favourite_cosmetics_body": "Chạm vào ngôi sao trên vật phẩm để lưu vào đây."
+  },
+  "zh-rCN": {
+    "caramel_no_favourite_cosmetics_title": "还没有收藏",
+    "caramel_no_favourite_cosmetics_body": "点按饰品上的星星即可收藏到这里。"
+  }
+}

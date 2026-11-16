@@ -86,6 +86,7 @@ public class PersonalizationManager {
     public static final int BLUR_INTENSITY_DEFAULT = 50;
 
     private static int sChangeGeneration = 0;
+    private static Runnable sChangeListener;
 
     private final SharedPreferences prefs;
     private final Context context;
@@ -141,7 +142,7 @@ public class PersonalizationManager {
         int clamped = clamp(blurRadius, BG_BLUR_MIN, BG_BLUR_MAX);
         if (getBackgroundImageBlur() == clamped) return;
         prefs.edit().putInt(KEY_BG_IMAGE_BLUR, clamped).apply();
-        sChangeGeneration++;
+        notifyChanged();
     }
 
     public int getBackgroundImageBrightness() {
@@ -153,7 +154,7 @@ public class PersonalizationManager {
         int clamped = clamp(brightnessPercent, BG_BRIGHTNESS_MIN, BG_BRIGHTNESS_MAX);
         if (getBackgroundImageBrightness() == clamped) return;
         prefs.edit().putInt(KEY_BG_IMAGE_BRIGHTNESS, clamped).apply();
-        sChangeGeneration++;
+        notifyChanged();
     }
 
     public void setBackgroundImage(Uri sourceUri, Context activityContext) {
@@ -185,7 +186,7 @@ public class PersonalizationManager {
             original.recycle();
 
             prefs.edit().putString(KEY_BG_IMAGE_PATH, destFile.getAbsolutePath()).apply();
-            sChangeGeneration++;
+            notifyChanged();
         } catch (Exception e) {
             AppLog.warn(TAG, "Saving the background image failed", e);
         }
@@ -198,7 +199,7 @@ public class PersonalizationManager {
             if (f.exists()) f.delete();
         }
         prefs.edit().remove(KEY_BG_IMAGE_PATH).apply();
-        sChangeGeneration++;
+        notifyChanged();
     }
 
     public Bitmap loadBackgroundBitmap() {
@@ -223,7 +224,7 @@ public class PersonalizationManager {
         float clamped = Math.max(ANIMATION_SPEED_MIN, Math.min(ANIMATION_SPEED_MAX, speed));
         if (getAnimationSpeed() == clamped) return;
         prefs.edit().putFloat(KEY_ANIMATION_SPEED, clamped).apply();
-        sChangeGeneration++;
+        notifyChanged();
     }
 
     public int getUiTransparency() {
@@ -234,7 +235,7 @@ public class PersonalizationManager {
         int clamped = Math.max(UI_TRANSPARENCY_MIN, Math.min(UI_TRANSPARENCY_MAX, transparency));
         if (getUiTransparency() == clamped) return;
         prefs.edit().putInt(KEY_UI_TRANSPARENCY, clamped).apply();
-        sChangeGeneration++;
+        notifyChanged();
     }
 
     public int getCardRounding() {
@@ -249,7 +250,7 @@ public class PersonalizationManager {
         int clamped = Math.max(CARD_ROUNDING_MIN, Math.min(CARD_ROUNDING_MAX, roundingPx));
         if (getCardRounding() == clamped) return;
         prefs.edit().putInt(KEY_CARD_ROUNDING, clamped).apply();
-        sChangeGeneration++;
+        notifyChanged();
     }
 
     public int getIconSize() {
@@ -260,7 +261,7 @@ public class PersonalizationManager {
         int clamped = Math.max(ICON_SIZE_MIN, Math.min(ICON_SIZE_MAX, sizePercent));
         if (getIconSize() == clamped) return;
         prefs.edit().putInt(KEY_ICON_SIZE, clamped).apply();
-        sChangeGeneration++;
+        notifyChanged();
     }
 
     public float getFontScale() {
@@ -271,7 +272,7 @@ public class PersonalizationManager {
         float clamped = Math.max(FONT_SCALE_MIN, Math.min(FONT_SCALE_MAX, scale));
         if (getFontScale() == clamped) return;
         prefs.edit().putFloat(KEY_FONT_SCALE, clamped).apply();
-        sChangeGeneration++;
+        notifyChanged();
     }
 
     /** The persisted font key; see {@link LauncherFonts}. */
@@ -285,7 +286,7 @@ public class PersonalizationManager {
                 ? LauncherFonts.DEFAULT_KEY : key;
         if (resolved.equals(getFontFamily())) return;
         prefs.edit().putString(KEY_FONT_FAMILY, resolved).apply();
-        sChangeGeneration++;
+        notifyChanged();
     }
 
     public int getBlurIntensity() {
@@ -296,7 +297,7 @@ public class PersonalizationManager {
         int clamped = Math.max(BLUR_INTENSITY_MIN, Math.min(BLUR_INTENSITY_MAX, intensity));
         if (getBlurIntensity() == clamped) return;
         prefs.edit().putInt(KEY_BLUR_INTENSITY, clamped).apply();
-        sChangeGeneration++;
+        notifyChanged();
     }
 
     public boolean isShowAnimations() {
@@ -306,7 +307,7 @@ public class PersonalizationManager {
     public void setShowAnimations(boolean enabled) {
         if (isShowAnimations() == enabled) return;
         prefs.edit().putBoolean(KEY_SHOW_ANIMATIONS, enabled).apply();
-        sChangeGeneration++;
+        notifyChanged();
     }
 
     public boolean isEnableGlowEffects() {
@@ -334,7 +335,7 @@ public class PersonalizationManager {
     public void setEnableGlowEffects(boolean enabled) {
         if (isEnableGlowEffects() == enabled) return;
         prefs.edit().putBoolean(KEY_ENABLE_GLOW, enabled).apply();
-        sChangeGeneration++;
+        notifyChanged();
     }
 
     /**
@@ -350,7 +351,7 @@ public class PersonalizationManager {
         if (isHapticFeedbackEnabled() == enabled) return;
         prefs.edit().putBoolean(KEY_HAPTIC_FEEDBACK, enabled).apply();
         org.chimeramc.client.ui.animation.UiTouchFeedback.setEnabled(enabled);
-        sChangeGeneration++;
+        notifyChanged();
     }
 
     /**
@@ -364,7 +365,7 @@ public class PersonalizationManager {
     public void setDynamicColorEnabled(boolean enabled) {
         if (isDynamicColorEnabled() == enabled) return;
         prefs.edit().putBoolean(KEY_DYNAMIC_COLOR, enabled).apply();
-        sChangeGeneration++;
+        notifyChanged();
     }
 
     public void resetAllCustomizations() {
@@ -386,12 +387,31 @@ public class PersonalizationManager {
             .remove(KEY_DYNAMIC_COLOR)
             .apply();
         org.chimeramc.client.ui.animation.UiTouchFeedback.setEnabled(true);
-        sChangeGeneration++;
+        notifyChanged();
     }
 
 
     public static int getChangeGeneration() {
         return sChangeGeneration;
+    }
+
+    /**
+     * Registers a listener told whenever a customization changes.
+     *
+     * <p>{@link #getChangeGeneration()} is a plain counter, which a Compose composition cannot
+     * observe: reading a static field registers no snapshot read, so a slider that restyles the
+     * glass would leave the surface holding the values it sampled on first paint. This is the
+     * seam the Compose theme uses to learn about a write without the store depending on Compose.
+     * A single listener is enough; the theme replaces it on each mount.
+     */
+    public static void setChangeListener(Runnable listener) {
+        sChangeListener = listener;
+    }
+
+    private static void notifyChanged() {
+        sChangeGeneration++;
+        Runnable listener = sChangeListener;
+        if (listener != null) listener.run();
     }
 
     public void applyToActivity(Activity activity) {

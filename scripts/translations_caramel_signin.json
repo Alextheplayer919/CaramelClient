@@ -1,0 +1,42 @@
+{
+  "es": {
+    "caramel_sign_in_idle": "Aún no has iniciado sesión",
+    "caramel_device_code_open_failed": "No se pudo abrir ningún navegador. Visita microsoft.com/link e introduce el código mostrado."
+  },
+  "fr": {
+    "caramel_sign_in_idle": "Pas encore connecté",
+    "caramel_device_code_open_failed": "Aucun navigateur n'a pu être ouvert. Rendez-vous sur microsoft.com/link et saisissez le code affiché."
+  },
+  "hi": {
+    "caramel_sign_in_idle": "अभी साइन इन नहीं है",
+    "caramel_device_code_open_failed": "कोई ब्राउज़र नहीं खोला जा सका। microsoft.com/link पर जाएँ और दिखाया गया कोड डालें।"
+  },
+  "id": {
+    "caramel_sign_in_idle": "Belum masuk",
+    "caramel_device_code_open_failed": "Tidak ada peramban yang dapat dibuka. Buka microsoft.com/link dan masukkan kode yang ditampilkan."
+  },
+  "ja": {
+    "caramel_sign_in_idle": "まだサインインしていません",
+    "caramel_device_code_open_failed": "ブラウザーを開けませんでした。microsoft.com/link を開き、表示されたコードを入力してください。"
+  },
+  "pt": {
+    "caramel_sign_in_idle": "Ainda não conectado",
+    "caramel_device_code_open_failed": "Não foi possível abrir um navegador. Acesse microsoft.com/link e digite o código exibido."
+  },
+  "ru": {
+    "caramel_sign_in_idle": "Вы ещё не вошли",
+    "caramel_device_code_open_failed": "Не удалось открыть браузер. Откройте microsoft.com/link и введите показанный код."
+  },
+  "tr": {
+    "caramel_sign_in_idle": "Henüz giriş yapılmadı",
+    "caramel_device_code_open_failed": "Hiçbir tarayıcı açılamadı. microsoft.com/link adresine gidin ve gösterilen kodu girin."
+  },
+  "vi": {
+    "caramel_sign_in_idle": "Chưa đăng nhập",
+    "caramel_device_code_open_failed": "Không thể mở trình duyệt nào. Truy cập microsoft.com/link và nhập mã hiển thị."
+  },
+  "zh-rCN": {
+    "caramel_sign_in_idle": "尚未登录",
+    "caramel_device_code_open_failed": "无法打开浏览器。请访问 microsoft.com/link 并输入显示的代码。"
+  }
+}

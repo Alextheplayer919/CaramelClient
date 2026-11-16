@@ -66,6 +66,7 @@ enum class Tone(val top: Color, val bottom: Color, val on: Color) {
     Caramel(Color(0xFFFFBE5A), C.CaramelDark, Color.White),
     Blue(C.BlueLight, C.BlueDark, Color.White),
     Red(Color(0xFFFF6C7E), Color(0xFFD6344E), Color.White),
+    Yellow(C.Yellow, Color(0xFFD9A100), Color(0xFF3A2A00)),
 }
 
 /** The pack's `PrimaryButton`: a filled, gradient, glowing action. */
@@ -77,16 +78,19 @@ fun PrimaryButton(
     tone: Tone = Tone.Green,
     icon: ImageVector? = null,
     height: Int = 44,
+    muted: Boolean = false,
 ) {
     val src = remember { MutableInteractionSource() }
     val pressed by src.collectIsPressedAsState()
     val shape = RoundedCornerShape((height / 2.6).dp)
+    val top = if (muted) desaturate(tone.top) else tone.top
+    val bottom = if (muted) desaturate(tone.bottom) else tone.bottom
     Box(
         modifier
             .height(height.dp)
-            .shadow(if (pressed) 16.dp else 10.dp, shape, ambientColor = tone.bottom, spotColor = tone.bottom)
+            .shadow(if (pressed) 16.dp else 10.dp, shape, ambientColor = bottom, spotColor = bottom)
             .clip(shape)
-            .background(Brush.verticalGradient(listOf(tone.top, tone.bottom)))
+            .background(Brush.verticalGradient(listOf(top, bottom)))
             .background(
                 Brush.verticalGradient(
                     listOf(Color.White.copy(if (pressed) 0.28f else 0.20f), Color.Transparent, Color.Transparent),
@@ -107,6 +111,15 @@ fun PrimaryButton(
     }
 }
 
+/**
+ * A greyed version of a tone, for an action that is drawn as unavailable but still answers a tap
+ * with an explanation rather than doing nothing.
+ */
+private fun desaturate(color: Color): Color {
+    val l = 0.299f * color.red + 0.587f * color.green + 0.114f * color.blue
+    return Color(l, l, l, color.alpha)
+}
+
 /** The pack's `GlassButton`: a translucent secondary action. `text == null` makes it square. */
 @Composable
 fun GlassButton(
@@ -117,6 +130,7 @@ fun GlassButton(
     danger: Boolean = false,
     active: Boolean = false,
     height: Int = 40,
+    enabled: Boolean = true,
 ) {
     val src = remember { MutableInteractionSource() }
     val pressed by src.collectIsPressedAsState()
@@ -126,15 +140,20 @@ fun GlassButton(
         else -> Color.White
     }
     val shape = RoundedCornerShape(CaramelDimens.RadiusButton)
-    val fg = if (danger) C.Red else C.Text
+    val fg = when {
+        !enabled -> C.Text3
+        danger -> C.Red
+        else -> C.Text
+    }
+    val alpha = if (enabled) 1f else 0.45f
     Box(
         modifier
             .height(height.dp)
             .then(if (text == null) Modifier.width(height.dp) else Modifier)
             .clip(shape)
-            .background(tint.copy(if (danger || active) 0.16f else if (pressed) 0.14f else 0.08f))
-            .border(1.dp, tint.copy(if (danger || active) 0.45f else if (pressed) 0.28f else 0.17f), shape)
-            .clickable(src, null, onClick = onClick),
+            .background(tint.copy((if (danger || active) 0.16f else if (pressed) 0.14f else 0.08f) * alpha))
+            .border(1.dp, tint.copy((if (danger || active) 0.45f else if (pressed) 0.28f else 0.17f) * alpha), shape)
+            .clickable(src, null, enabled = enabled, onClick = onClick),
         Alignment.Center,
     ) {
         Row(

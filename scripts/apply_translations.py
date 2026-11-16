@@ -44,6 +44,19 @@ BATCHES = [
     ROOT / "scripts/translations_settings_run_setup.json",
     ROOT / "scripts/translations_present_frame.json",
     ROOT / "scripts/translations_caramel_launcher.json",
+    ROOT / "scripts/translations_caramel_signin.json",
+    ROOT / "scripts/translations_caramel_friends.json",
+    ROOT / "scripts/translations_caramel_mods_folder.json",
+    ROOT / "scripts/translations_caramel_servers.json",
+    ROOT / "scripts/translations_caramel_settings.json",
+    ROOT / "scripts/translations_caramel_settings_missing.json",
+    ROOT / "scripts/translations_caramel_perf.json",
+    ROOT / "scripts/translations_caramel_promo.json",
+    ROOT / "scripts/translations_caramel_news_honey.json",
+    ROOT / "scripts/translations_caramel_cosmetics_favourites.json",
+    ROOT / "scripts/translations_caramel_about.json",
+    ROOT / "scripts/translations_caramel_loaders.json",
+    ROOT / "scripts/translations_caramel_splash.json",
 ]
 
 STRING_RE = re.compile(r'<string name="([^"]+)"([^>]*)>(.*?)</string>', re.S)

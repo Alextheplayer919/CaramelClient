@@ -4,12 +4,15 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.platform.ComposeView
+import org.chimeramc.client.ui.compose.caramel.CaramelFileEntry
 import org.chimeramc.client.ui.compose.caramel.CaramelLauncherState
 import org.chimeramc.client.ui.compose.caramel.CaramelModInfo
 import org.chimeramc.client.ui.compose.caramel.CaramelScreenshotInfo
 import org.chimeramc.client.ui.compose.caramel.CaramelTheme
 import org.chimeramc.client.ui.compose.caramel.CaramelCosmeticInfo
 import org.chimeramc.client.ui.compose.caramel.CaramelServerInfo
+import org.chimeramc.client.launcher.core.splash.SplashShow
+import org.chimeramc.client.ui.compose.caramel.CaramelSettingsProvider
 
 /**
  * The Java-facing entry point for the Caramel launcher UI.
@@ -34,48 +37,73 @@ object CaramelLauncherHost {
         fun toggleFavourite(cosmetic: CaramelCosmeticInfo)
         fun joinServer(server: CaramelServerInfo)
         fun addServer()
+        fun submitAddServer()
+        fun resetAddServer()
+        fun deleteServer(server: CaramelServerInfo)
         fun toggleServerFavourite(server: CaramelServerInfo)
         fun openModsFolder()
-        fun openContent()
+        fun openModsFolderEntry(entry: CaramelFileEntry)
+        fun openModsFolderUp()
         fun openSettings()
         fun openAccounts()
         fun openScreenshots()
+        fun openScreenshotsFolder()
         fun openScreenshot(screenshot: CaramelScreenshotInfo)
         fun deleteScreenshot(screenshot: CaramelScreenshotInfo)
         fun startSignIn()
+        fun openDeviceCodePage()
+        fun copyDeviceCode()
         fun signOut()
+        fun searchFriend(query: String)
+        fun sendFriendRequest()
+        fun resetFriendSearch()
         fun renameInstance(name: String)
         fun repairInstance()
         fun deleteInstance()
         fun openInstanceFolder()
+        /** Writes one performance feature's value into the selected instance's options file. */
+        fun setPerfFeature(featureId: String, value: String)
+        /** Resets every performance feature to its catalogue default. */
+        fun resetPerfFeatures()
+        /** Toggles the instance's MB shader-loader compatibility fixer. */
+        fun setInstanceShaderCompat(enabled: Boolean)
+        /** Toggles whether this instance keeps its own game data. */
+        fun setInstanceIsolation(enabled: Boolean)
+        /** Toggles portrait launch for this instance. */
+        fun setInstanceLaunchVertical(enabled: Boolean)
+        /** Toggles the in-game resource-pack changer for this instance. */
+        fun setInstancePackChanger(enabled: Boolean)
         fun quit()
     }
 
     /**
      * Mounts the launcher into [composeView], wrapped in the Caramel theme.
      *
-     * <p>The skin preview slot is left to [skinViewerProvider]: a `@Composable` lambda cannot be
-     * passed from Java, so the activity opts in by setting the provider from Kotlin code (or not at
-     * all, in which case the Cosmetics screen shows its empty slot).
+     * <p>The skin preview slot defaults to the real software-rendered character (see
+     * [CaramelSkinPreview]); a Kotlin caller may override [skinViewerProvider] to substitute its own.
+     * A `@Composable` lambda cannot be passed from Java, so the activity opts in from Kotlin code
+     * (or not at all, in which case the Cosmetics screen still shows the real render).
      */
     @JvmStatic
     fun setContent(
         composeView: ComposeView,
         state: MutableState<CaramelLauncherState>,
         actions: Actions,
+        settings: CaramelSettingsProvider? = null,
     ) {
         composeView.setContent {
             CaramelTheme {
                 CaramelLauncherScreen(
                     state = state.value,
                     actions = actions,
-                    skinViewer = skinViewerProvider ?: { EmptySkinSlot(it) },
+                    skinViewer = skinViewerProvider,
+                    settings = settings,
                 )
             }
         }
     }
 
-    /** The Cosmetics skin-preview slot; a Kotlin caller may replace it. */
+    /** An override for the Cosmetics skin-preview slot; null means the real render is used. */
     @JvmStatic
     var skinViewerProvider: (@Composable (androidx.compose.ui.Modifier) -> Unit)? = null
 }
@@ -87,10 +115,30 @@ object CaramelLauncherHost {
  * passes the plain `preparing` string and this mounts the screen.
  */
 object CaramelSplashHost {
+    /**
+     * Mounts the cold-start show.
+     *
+     * <p>[art] is the ordered list of drawables this launch picked, [show] its timeline, and
+     * [onFinished] is called once the show has run its length — the activity plays the hand-over pop
+     * and opens the launcher there, so the screen is on the clock rather than the warm-up.
+     */
     @JvmStatic
-    fun setContent(composeView: ComposeView, preparing: String) {
+    fun setContent(
+        composeView: ComposeView,
+        art: IntArray,
+        show: SplashShow,
+        preparing: String,
+        onFinished: Runnable,
+    ) {
         composeView.setContent {
-            CaramelTheme { CaramelSplashScreen(preparing) }
+            CaramelTheme {
+                CaramelSplashScreen(
+                    art = art.asList(),
+                    show = show,
+                    preparing = preparing,
+                    onFinished = { onFinished.run() },
+                )
+            }
         }
     }
 }

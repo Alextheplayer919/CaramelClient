@@ -144,8 +144,7 @@
     "caramel_profile_isolated": "Perfil de instancia aislado",
     "caramel_unlocked": "Desbloqueado",
     "caramel_news_title": "Noticias",
-    "caramel_store_title": "Tienda",
-    "caramel_version_range": "%1$s \\u2013 %2$s"
+    "caramel_store_title": "Tienda"
   },
   "fr": {
     "caramel_user_badge": "CaramelClient user",
@@ -292,8 +291,7 @@
     "caramel_profile_isolated": "Profil d'instance isolé",
     "caramel_unlocked": "Déverrouillé",
     "caramel_news_title": "Nouvelles",
-    "caramel_store_title": "Boutique",
-    "caramel_version_range": "%1$s \\u2013 %2$s"
+    "caramel_store_title": "Boutique"
   },
   "hi": {
     "caramel_user_badge": "CaramelClient user",
@@ -440,8 +438,7 @@
     "caramel_profile_isolated": "पृथक इंस्टेंस प्रोफ़ाइल",
     "caramel_unlocked": "अनलॉक",
     "caramel_news_title": "ख़बरें",
-    "caramel_store_title": "स्टोर",
-    "caramel_version_range": "%1$s \\u2013 %2$s"
+    "caramel_store_title": "स्टोर"
   },
   "id": {
     "caramel_user_badge": "CaramelClient user",
@@ -588,8 +585,7 @@
     "caramel_profile_isolated": "Profil instans terpisah",
     "caramel_unlocked": "Terbuka",
     "caramel_news_title": "Berita",
-    "caramel_store_title": "Toko",
-    "caramel_version_range": "%1$s \\u2013 %2$s"
+    "caramel_store_title": "Toko"
   },
   "ja": {
     "caramel_user_badge": "CaramelClient user",
@@ -736,8 +732,7 @@
     "caramel_profile_isolated": "分離インスタンスプロファイル",
     "caramel_unlocked": "ロック解除",
     "caramel_news_title": "ニュース",
-    "caramel_store_title": "ストア",
-    "caramel_version_range": "%1$s \\u2013 %2$s"
+    "caramel_store_title": "ストア"
   },
   "pt": {
     "caramel_user_badge": "CaramelClient user",
@@ -884,8 +879,7 @@
     "caramel_profile_isolated": "Perfil de instância isolado",
     "caramel_unlocked": "Desbloqueado",
     "caramel_news_title": "Notícias",
-    "caramel_store_title": "Loja",
-    "caramel_version_range": "%1$s \\u2013 %2$s"
+    "caramel_store_title": "Loja"
   },
   "ru": {
     "caramel_user_badge": "CaramelClient user",
@@ -1032,8 +1026,7 @@
     "caramel_profile_isolated": "Изолированный профиль экземпляра",
     "caramel_unlocked": "Разблокировано",
     "caramel_news_title": "Новости",
-    "caramel_store_title": "Магазин",
-    "caramel_version_range": "%1$s \\u2013 %2$s"
+    "caramel_store_title": "Магазин"
   },
   "tr": {
     "caramel_user_badge": "CaramelClient user",
@@ -1180,8 +1173,7 @@
     "caramel_profile_isolated": "Yalıtılmış örnek profili",
     "caramel_unlocked": "Kilidi açık",
     "caramel_news_title": "Haberler",
-    "caramel_store_title": "Mağaza",
-    "caramel_version_range": "%1$s \\u2013 %2$s"
+    "caramel_store_title": "Mağaza"
   },
   "vi": {
     "caramel_user_badge": "CaramelClient user",
@@ -1328,8 +1320,7 @@
     "caramel_profile_isolated": "Hồ sơ phiên bản riêng biệt",
     "caramel_unlocked": "Đã mở khóa",
     "caramel_news_title": "Tin tức",
-    "caramel_store_title": "Cửa hàng",
-    "caramel_version_range": "%1$s \\u2013 %2$s"
+    "caramel_store_title": "Cửa hàng"
   },
   "zh-rCN": {
     "caramel_user_badge": "CaramelClient user",
@@ -1476,7 +1467,6 @@
     "caramel_profile_isolated": "隔离实例配置文件",
     "caramel_unlocked": "未锁定",
     "caramel_news_title": "消息",
-    "caramel_store_title": "商店",
-    "caramel_version_range": "%1$s \\u2013 %2$s"
+    "caramel_store_title": "商店"
   }
 }

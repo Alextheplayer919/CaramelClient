@@ -1,11 +1,20 @@
 package org.chimeramc.client.ui.compose.caramel
 
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.ReadOnlyComposable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
+import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import org.chimeramc.client.R
@@ -91,27 +100,113 @@ typealias T = CaramelType
  * `CircularProgressIndicator`, a ripple) does not fall back to the default purple.
  */
 @Composable
-fun CaramelTheme(content: @Composable () -> Unit) {
-    androidx.compose.material3.MaterialTheme(
-        colorScheme = androidx.compose.material3.darkColorScheme(
-            primary = C.Blue,
-            onPrimary = Color.White,
-            primaryContainer = C.DeepBlue,
-            onPrimaryContainer = C.Text,
-            secondary = C.Caramel,
-            onSecondary = Color.White,
-            background = C.Abyss,
-            onBackground = C.Text,
-            surface = C.Navy,
-            onSurface = C.Text,
-            surfaceVariant = C.DeepBlue,
-            onSurfaceVariant = C.Text2,
-            outline = C.Hairline,
-            error = C.Red,
-            onError = Color.White,
-        ),
-        content = content,
-    )
+fun CaramelTheme(prefs: CaramelUiPrefs = rememberCaramelUiPrefs(), content: @Composable () -> Unit) {
+    val density = LocalDensity.current
+    CompositionLocalProvider(
+        LocalCaramelPrefs provides prefs,
+        LocalDensity provides Density(density.density, prefs.fontScale),
+    ) {
+        androidx.compose.material3.MaterialTheme(
+            colorScheme = androidx.compose.material3.darkColorScheme(
+                primary = C.Blue,
+                onPrimary = Color.White,
+                primaryContainer = C.DeepBlue,
+                onPrimaryContainer = C.Text,
+                secondary = C.Caramel,
+                onSecondary = Color.White,
+                background = C.Abyss,
+                onBackground = C.Text,
+                surface = C.Navy,
+                onSurface = C.Text,
+                surfaceVariant = C.DeepBlue,
+                onSurfaceVariant = C.Text2,
+                outline = C.Hairline,
+                error = C.Red,
+                onError = Color.White,
+            ),
+            content = content,
+        )
+    }
+}
+
+/**
+ * The personalization values a Caramel surface reads.
+ *
+ * <p>Three of these (the font scale, the card radius and the glass strength) have no Material slot
+ * and are read by [CaramelTheme] itself: the scale becomes the composition's font scale, the radius
+ * is [GlassPanel]'s default corner, and the strength scales its frost. A settings screen passes its
+ * own instance so moving a slider previews immediately, and every other screen uses the store.
+ */
+class CaramelUiPrefs(
+    val fontScale: Float,
+    /** The card corner radius in dp, from the user's "Card Corner Rounding". */
+    val cardRadiusDp: Float,
+    /** 1 while animation is on, 0 when the user asked for reduced motion. */
+    val motionScale: Float,
+    /** 0.35 to 1.35, from the user's "Glass blur strength". */
+    val glassStrength: Float,
+    /**
+     * The user's "Animation Speed", 0.5 (half speed) to 3.0 (three times). A transition's base
+     * duration is divided by this, so a larger value is a shorter animation, matching the
+     * View-side {@code DynamicAnim} multiplier rather than inverting its sense.
+     */
+    val animationSpeed: Float = 1f,
+    /**
+     * The user's "UI Transparency", 0.0 (fully see-through) to 1.0 (opaque), default 0.85. It
+     * scales the glass fills' opacity, which is the only honest reading on Android: the surfaces
+     * are already translucent, so this is how much of the backdrop shows through them.
+     */
+    val uiTransparency: Float = 0.85f,
+)
+
+private val LocalCaramelPrefs = staticCompositionLocalOf {
+    CaramelUiPrefs(fontScale = 1f, cardRadiusDp = 20f, motionScale = 1f, glassStrength = 1f, animationSpeed = 1f, uiTransparency = 0.85f)
+}
+
+/** The user's personalization, as [CaramelTheme] provides it. */
+val caramelPrefs: CaramelUiPrefs
+    @Composable @ReadOnlyComposable get() = LocalCaramelPrefs.current
+
+/**
+ * A Compose-observable mirror of [org.chimeramc.client.util.PersonalizationManager]'s change counter.
+ *
+ * <p>The store is plain Java over `SharedPreferences`, so a composition that reads it cannot see a
+ * write: reading a static field does not register a snapshot read, and the surfaces would keep the
+ * values they sampled on their first paint. The store bumps this counter alongside its own, which is
+ * what makes a personalization change — a slider in the settings panel — repaint the glass it just
+ * restyled, instead of waiting for the surface to be recreated.
+ */
+object CaramelPersonalizationSignal {
+    var generation by mutableStateOf(0)
+        private set
+
+    init {
+        // Registered once, when the object is first read from a composition. The store is a
+        // singleton too, so a single listener sees every write from anywhere in the process.
+        org.chimeramc.client.util.PersonalizationManager.setChangeListener { generation++ }
+    }
+}
+
+/** Reads the persisted personalization; a failure yields the defaults rather than no theme. */
+@Composable
+fun rememberCaramelUiPrefs(): CaramelUiPrefs {
+    val context = LocalContext.current
+    val generation = CaramelPersonalizationSignal.generation
+    return androidx.compose.runtime.remember(context, generation) {
+        try {
+            val pm = org.chimeramc.client.util.PersonalizationManager(context)
+            CaramelUiPrefs(
+                fontScale = pm.fontScale.coerceIn(0.8f, 1.6f),
+                cardRadiusDp = pm.cardRounding.toFloat(),
+                motionScale = if (pm.isReduceMotion) 0f else 1f,
+                glassStrength = 0.35f + pm.blurIntensity / 100f,
+                animationSpeed = pm.animationSpeed.coerceIn(0.5f, 3f),
+                uiTransparency = (pm.uiTransparency / 100f).coerceIn(0f, 1f),
+            )
+        } catch (t: Throwable) {
+            CaramelUiPrefs(fontScale = 1f, cardRadiusDp = 20f, motionScale = 1f, glassStrength = 1f, animationSpeed = 1f, uiTransparency = 0.85f)
+        }
+    }
 }
 
 /** The pack's spacing and radius scale. */

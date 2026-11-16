@@ -110,8 +110,7 @@ public class Api28CompatTest {
         assertEquals(java.net.URLEncoder.encode("a b/c?d=e&f", "UTF-8"),
                 Api28Compat.urlEncode("a b/c?d=e&f"));
         // A redirect-URI component is the real call site: dots and letters pass through.
-        assertEquals("com.microsoft.identity.client.SignActivity",
-                Api28Compat.urlEncode("com.microsoft.identity.client.SignActivity"));
+        assertEquals("a.b.c.SomeActivity", Api28Compat.urlEncode("a.b.c.SomeActivity"));
     }
 
     @Test

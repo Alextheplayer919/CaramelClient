@@ -107,10 +107,6 @@
 -dontwarn org.bouncycastle.**
 -dontwarn org.openjsse.**
 
-# MSAL (Microsoft authentication) reflects on its own configuration classes.
--keep class com.microsoft.identity.** { *; }
--keep interface com.microsoft.identity.** { *; }
--dontwarn com.microsoft.identity.**
 
 # LuaJ (script host) loads its classes reflectively.
 -keep class org.luaj.** { *; }

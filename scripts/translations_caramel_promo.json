@@ -1,0 +1,62 @@
+{
+  "es": {
+    "caramel_plus_no_payment": "Intentaste pagar Caramel+ pero los desarrolladores aún no han configurado un sistema de pago",
+    "caramel_checking_updates": "Buscando actualizaciones…",
+    "caramel_update_available_version": "La versión %1$s está disponible. Toca Descargar actualización para instalarla.",
+    "caramel_update_check_failed": "No se pudieron buscar actualizaciones. Comprueba tu conexión e inténtalo de nuevo."
+  },
+  "fr": {
+    "caramel_plus_no_payment": "Vous avez essayé de payer Caramel+ mais les développeurs n'ont pas encore mis en place de système de paiement",
+    "caramel_checking_updates": "Recherche de mises à jour…",
+    "caramel_update_available_version": "La version %1$s est disponible. Appuyez sur Télécharger la mise à jour pour l'installer.",
+    "caramel_update_check_failed": "Impossible de rechercher des mises à jour. Vérifiez votre connexion et réessayez."
+  },
+  "hi": {
+    "caramel_plus_no_payment": "आपने Caramel+ के लिए भुगतान करने का प्रयास किया, लेकिन डेवलपर्स ने अभी तक भुगतान प्रणाली सेट नहीं की है",
+    "caramel_checking_updates": "अपडेट की जाँच की जा रही है…",
+    "caramel_update_available_version": "संस्करण %1$s उपलब्ध है। इसे इंस्टॉल करने के लिए अपडेट डाउनलोड करें पर टैप करें।",
+    "caramel_update_check_failed": "अपडेट की जाँच नहीं हो सकी। अपना कनेक्शन जाँचें और फिर से प्रयास करें।"
+  },
+  "id": {
+    "caramel_plus_no_payment": "Anda mencoba membayar Caramel+ tetapi pengembang belum menyiapkan sistem pembayaran",
+    "caramel_checking_updates": "Memeriksa pembaruan…",
+    "caramel_update_available_version": "Versi %1$s tersedia. Ketuk Unduh Pembaruan untuk memasangnya.",
+    "caramel_update_check_failed": "Tidak dapat memeriksa pembaruan. Periksa koneksi Anda dan coba lagi."
+  },
+  "ja": {
+    "caramel_plus_no_payment": "Caramel+ の支払いを試みましたが、開発者はまだ支払いシステムを設定していません",
+    "caramel_checking_updates": "アップデートを確認しています…",
+    "caramel_update_available_version": "バージョン %1$s が利用可能です。インストールするには「アップデートをダウンロード」をタップします。",
+    "caramel_update_check_failed": "アップデートを確認できませんでした。接続を確認して再試行してください。"
+  },
+  "pt": {
+    "caramel_plus_no_payment": "Você tentou pagar pelo Caramel+, mas os desenvolvedores ainda não configuraram um sistema de pagamento",
+    "caramel_checking_updates": "Verificando atualizações…",
+    "caramel_update_available_version": "A versão %1$s está disponível. Toque em Baixar atualização para instalá-la.",
+    "caramel_update_check_failed": "Não foi possível verificar atualizações. Verifique sua conexão e tente novamente."
+  },
+  "ru": {
+    "caramel_plus_no_payment": "Вы попытались оплатить Caramel+, но разработчики ещё не настроили систему оплаты",
+    "caramel_checking_updates": "Проверка обновлений…",
+    "caramel_update_available_version": "Доступна версия %1$s. Нажмите «Скачать обновление», чтобы установить её.",
+    "caramel_update_check_failed": "Не удалось проверить обновления. Проверьте подключение и повторите попытку."
+  },
+  "tr": {
+    "caramel_plus_no_payment": "Caramel+ için ödeme yapmayı denediniz ancak geliştiriciler henüz bir ödeme sistemi kurmadı",
+    "caramel_checking_updates": "Güncellemeler denetleniyor…",
+    "caramel_update_available_version": "%1$s sürümü mevcut. Yüklemek için Güncellemeyi indir öğesine dokunun.",
+    "caramel_update_check_failed": "Güncellemeler denetlenemedi. Bağlantınızı kontrol edip yeniden deneyin."
+  },
+  "vi": {
+    "caramel_plus_no_payment": "Bạn đã cố thanh toán cho Caramel+ nhưng các nhà phát triển chưa thiết lập hệ thống thanh toán",
+    "caramel_checking_updates": "Đang kiểm tra bản cập nhật…",
+    "caramel_update_available_version": "Đã có phiên bản %1$s. Nhấn Tải bản cập nhật để cài đặt.",
+    "caramel_update_check_failed": "Không thể kiểm tra bản cập nhật. Hãy kiểm tra kết nối và thử lại."
+  },
+  "zh-rCN": {
+    "caramel_plus_no_payment": "您尝试为 Caramel+ 付款，但开发者尚未设置支付系统",
+    "caramel_checking_updates": "正在检查更新…",
+    "caramel_update_available_version": "版本 %1$s 已可用。点击“下载更新”以安装。",
+    "caramel_update_check_failed": "无法检查更新。请检查您的网络连接后重试。"
+  }
+}

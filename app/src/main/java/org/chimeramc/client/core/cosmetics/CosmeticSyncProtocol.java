@@ -31,7 +31,19 @@ import java.nio.charset.StandardCharsets;
 public final class CosmeticSyncProtocol {
 
     public static final byte[] MAGIC = {'C', 'S'};
-    public static final byte VERSION = 1;
+
+    /**
+     * The current wire version.
+     *
+     * <p>Version 2 adds the sender's Xbox xuid. The badge rule needs a real identity, not a random
+     * peer id: "this gamertag is a Caramel user" is only honest if we heard that account's own xuid
+     * on a Caramel-only protocol. A version-1 packet still decodes (with no xuid) so an older client
+     * keeps syncing cosmetics; it simply cannot earn a badge.
+     */
+    public static final byte VERSION = 2;
+
+    /** The version before the xuid field; still decoded so an older peer is not dropped. */
+    public static final byte VERSION_XUIDLESS = 1;
 
     /** A full advertisement of the sender's equipped set. */
     public static final byte TYPE_ADVERTISE = 1;
@@ -60,15 +72,18 @@ public final class CosmeticSyncProtocol {
         public final byte type;
         public final String peerId;
         public final String name;
+        /** The sender's Xbox xuid, or "" for a version-1 peer that carried none. */
+        public final String xuid;
         public final String capeId;
         public final String accessoryId;
         public final String petId;
 
-        Advert(byte type, String peerId, String name, String capeId, String accessoryId,
+        Advert(byte type, String peerId, String name, String xuid, String capeId, String accessoryId,
                String petId) {
             this.type = type;
             this.peerId = peerId == null ? "" : peerId;
             this.name = name == null ? "" : name;
+            this.xuid = xuid == null ? "" : xuid;
             this.capeId = capeId == null ? CosmeticCatalog.NONE : capeId;
             this.accessoryId = accessoryId == null ? CosmeticCatalog.NONE : accessoryId;
             this.petId = petId == null ? CosmeticCatalog.NONE : petId;
@@ -82,16 +97,26 @@ public final class CosmeticSyncProtocol {
     /** Encodes one advertisement. Null ids become {@link CosmeticCatalog#NONE}. */
     public static byte[] encode(String peerId, String name, String capeId, String accessoryId,
                                 String petId) {
-        return encode(TYPE_ADVERTISE, peerId, name, capeId, accessoryId, petId);
+        return encode(peerId, name, "", capeId, accessoryId, petId);
+    }
+
+    /**
+     * Encodes one advertisement carrying the sender's xuid, so a receiver can mark the account as a
+     * Caramel user. The four-argument overload sends no xuid and is kept for tests and for a caller
+     * that genuinely has none.
+     */
+    public static byte[] encode(String peerId, String name, String xuid, String capeId,
+                                String accessoryId, String petId) {
+        return encode(TYPE_ADVERTISE, peerId, name, xuid, capeId, accessoryId, petId);
     }
 
     /** Encodes a request for peers to re-advertise immediately. */
     public static byte[] encodeRequest(String peerId, String name) {
-        return encode(TYPE_REQUEST, peerId, name,
+        return encode(TYPE_REQUEST, peerId, name, "",
                 CosmeticCatalog.NONE, CosmeticCatalog.NONE, CosmeticCatalog.NONE);
     }
 
-    private static byte[] encode(byte type, String peerId, String name, String capeId,
+    private static byte[] encode(byte type, String peerId, String name, String xuid, String capeId,
                                  String accessoryId, String petId) {
         try {
             ByteArrayOutputStream bytes = new ByteArrayOutputStream();
@@ -101,6 +126,7 @@ public final class CosmeticSyncProtocol {
             out.writeByte(type);
             writeString(out, peerId);
             writeString(out, name);
+            writeString(out, xuid);
             writeString(out, capeId == null ? CosmeticCatalog.NONE : capeId);
             writeString(out, accessoryId == null ? CosmeticCatalog.NONE : accessoryId);
             writeString(out, petId == null ? CosmeticCatalog.NONE : petId);
@@ -115,7 +141,8 @@ public final class CosmeticSyncProtocol {
     public static Advert decode(byte[] data) {
         if (data == null || data.length < MAGIC.length + 2) return null;
         if (data[0] != MAGIC[0] || data[1] != MAGIC[1]) return null;
-        if (data[2] != VERSION) return null;
+        byte version = data[2];
+        if (version != VERSION && version != VERSION_XUIDLESS) return null;
         try {
             DataInputStream in = new DataInputStream(new ByteArrayInputStream(data));
             in.skipBytes(MAGIC.length);
@@ -124,10 +151,12 @@ public final class CosmeticSyncProtocol {
             if (type != TYPE_ADVERTISE && type != TYPE_REQUEST) return null;
             String peerId = readString(in);
             String name = readString(in);
+            // Only a version-2 packet carries the xuid; a version-1 one has the cape id here.
+            String xuid = version >= VERSION ? readString(in) : "";
             String capeId = readString(in);
             String accessoryId = readString(in);
             String petId = readString(in);
-            return new Advert(type, peerId, name, capeId, accessoryId, petId);
+            return new Advert(type, peerId, name, xuid, capeId, accessoryId, petId);
         } catch (IOException e) {
             return null;
         }

@@ -47,7 +47,10 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import org.chimeramc.client.R
 import org.chimeramc.client.ui.compose.caramel.C
+import org.chimeramc.client.ui.compose.caramel.CaramelFriendRow
+import org.chimeramc.client.ui.compose.caramel.CaramelNotice
 import org.chimeramc.client.ui.compose.caramel.CaramelLauncherState
+import org.chimeramc.client.ui.compose.caramel.CaramelNewsInfo
 import org.chimeramc.client.ui.compose.caramel.GlassButton
 import org.chimeramc.client.ui.compose.caramel.GlassPanel
 import org.chimeramc.client.ui.compose.caramel.PrimaryButton
@@ -66,14 +69,18 @@ import org.chimeramc.client.ui.compose.caramel.sp_
 fun CaramelHomeScreen(
     state: CaramelLauncherState,
     onLaunch: () -> Unit,
-    onOpenContent: () -> Unit,
+    onOpenScreenshots: () -> Unit,
 ) {
     Row(Modifier.fillMaxSize(), horizontalArrangement = Arrangement.spacedBy(20.dp)) {
         Column(Modifier.weight(1f).fillMaxHeight(), verticalArrangement = Arrangement.spacedBy(20.dp)) {
-            Hero(state, onLaunch, onOpenContent, Modifier.fillMaxWidth().height(320.dp))
+            Hero(state, onLaunch, onOpenScreenshots, Modifier.fillMaxWidth().height(320.dp))
             Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
                 Text(stringResource(R.string.caramel_latest_news), style = T.Title, modifier = Modifier.weight(1f))
-                Text(stringResource(R.string.caramel_view_all_news), style = T.Label.copy(color = C.Text2, fontSize = 11.5.sp_))
+                Text(
+                    stringResource(R.string.caramel_view_all_news),
+                    style = T.Label.copy(color = C.Text2, fontSize = 11.5.sp_),
+                    modifier = Modifier.clickable(remember { MutableInteractionSource() }, null) { state.newsAll = true },
+                )
             }
             Row(Modifier.fillMaxWidth().weight(1f), horizontalArrangement = Arrangement.spacedBy(16.dp)) {
                 val cards = state.news.take(3)
@@ -81,14 +88,14 @@ fun CaramelHomeScreen(
                     EmptyCard(stringResource(R.string.caramel_no_news_title), stringResource(R.string.caramel_no_news_body), Modifier.weight(1f))
                 } else {
                     cards.forEachIndexed { i, n ->
-                        NewsCard(n.title, n.meta, newsArt(i), Modifier.weight(1f))
+                        NewsCard(state, n, newsArt(i), Modifier.weight(1f))
                     }
                 }
             }
         }
         Column(Modifier.width(374.dp).fillMaxHeight(), verticalArrangement = Arrangement.spacedBy(20.dp)) {
             FriendsCard(state, Modifier.fillMaxWidth().height(320.dp))
-            PromoCard(Modifier.fillMaxWidth().weight(1f))
+            PromoCard(state, Modifier.fillMaxWidth().weight(1f))
         }
     }
 }
@@ -101,7 +108,7 @@ private fun newsArt(i: Int): List<Color> = when (i % 3) {
 }
 
 @Composable
-private fun Hero(state: CaramelLauncherState, onLaunch: () -> Unit, onOpenContent: () -> Unit, modifier: Modifier) {
+private fun Hero(state: CaramelLauncherState, onLaunch: () -> Unit, onOpenScreenshots: () -> Unit, modifier: Modifier) {
     GlassPanel(modifier, RoundedCornerShape(24.dp)) {
         Canvas(Modifier.matchParentSize()) {
             drawCircle(
@@ -125,7 +132,7 @@ private fun Hero(state: CaramelLauncherState, onLaunch: () -> Unit, onOpenConten
             Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                 GlassButton(stringResource(R.string.caramel_profiles), { state.launchMenu = true }, icon = Icons.Rounded.Folder, height = 32)
                 GlassButton(stringResource(R.string.caramel_instances), { state.instanceSettings = true }, icon = Icons.Rounded.Tune, height = 32)
-                GlassButton(stringResource(R.string.caramel_content), onOpenContent, icon = Icons.Rounded.PhotoCamera, height = 32)
+                GlassButton(stringResource(R.string.caramel_screenshots_title), onOpenScreenshots, icon = Icons.Rounded.PhotoCamera, height = 32)
             }
             val line = state.instanceName.ifEmpty { stringResource(R.string.caramel_no_instance) }
             Text(line, style = T.Caption)
@@ -174,7 +181,7 @@ private fun LaunchSplitButton(state: CaramelLauncherState, onLaunch: () -> Unit)
 }
 
 @Composable
-private fun NewsCard(title: String, meta: String, art: List<Color>, modifier: Modifier) {
+private fun NewsCard(state: CaramelLauncherState, post: CaramelNewsInfo, art: List<Color>, modifier: Modifier) {
     GlassPanel(modifier, RoundedCornerShape(18.dp), elevation = 10.dp) {
         Column(Modifier.padding(6.dp)) {
             Box(
@@ -195,8 +202,18 @@ private fun NewsCard(title: String, meta: String, art: List<Color>, modifier: Mo
                 }
             }
             Column(Modifier.padding(10.dp), verticalArrangement = Arrangement.spacedBy(4.dp)) {
-                Text(title, style = T.Subtitle.copy(fontSize = 13.5.sp_), maxLines = 2)
-                Text(meta, style = T.Body, maxLines = 2)
+                Text(post.title, style = T.Subtitle.copy(fontSize = 13.5.sp_), maxLines = 2)
+                Text(post.meta, style = T.Body, maxLines = 2)
+                if (post.actionLabel.isNotEmpty() && post.actionUrl.isNotEmpty()) {
+                    // The card's own action, so the announcement is one tap from Home too.
+                    val label = post.actionLabel
+                    PrimaryButton(
+                        label,
+                        { state.webTitle = post.title; state.webUrl = post.actionUrl },
+                        tone = Tone.Yellow,
+                        height = 32,
+                    )
+                }
             }
         }
     }
@@ -235,26 +252,37 @@ private fun FriendsCard(state: CaramelLauncherState, modifier: Modifier) {
                 verticalArrangement = Arrangement.Center,
                 horizontalAlignment = Alignment.CenterHorizontally,
             ) {
-                Box(
-                    Modifier.size(60.dp).clip(CircleShape).background(Color.White.copy(0.07f))
-                        .border(1.dp, Color.White.copy(0.17f), CircleShape),
-                    Alignment.Center,
-                ) { Icon(Icons.Rounded.Group, null, Modifier.size(28.dp), C.Text2) }
-                Spacer(Modifier.height(16.dp))
-                Text(
-                    stringResource(R.string.caramel_friends_sub),
-                    style = T.Body.copy(fontSize = 12.5.sp_, textAlign = TextAlign.Center),
-                    modifier = Modifier.width(200.dp),
-                )
-                Spacer(Modifier.height(16.dp))
-                GlassButton(stringResource(R.string.caramel_add_first_friend), { state.addFriend = true }, icon = Icons.Rounded.Add)
+                if (state.friends.isNotEmpty()) {
+                    Column(
+                        Modifier.fillMaxWidth(),
+                        verticalArrangement = Arrangement.spacedBy(8.dp),
+                    ) {
+                        state.friends.take(4).forEach { friend ->
+                            CaramelFriendRow(friend)
+                        }
+                    }
+                } else {
+                    Box(
+                        Modifier.size(60.dp).clip(CircleShape).background(Color.White.copy(0.07f))
+                            .border(1.dp, Color.White.copy(0.17f), CircleShape),
+                        Alignment.Center,
+                    ) { Icon(Icons.Rounded.Group, null, Modifier.size(28.dp), C.Text2) }
+                    Spacer(Modifier.height(16.dp))
+                    Text(
+                        stringResource(R.string.caramel_friends_sub),
+                        style = T.Body.copy(fontSize = 12.5.sp_, textAlign = TextAlign.Center),
+                        modifier = Modifier.width(200.dp),
+                    )
+                    Spacer(Modifier.height(16.dp))
+                    GlassButton(stringResource(R.string.caramel_add_first_friend), { state.addFriend = true }, icon = Icons.Rounded.Add)
+                }
             }
         }
     }
 }
 
 @Composable
-private fun PromoCard(modifier: Modifier) {
+private fun PromoCard(state: CaramelLauncherState, modifier: Modifier) {
     GlassPanel(modifier, RoundedCornerShape(24.dp)) {
         Box(Modifier.matchParentSize().background(Brush.verticalGradient(listOf(C.Caramel.copy(0.26f), Color.Transparent))))
         Column(
@@ -271,7 +299,16 @@ private fun PromoCard(modifier: Modifier) {
                 modifier = Modifier.width(310.dp),
             )
             Spacer(Modifier.weight(1f))
-            PrimaryButton(stringResource(R.string.caramel_get_plus), {}, Modifier.fillMaxWidth(), Tone.Caramel)
+            // No payment method is attached yet, so the button is drawn unavailable: greyed, and a
+            // tap explains why rather than silently doing nothing.
+            val noPayment = stringResource(R.string.caramel_plus_no_payment)
+            PrimaryButton(
+                stringResource(R.string.caramel_get_plus),
+                { state.notice = CaramelNotice(noPayment, warning = true) },
+                Modifier.fillMaxWidth(),
+                Tone.Caramel,
+                muted = true,
+            )
         }
     }
 }

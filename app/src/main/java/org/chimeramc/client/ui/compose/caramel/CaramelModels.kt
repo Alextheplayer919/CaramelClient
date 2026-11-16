@@ -26,11 +26,18 @@ data class CaramelVersion(val id: String, val beta: Boolean) {
     val channel: CaramelChannel get() = if (beta) CaramelChannel.Beta else CaramelChannel.Release
 }
 
-/** The three loaders the pack's launch menu offers. */
-enum class CaramelLoader(val title: String) {
-    Bedrock("Minecraft Bedrock"),
-    Rust("Rust"),
-    Lightning("Lightning"),
+/**
+ * The three preloaders a game can be started with.
+ *
+ * <p>Only [Bedrock] exists: it is the shipped SweetLoader path the launcher actually runs. The
+ * other two are named so the choice is visible and are marked unavailable, because a loader that
+ * has not been built cannot be started — offering it as a working option would be a lie the launch
+ * could not keep.
+ */
+enum class CaramelLoader(val title: String, val available: Boolean) {
+    Bedrock("SweetLoader", true),
+    Rust("RustyLoader", false),
+    Lightning("LightningLoader", false),
 }
 
 /** The instance profile mode: a shared "Open" profile or an isolated one. */
@@ -41,6 +48,18 @@ enum class CaramelProfileMode(val title: String, val desc: String, val label: St
 
 /** The six launcher tabs the pack's sidebar carries. */
 enum class CaramelTab { Home, Mods, Servers, Cosmetics, News, Store }
+
+/**
+ * A transient in-app notice — the launcher's toast.
+ *
+ * <p>[text] is already-resolved display text (the caller reads the string resource), and [warning]
+ * picks the leading mark: a red "!" in a rounded square for something that did not work, a blue
+ * check for something that did. The notice clears itself, so a caller only ever raises one.
+ */
+data class CaramelNotice(
+    val text: String,
+    val warning: Boolean = false,
+)
 
 /** One mod row: the fields the Mods grid and the instance-settings list draw. */
 data class CaramelModInfo(
@@ -58,9 +77,15 @@ data class CaramelServerInfo(
     val port: Int,
     val online: Int?,
     val ping: Int?,
-    val minVersion: String,
-    val maxVersion: String,
+    /** The game version the server advertised, empty until a ping measured one. */
+    val version: String,
     val favourite: Boolean,
+    /** The icon key from [org.chimeramc.client.core.content.ServerIconCatalog], empty when none. */
+    val iconKey: String,
+    /** True for a shipped default server, false for one the user saved. */
+    val featured: Boolean,
+    /** True once a ping has been attempted, so the row can tell "checking" from "offline". */
+    val checked: Boolean = false,
 )
 
 /** What kind of cosmetic a tile is, which is the Cosmetics screen's filter chip. */
@@ -81,18 +106,59 @@ data class CaramelCosmeticInfo(
     val favourite: Boolean,
 )
 
-/** One news/changelog entry: the News tab draws these from the real changelog. */
-data class CaramelNewsInfo(
+/** One news post: the News screen and the news modal both draw these. */
+data class CaramelNewsInfo @JvmOverloads constructor(
     val title: String,
     val summary: String,
     val meta: String,
     val featured: Boolean,
+    /**
+     * An optional in-app action: the button's label, empty when the post has none.
+     *
+     * <p>A post with a label and a [actionUrl] draws a button that opens the page in the launcher's
+     * own WebView, so a link never throws the user out to a browser.
+     */
+    val actionLabel: String = "",
+    val actionUrl: String = "",
 )
 
 /** One captured screenshot: the Screenshots modal draws these from the instance's folder. */
 data class CaramelScreenshotInfo(
     val name: String,
     val path: String,
+)
+
+/** One group of release notes: a heading and the lines under it. */
+data class CaramelReleaseSection(
+    val title: String,
+    val lines: List<String>,
+)
+
+/**
+ * The current release's notes, shown by the Release notes popup.
+ *
+ * <p>Filled from the bundled `launcher/changelog.json` (the same document the first-run card reads)
+ * and the running build's own version, so the popup describes the build the user is on rather than a
+ * hard-coded list. [isEmpty] is true when the document carried nothing to show.
+ */
+data class CaramelReleaseNotes(
+    val version: String,
+    val headline: String,
+    val summary: String,
+    val dateLine: String,
+    val sections: List<CaramelReleaseSection>,
+) {
+    val isEmpty: Boolean
+        get() = headline.isEmpty() && summary.isEmpty() && sections.isEmpty()
+}
+
+/** One Xbox Live friend: the Friends card and modal draw these from PeopleHub. */
+data class CaramelFriendInfo(
+    val xuid: String,
+    val gamertag: String,
+    val avatarUrl: String,
+    val online: Boolean,
+    val presence: String,
 )
 
 /**
@@ -112,7 +178,16 @@ class CaramelLauncherState {
     var instanceName by mutableStateOf("")
     var accountName by mutableStateOf("")
     var signedIn by mutableStateOf(false)
-    var runningInstances by mutableStateOf(0)
+
+    /** The signed-in account's profile picture URL (Xbox), empty when unknown or signed out. */
+    var accountAvatarUrl by mutableStateOf("")
+    /**
+     * How many instances the launcher knows about — installed plus imported custom ones.
+     *
+     * <p>This is the number the title bar shows. It used to be a running-game flag, so it read
+     * "0 instances" for every user who was not mid-game, which is everyone almost all of the time.
+     */
+    var instancesCount by mutableStateOf(0)
     var launchEnabled by mutableStateOf(false)
     var launching by mutableStateOf(false)
 
@@ -121,6 +196,10 @@ class CaramelLauncherState {
     var cosmetics by mutableStateOf<List<CaramelCosmeticInfo>>(emptyList())
     var news by mutableStateOf<List<CaramelNewsInfo>>(emptyList())
     var screenshots by mutableStateOf<List<CaramelScreenshotInfo>>(emptyList())
+    var friends by mutableStateOf<List<CaramelFriendInfo>>(emptyList())
+
+    /** A status line for the friends list: "loading", an error reason, or empty when loaded. */
+    var friendsStatus by mutableStateOf("")
 
     var launchMenu by mutableStateOf(false)
     var instanceSettings by mutableStateOf(false)
@@ -130,6 +209,34 @@ class CaramelLauncherState {
     var appMenu by mutableStateOf(false)
     var screenshotsModal by mutableStateOf(false)
     var friendsAll by mutableStateOf(false)
+
+    /** Whether the "View all news" modal is open. */
+    var newsAll by mutableStateOf(false)
+
+    /**
+     * The current release's notes, shown by the Release notes popup.
+     *
+     * <p>Read once from the bundled changelog when the launcher mounts, so the menu item is a
+     * property of the build rather than something re-read on every open.
+     */
+    var releaseNotes by mutableStateOf(CaramelReleaseNotes("", "", "", "", emptyList()))
+
+    /** Whether the Release notes popup is open. */
+    var releaseNotesOpen by mutableStateOf(false)
+
+    /** Whether the About modal is open. */
+    var aboutOpen by mutableStateOf(false)
+
+    /**
+     * The page the in-app browser is showing, empty when it is closed.
+     *
+     * <p>A news post's link opens here rather than in the system browser, so the user stays in the
+     * launcher. The host fills [webTitle] with the page's own name.
+     */
+    var webUrl by mutableStateOf("")
+
+    /** The title shown on the in-app browser's header, empty falls back to the URL. */
+    var webTitle by mutableStateOf("")
     var addAccount by mutableStateOf(false)
     var accountSettings by mutableStateOf(false)
 
@@ -147,4 +254,112 @@ class CaramelLauncherState {
 
     /** The Microsoft device code shown in the add-account modal, empty when no sign-in is running. */
     var deviceCode by mutableStateOf("")
+
+    /** The page the code is entered on, with the code pre-filled; empty until a code is issued. */
+    var deviceCodeUrl by mutableStateOf("")
+
+    /** Whether a sign-in is in flight, so the modal can show progress rather than a dead button. */
+    var signInRunning by mutableStateOf(false)
+
+    /** Why the last sign-in attempt failed, empty when it has not failed. */
+    var signInError by mutableStateOf("")
+
+    /** The gamertag typed into the Add friend modal. */
+    var friendQuery by mutableStateOf("")
+
+    /** Whether a gamertag lookup is in flight, so the modal can show progress. */
+    var friendSearchRunning by mutableStateOf(false)
+
+    /** The account the last lookup resolved, or null when nothing has matched yet. */
+    var friendFound by mutableStateOf<CaramelFoundUser?>(null)
+
+    /** Whether the found account is a confirmed Caramel user, so the badge is honest. */
+    var friendFoundIsCaramel by mutableStateOf(false)
+
+    /** Why the last lookup found nothing, empty when it has not failed. */
+    var friendSearchError by mutableStateOf("")
+
+    /** Whether the follow request for [friendFound] is in flight. */
+    var friendRequestRunning by mutableStateOf(false)
+
+    /** The result line shown after a follow attempt, empty when idle. */
+    var friendRequestResult by mutableStateOf("")
+
+    /** Whether the follow request succeeded, so the result line can be tinted. */
+    var friendRequestSucceeded by mutableStateOf(false)
+
+    /** Whether the in-app mods-folder browser is open. */
+    var modsFolderOpen by mutableStateOf(false)
+
+    /** Whether the Add server modal is open. */
+    var addServer by mutableStateOf(false)
+
+    /**
+     * The in-app notice currently on screen, or null when none is.
+     *
+     * <p>This is the launcher's toast: a transient line that appears over the frame and clears
+     * itself. It is deliberately part of the state so a host action can raise one from anywhere.
+     */
+    var notice by mutableStateOf<CaramelNotice?>(null)
+
+    /** The name typed into the Add server modal. */
+    var serverDraftName by mutableStateOf("")
+
+    /** The address typed into the Add server modal. */
+    var serverDraftAddress by mutableStateOf("")
+
+    /** The port typed into the Add server modal, as text so the field can be cleared. */
+    var serverDraftPort by mutableStateOf("")
+
+    /** Whether an add-server write is in flight, so the button shows progress. */
+    var addServerRunning by mutableStateOf(false)
+
+    /** Why the last add-server attempt failed, empty when it has not failed. */
+    var addServerError by mutableStateOf("")
+
+    /** The folder the browser is currently showing, as a path relative to the mods root. */
+    var modsFolderPath by mutableStateOf("/")
+
+    /** The entries in the folder the browser is showing. */
+    var modsFolderEntries by mutableStateOf<List<CaramelFileEntry>>(emptyList())
+
+    /** Whether the browser can go up a level (false at the mods root). */
+    var modsFolderCanGoUp by mutableStateOf(false)
+
+    /**
+     * The instance's performance settings, keyed by [org.chimeramc.client.core.minecraft.PerfFeatureCatalog]
+     * feature id. A missing entry means the instance's options file has no such key yet, so the tab
+     * draws the feature's own default rather than a fabricated reading.
+     */
+    var perfValues by mutableStateOf<Map<String, String>>(emptyMap())
+
+    /** A status line for the last performance write; empty when idle. */
+    var perfStatus by mutableStateOf("")
+
+    /** Whether this instance runs the MB shader loader (the mtbinloader2 compatibility fixer). */
+    var instanceShaderCompat by mutableStateOf(false)
+
+    /** Whether this instance keeps its own game data rather than the shared root. */
+    var instanceIsolation by mutableStateOf(false)
+
+    /** Whether this instance launches in portrait. */
+    var instanceLaunchVertical by mutableStateOf(false)
+
+    /** Whether this instance exposes the in-game resource-pack changer. */
+    var instancePackChanger by mutableStateOf(false)
 }
+
+/** One row in the mods-folder browser: a file or a sub-directory. */
+data class CaramelFileEntry(
+    val name: String,
+    val path: String,
+    val directory: Boolean,
+    val sizeLabel: String,
+)
+
+/** One account the Add friend modal resolved from a typed gamertag. */
+data class CaramelFoundUser(
+    val xuid: String,
+    val gamertag: String,
+    val avatarUrl: String,
+)

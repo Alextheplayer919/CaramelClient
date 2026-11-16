@@ -348,6 +348,7 @@ public final class CosmeticSyncModule {
         // the world kept their cape on our client forever.
         pruneDepartedPeers();
         byte[] data = CosmeticSyncProtocol.encode(peerId, displayName,
+                org.chimeramc.client.core.xbox.CaramelIdentity.xuid(),
                 store.getEquippedCapeId(), store.getEquippedAccessoryId(),
                 store.getEquippedPetId());
         if (data.length == 0) return;
