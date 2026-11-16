@@ -197,9 +197,24 @@ public final class LauncherSettingsController implements CaramelSettingsActions,
             updater = new GithubReleaseUpdater(activity, GithubReleaseUpdater.REPO_OWNER,
                     GithubReleaseUpdater.REPO_NAME, null);
         }
-        // The check answers through its own dialog or toast; a press that produced no visible
-        // reaction at all was the bug this replaces.
-        updater.checkUpdate();
+        // A manual press must always answer: the button used to look dead because a failed request
+        // only reached the log. The panel now shows a line for the duration and the result.
+        state.setBusyMessage(activity.getString(R.string.caramel_checking_updates));
+        updater.checkUpdate((outcome, latestVersion, downloadUrl, error) -> {
+            switch (outcome) {
+                case UPDATE_AVAILABLE:
+                    state.setUpdateAvailable(true);
+                    state.setBusyMessage(activity.getString(R.string.caramel_update_available_version, latestVersion));
+                    break;
+                case UP_TO_DATE:
+                    state.setUpdateAvailable(false);
+                    state.setBusyMessage(activity.getString(R.string.already_latest_version, latestVersion));
+                    break;
+                default:
+                    state.setBusyMessage(activity.getString(R.string.caramel_update_check_failed));
+                    break;
+            }
+        });
     }
 
     @Override

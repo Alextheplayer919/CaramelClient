@@ -1502,4 +1502,7 @@
     <string name="caramel_news_honey_body">一个新客户端即将到来。点击下方查看 HoneyClient 正在打造的内容。</string>
     <string name="caramel_news_honey_meta">公告</string>
     <string name="caramel_news_honey_button">点击我了解更多信息！</string>
+    <string name="caramel_checking_updates">正在检查更新…</string>
+    <string name="caramel_update_available_version">版本 %1$s 已可用。点击“下载更新”以安装。</string>
+    <string name="caramel_update_check_failed">无法检查更新。请检查您的网络连接后重试。</string>
 </resources>

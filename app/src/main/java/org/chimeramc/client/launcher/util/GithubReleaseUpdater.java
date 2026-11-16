@@ -71,6 +71,21 @@ public class GithubReleaseUpdater {
     }
     private ActivityResultLauncher<Intent> permissionResultLauncher;
 
+    /** How a manual update check ended, so the surface that asked can say so. */
+    public enum Outcome {
+        /** The newest release is the one already installed. */
+        UP_TO_DATE,
+        /** A newer release exists; the dialog offers the download. */
+        UPDATE_AVAILABLE,
+        /** The check could not complete — no network, a bad response, or no APK asset. */
+        FAILED,
+    }
+
+    /** Receives the outcome of a manual check. Called on the caller's thread (the UI thread). */
+    public interface ResultListener {
+        void onResult(Outcome outcome, String latestVersion, String downloadUrl, Throwable error);
+    }
+
     public GithubReleaseUpdater(Activity activity, String owner, String repo,
                                 ActivityResultLauncher<Intent> permissionResultLauncher) {
         this.activity = activity;
@@ -124,12 +139,26 @@ public class GithubReleaseUpdater {
     }
 
     public void checkUpdate() {
+        checkUpdate(null);
+    }
+
+    /**
+     * Runs a manual update check and reports how it ended.
+     *
+     * <p>Before this the only visible reactions were the "new version" dialog and an "already latest"
+     * toast; a failed request logged a line and left the user staring at a button that appeared to
+     * do nothing. [listener] now receives every outcome, so the surface that asked can say so.
+     */
+    public void checkUpdate(ResultListener listener) {
         String url = String.format(GITHUB_LATEST_API, owner, repo);
         Request request = new Request.Builder().url(url).build();
         client.newCall(request).enqueue(new Callback() {
             @Override
             public void onFailure(Call call, IOException e) {
                 Log.e(TAG, "Request failed: " + e.getMessage());
+                if (listener != null) {
+                    activity.runOnUiThread(() -> listener.onResult(Outcome.FAILED, "", "", e));
+                }
             }
 
             @Override
@@ -150,18 +179,36 @@ public class GithubReleaseUpdater {
                     }
                     if (downloadUrl == null) {
                         Log.e(TAG, "No APK asset found in release.");
+                        if (listener != null) {
+                            activity.runOnUiThread(() -> listener.onResult(Outcome.FAILED, "", "",
+                                    new IOException("no APK asset in the newest release")));
+                        }
                         return;
                     }
                     String localVersion = activity.getPackageManager().getPackageInfo(activity.getPackageName(), 0).versionName;
                     rememberLatestSeen(activity, latestVersion);
                     if (compareVersion(latestVersion, localVersion) > 0) {
                         showUpdateDialog(latestVersion, downloadUrl);
+                        if (listener != null) {
+                            String version = latestVersion;
+                            String link = downloadUrl;
+                            activity.runOnUiThread(() ->
+                                    listener.onResult(Outcome.UPDATE_AVAILABLE, version, link, null));
+                        }
                     } else {
                         activity.runOnUiThread(() ->
                                 Toast.makeText(activity, activity.getString(R.string.already_latest_version, localVersion), Toast.LENGTH_SHORT).show());
+                        if (listener != null) {
+                            String version = latestVersion;
+                            activity.runOnUiThread(() ->
+                                    listener.onResult(Outcome.UP_TO_DATE, version, "", null));
+                        }
                     }
                 } catch (Exception e) {
                     Log.e(TAG, "Parse error: " + e.getMessage());
+                    if (listener != null) {
+                        activity.runOnUiThread(() -> listener.onResult(Outcome.FAILED, "", "", e));
+                    }
                 }
             }
         });

@@ -1511,4 +1511,7 @@ Quá trình chuyển đổi phải hoàn tất trước khi CaramelClient có th
     <string name="caramel_news_honey_body">Một ứng dụng khách mới đang đến. Nhấn bên dưới để xem HoneyClient đang xây dựng gì.</string>
     <string name="caramel_news_honey_meta">Thông báo</string>
     <string name="caramel_news_honey_button">Nhấn vào tôi để biết thêm!</string>
+    <string name="caramel_checking_updates">Đang kiểm tra bản cập nhật…</string>
+    <string name="caramel_update_available_version">Đã có phiên bản %1$s. Nhấn Tải bản cập nhật để cài đặt.</string>
+    <string name="caramel_update_check_failed">Không thể kiểm tra bản cập nhật. Hãy kiểm tra kết nối và thử lại.</string>
 </resources>

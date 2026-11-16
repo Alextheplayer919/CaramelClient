@@ -2798,6 +2798,9 @@ CaramelClient must complete the migration before continuing.</string>
     <string name="caramel_plus_blurb">Support the client and unlock cosmetics, themes and early builds.</string>
     <string name="caramel_get_plus">Get Caramel+</string>
     <string name="caramel_plus_no_payment">You tried to pay for Caramel+ but the developers haven\'t set up a payment system yet</string>
+    <string name="caramel_checking_updates">Checking for updates…</string>
+    <string name="caramel_update_available_version">Version %1$s is available. Tap Download Update to install it.</string>
+    <string name="caramel_update_check_failed">Could not check for updates. Check your connection and try again.</string>
     <string name="caramel_no_news_title">No news yet</string>
     <string name="caramel_no_news_body">Posts appear here once the changelog loads.</string>
     <string name="caramel_news_honey_title">HoneyClient coming soon..</string>
