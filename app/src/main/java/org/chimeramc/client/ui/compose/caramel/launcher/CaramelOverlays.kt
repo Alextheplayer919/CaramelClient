@@ -1,5 +1,6 @@
 package org.chimeramc.client.ui.compose.caramel.launcher
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -51,9 +52,13 @@ import org.chimeramc.client.ui.compose.caramel.sp_
 @Composable
 fun CaramelLaunchMenuOverlay(state: CaramelLauncherState, onLaunch: () -> Unit) {
     if (!state.launchMenu) return
+    // A tap outside a menu must not throw it away — the same rule the modals follow, and the one the
+    // user asked for: a menu closes from its own X, or from the system back gesture. The scrim still
+    // swallows the tap so it cannot reach the screen behind.
+    BackHandler(enabled = state.launchMenu) { state.launchMenu = false }
     Popup(
         alignment = Alignment.Center,
-        onDismissRequest = { state.launchMenu = false },
+        onDismissRequest = {},
         properties = PopupProperties(focusable = true),
     ) {
         GlassPanel(Modifier.width(372.dp), RoundedCornerShape(22.dp), popup = true, elevation = 40.dp) {
@@ -61,6 +66,7 @@ fun CaramelLaunchMenuOverlay(state: CaramelLauncherState, onLaunch: () -> Unit) 
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Text(stringResource(R.string.caramel_version), style = T.Title.copy(fontSize = 15.sp_), modifier = Modifier.weight(1f))
                     CaramelVersionDropdown(state.versions, state.version, onSelect = { state.version = it })
+                    GlassButton(null, { state.launchMenu = false }, icon = Icons.Rounded.Close, height = 32)
                 }
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Text(stringResource(R.string.caramel_loaders), style = T.Title.copy(fontSize = 15.sp_), modifier = Modifier.weight(1f))
