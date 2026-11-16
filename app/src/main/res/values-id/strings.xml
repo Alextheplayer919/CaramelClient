@@ -1538,4 +1538,5 @@ Migrasi harus selesai sebelum CaramelClient dapat melanjutkan.</string>
     <string name="caramel_about_fact_best">Pengalaman Bedrock terbaik yang bisa Anda dapatkan.</string>
     <string name="caramel_loader_unavailable">Pramuat ini belum dibuat.</string>
     <string name="caramel_loaders_note">Hanya SweetLoader yang sudah dibuat. RustyLoader dan LightningLoader belum siap.</string>
+    <string name="splash_show_tagline">Pengalaman Bedrock terbaik yang bisa kamu dapatkan</string>
 </resources>

@@ -1544,4 +1544,5 @@ Quá trình chuyển đổi phải hoàn tất trước khi CaramelClient có th
     <string name="caramel_about_fact_best">Trải nghiệm Bedrock tốt nhất mà bạn có thể có.</string>
     <string name="caramel_loader_unavailable">Trình tải trước này chưa được tạo.</string>
     <string name="caramel_loaders_note">Chỉ SweetLoader đã được tạo. RustyLoader và LightningLoader chưa sẵn sàng.</string>
+    <string name="splash_show_tagline">Trải nghiệm Bedrock tuyệt nhất bạn có thể có</string>
 </resources>

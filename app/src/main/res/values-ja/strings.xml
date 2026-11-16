@@ -1511,4 +1511,5 @@ CaramelClient を続行するには移行を完了する必要があります。
     <string name="caramel_about_fact_best">手に入る最高の Bedrock 体験。</string>
     <string name="caramel_loader_unavailable">このプリローダーはまだ作られていません。</string>
     <string name="caramel_loaders_note">作成済みなのは SweetLoader だけです。RustyLoader と LightningLoader はまだ準備できていません。</string>
+    <string name="splash_show_tagline">手に入る最高の Bedrock 体験</string>
 </resources>

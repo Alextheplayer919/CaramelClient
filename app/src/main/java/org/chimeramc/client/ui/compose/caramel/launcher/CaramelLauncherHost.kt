@@ -11,6 +11,7 @@ import org.chimeramc.client.ui.compose.caramel.CaramelScreenshotInfo
 import org.chimeramc.client.ui.compose.caramel.CaramelTheme
 import org.chimeramc.client.ui.compose.caramel.CaramelCosmeticInfo
 import org.chimeramc.client.ui.compose.caramel.CaramelServerInfo
+import org.chimeramc.client.launcher.core.splash.SplashShow
 import org.chimeramc.client.ui.compose.caramel.CaramelSettingsProvider
 
 /**
@@ -114,10 +115,30 @@ object CaramelLauncherHost {
  * passes the plain `preparing` string and this mounts the screen.
  */
 object CaramelSplashHost {
+    /**
+     * Mounts the cold-start show.
+     *
+     * <p>[art] is the ordered list of drawables this launch picked, [show] its timeline, and
+     * [onFinished] is called once the show has run its length — the activity plays the hand-over pop
+     * and opens the launcher there, so the screen is on the clock rather than the warm-up.
+     */
     @JvmStatic
-    fun setContent(composeView: ComposeView, preparing: String) {
+    fun setContent(
+        composeView: ComposeView,
+        art: IntArray,
+        show: SplashShow,
+        preparing: String,
+        onFinished: Runnable,
+    ) {
         composeView.setContent {
-            CaramelTheme { CaramelSplashScreen(preparing) }
+            CaramelTheme {
+                CaramelSplashScreen(
+                    art = art.asList(),
+                    show = show,
+                    preparing = preparing,
+                    onFinished = { onFinished.run() },
+                )
+            }
         }
     }
 }

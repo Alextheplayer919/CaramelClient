@@ -1514,4 +1514,5 @@ La migration doit être terminée avant de continuer avec CaramelClient.</string
     <string name="caramel_about_fact_best">La meilleure expérience Bedrock possible.</string>
     <string name="caramel_loader_unavailable">Ce préchargeur n’est pas encore prêt.</string>
     <string name="caramel_loaders_note">Seul SweetLoader est prêt. RustyLoader et LightningLoader ne sont pas encore disponibles.</string>
+    <string name="splash_show_tagline">La meilleure expérience Bedrock possible</string>
 </resources>

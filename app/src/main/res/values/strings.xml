@@ -1866,6 +1866,7 @@ CaramelClient must complete the migration before continuing.</string>
     <string name="property_type_int">Int</string>
     <string name="value_hint">Value</string>
     <!-- Splash rebuild: random background + rotating loader -->
+    <string name="splash_show_tagline">The best Bedrock experience you could possibly have</string>
     <string name="splash_background_desc">Minecraft key art</string>
     <string name="minecraft_disclaimer" translatable="false">NOT AN OFFICIAL MINECRAFT PRODUCT. NOT APPROVED BY OR ASSOCIATED WITH MOJANG OR MICROSOFT</string>
     <string name="preparing_to_launch">Preparing to launch</string>

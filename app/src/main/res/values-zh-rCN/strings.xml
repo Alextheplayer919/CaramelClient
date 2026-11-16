@@ -1535,4 +1535,5 @@
     <string name="caramel_about_fact_best">你能获得的最好的 Bedrock 体验。</string>
     <string name="caramel_loader_unavailable">此预加载器尚未制作。</string>
     <string name="caramel_loaders_note">目前只做好了 SweetLoader。RustyLoader 和 LightningLoader 尚未就绪。</string>
+    <string name="splash_show_tagline">你能获得的最佳基岩版体验</string>
 </resources>

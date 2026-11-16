@@ -29,7 +29,7 @@ file is missing from the index.
 - [Shared card style (Widget.Caramel.Card + res/values/dimens.xml)](docs/agents/shared-card-style.md)
 - [Top-level navigation (org.chimeramc.client.ui.navigation.LauncherTab + BaseActivity)](docs/agents/top-level-navigation.md)
 - [Material 3 Expressive primitives (U6): variable-font roles and shape morphing](docs/agents/material-3-expressive-primitives-variable-font-roles-and-shape-morphing.md)
-- [Splash screen (ui.activities.SplashActivity + drawable/ic_chimera_ant)](docs/agents/splash-screen.md)
+- [Splash screen (ui.activities.SplashActivity + core.splash + drawable-nodpi/splash_bg_*)](docs/agents/splash-screen.md)
 - [Launch tab layout & news removal](docs/agents/launch-tab-layout-news-removal.md)
 - [Mod Hub (org.chimeramc.client.ui.activities.ModHubActivity + core.modrinth + core.downloads)](docs/agents/mod-hub.md)
 - [Controller illustrations (ui.views.ControllerIllustrationView)](docs/agents/controller-illustrations-ui-views-controllerillustrationview.md)

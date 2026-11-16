@@ -1553,4 +1553,5 @@
     <string name="caramel_about_fact_best">Лучший опыт Bedrock, какой только возможен.</string>
     <string name="caramel_loader_unavailable">Этот предзагрузчик ещё не создан.</string>
     <string name="caramel_loaders_note">Готов только SweetLoader. RustyLoader и LightningLoader ещё не готовы.</string>
+    <string name="splash_show_tagline">Лучший опыт Bedrock, какой только возможен</string>
 </resources>
