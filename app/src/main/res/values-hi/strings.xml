@@ -1528,4 +1528,6 @@ CaramelClient जारी रखने से पहले माइग्र�
     <string name="performance_preset_performance">प्रदर्शन</string>
     <string name="performance_preset_note">यह नीचे के टॉगल सेट करता है। इनमें से किसी को अलग से बदलें और यह आपकी पसंद बनाए रखता है।</string>
     <string name="file_picker_unavailable">इस स्क्रीन पर कोई फ़ाइल चयनकर्ता उपलब्ध नहीं है।</string>
+    <string name="caramel_no_favourite_cosmetics_title">अभी कोई पसंदीदा नहीं</string>
+    <string name="caramel_no_favourite_cosmetics_body">किसी कॉस्मेटिक को यहाँ रखने के लिए उस पर तारा दबाएँ।</string>
 </resources>

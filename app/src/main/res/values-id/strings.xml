@@ -1524,4 +1524,6 @@ Migrasi harus selesai sebelum CaramelClient dapat melanjutkan.</string>
     <string name="performance_preset_performance">Performa</string>
     <string name="performance_preset_note">Ini mengatur tombol di bawah. Ubah salah satunya secara terpisah dan pilihanmu tetap tersimpan.</string>
     <string name="file_picker_unavailable">Tidak ada pemilih berkas yang tersedia di layar ini.</string>
+    <string name="caramel_no_favourite_cosmetics_title">Belum ada favorit</string>
+    <string name="caramel_no_favourite_cosmetics_body">Ketuk bintang pada kosmetik untuk menyimpannya di sini.</string>
 </resources>

@@ -1530,4 +1530,6 @@ Quá trình chuyển đổi phải hoàn tất trước khi CaramelClient có th
     <string name="performance_preset_performance">Hiệu năng</string>
     <string name="performance_preset_note">Mục này đặt các công tắc bên dưới. Nếu bạn thay đổi riêng từng cái, lựa chọn của bạn vẫn được giữ.</string>
     <string name="file_picker_unavailable">Không có trình chọn tệp nào khả dụng trên màn hình này.</string>
+    <string name="caramel_no_favourite_cosmetics_title">Chưa có mục yêu thích</string>
+    <string name="caramel_no_favourite_cosmetics_body">Chạm vào ngôi sao trên vật phẩm để lưu vào đây.</string>
 </resources>

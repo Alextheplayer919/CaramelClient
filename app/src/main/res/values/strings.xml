@@ -2857,6 +2857,8 @@ CaramelClient must complete the migration before continuing.</string>
     <string name="caramel_equip">Equip</string>
     <string name="caramel_no_cosmetics_title">No cosmetics yet</string>
     <string name="caramel_no_cosmetics_body">Capes and hats you own appear here.</string>
+    <string name="caramel_no_favourite_cosmetics_title">No favourites yet</string>
+    <string name="caramel_no_favourite_cosmetics_body">Tap the star on a cosmetic to keep it here.</string>
     <string name="caramel_skin_preview">3D skin preview</string>
     <string name="caramel_news_sub">Updates, events and community posts</string>
     <string name="caramel_featured">Featured</string>

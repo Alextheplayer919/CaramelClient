@@ -46,6 +46,7 @@ import org.chimeramc.client.ui.compose.caramel.C
 import org.chimeramc.client.ui.compose.caramel.CaramelNotice
 import org.chimeramc.client.ui.compose.caramel.Tone
 import org.chimeramc.client.ui.compose.caramel.CaramelCosmeticInfo
+import org.chimeramc.client.ui.compose.caramel.CaramelCosmeticKind
 import org.chimeramc.client.ui.compose.caramel.CaramelLauncherState
 import org.chimeramc.client.ui.compose.caramel.FilterChip
 import org.chimeramc.client.ui.compose.caramel.GlassButton
@@ -56,6 +57,27 @@ import org.chimeramc.client.ui.compose.caramel.T
 import org.chimeramc.client.ui.compose.caramel.sp_
 
 private val cosAccents = listOf(C.Blue, C.Caramel, C.Green, Color(0xFF966EFF))
+
+/** The cosmetic kinds, in the order the filter chips show them (index 1..4). */
+private val cosFilterKinds = listOf(
+    CaramelCosmeticKind.Cape,
+    CaramelCosmeticKind.Wings,
+    CaramelCosmeticKind.Hat,
+    CaramelCosmeticKind.Pet,
+)
+
+/**
+ * The tiles a chip selects: 0 is "All", 1..4 are the kinds above, 5 is the starred set.
+ *
+ * <p>Pure and index-based so the filter the chips promise is the filter the grid applies; before
+ * this the chip only moved its own highlight and the grid kept showing everything.
+ */
+internal fun filterCosmetics(all: List<CaramelCosmeticInfo>, chip: Int): List<CaramelCosmeticInfo> =
+    when {
+        chip == 5 -> all.filter { it.favourite }
+        chip in 1..cosFilterKinds.size -> all.filter { it.kind == cosFilterKinds[chip - 1] }
+        else -> all
+    }
 
 /**
  * The Cosmetics screen, ported from the pack's `CosmeticsScreen`.
@@ -94,15 +116,18 @@ fun CaramelCosmeticsScreen(
                     listOf(R.string.caramel_filter_all, R.string.caramel_filter_capes, R.string.caramel_filter_wings, R.string.caramel_filter_hats, R.string.caramel_filter_pets).forEachIndexed { i, t -> FilterChip(stringResource(t), chip == i, { chip = i }) }
                     FilterChip(stringResource(R.string.caramel_filter_favorites), chip == 5, { chip = 5 })
                 }
+                val shown = remember(state.cosmetics, chip) { filterCosmetics(state.cosmetics, chip) }
                 if (state.cosmetics.isEmpty()) {
                     EmptyState(stringResource(R.string.caramel_no_cosmetics_title), stringResource(R.string.caramel_no_cosmetics_body), Modifier.fillMaxWidth().weight(1f))
+                } else if (shown.isEmpty()) {
+                    EmptyState(stringResource(R.string.caramel_no_favourite_cosmetics_title), stringResource(R.string.caramel_no_favourite_cosmetics_body), Modifier.fillMaxWidth().weight(1f))
                 } else {
                     LazyVerticalGrid(
                         GridCells.Adaptive(190.dp),
                         horizontalArrangement = Arrangement.spacedBy(12.dp),
                         verticalArrangement = Arrangement.spacedBy(12.dp),
                     ) {
-                        items(state.cosmetics, key = { it.name }) { c ->
+                        items(shown, key = { it.name }) { c ->
                             CosmeticTile(c, { onToggleFavourite(c) }, { onEquip(c) })
                         }
                     }

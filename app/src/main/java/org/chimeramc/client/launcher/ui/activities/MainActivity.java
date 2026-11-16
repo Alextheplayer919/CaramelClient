@@ -398,19 +398,20 @@ public class MainActivity extends BaseActivity implements CaramelLauncherHost.Ac
             String equippedCape = cosmeticStore.getEquippedCapeId();
             String equippedAccessory = cosmeticStore.getEquippedAccessoryId();
             String equippedPet = cosmeticStore.getEquippedPetId();
+            java.util.Set<String> favourites = cosmeticStore.getFavourites();
             for (CosmeticCatalog.Cape c : CosmeticCatalog.capes()) {
                 out.add(new CaramelCosmeticInfo(c.id, c.name, CaramelCosmeticKind.Cape,
-                        c.id.equals(equippedCape), true, false));
+                        c.id.equals(equippedCape), true, favourites.contains(c.id)));
             }
             for (CosmeticCatalog.Accessory a : CosmeticCatalog.accessories()) {
                 CaramelCosmeticKind kind = a.kind != null && a.kind.followsHead()
                         ? CaramelCosmeticKind.Hat : CaramelCosmeticKind.Wings;
                 out.add(new CaramelCosmeticInfo(a.id, a.name, kind,
-                        a.id.equals(equippedAccessory), true, false));
+                        a.id.equals(equippedAccessory), true, favourites.contains(a.id)));
             }
             for (CosmeticCatalog.Pet p : CosmeticCatalog.pets()) {
                 out.add(new CaramelCosmeticInfo(p.id, p.name, CaramelCosmeticKind.Pet,
-                        p.id.equals(equippedPet), true, false));
+                        p.id.equals(equippedPet), true, favourites.contains(p.id)));
             }
         } catch (Throwable t) {
             AppLog.warnOnce(TAG, "buildCosmetics", "Could not read the cosmetic catalogue", t);
@@ -569,8 +570,13 @@ public class MainActivity extends BaseActivity implements CaramelLauncherHost.Ac
 
     @Override
     public void toggleFavourite(CaramelCosmeticInfo cosmetic) {
-        // The cosmetic store has no favourites model; the tile keeps its star in the screen rather
-        // than the client pretending the choice was persisted.
+        try {
+            if (cosmeticStore == null) cosmeticStore = new CosmeticStore(this);
+            cosmeticStore.toggleFavourite(cosmetic.getId());
+        } catch (Throwable t) {
+            AppLog.warnOnce(TAG, "toggleFavourite", "Could not save the favourite", t);
+        }
+        refreshState();
     }
 
     @Override

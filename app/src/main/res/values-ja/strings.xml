@@ -1497,4 +1497,6 @@ CaramelClient を続行するには移行を完了する必要があります。
     <string name="performance_preset_performance">パフォーマンス</string>
     <string name="performance_preset_note">下のスイッチをまとめて設定します。個別に変更すると、その選択が保持されます。</string>
     <string name="file_picker_unavailable">この画面ではファイル選択を利用できません。</string>
+    <string name="caramel_no_favourite_cosmetics_title">お気に入りはまだありません</string>
+    <string name="caramel_no_favourite_cosmetics_body">コスメの星をタップするとここに保存されます。</string>
 </resources>

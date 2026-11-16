@@ -1521,4 +1521,6 @@
     <string name="performance_preset_performance">性能</string>
     <string name="performance_preset_note">这会设置下方的开关。单独更改其中任意一个，它会保留你的选择。</string>
     <string name="file_picker_unavailable">此界面没有可用的文件选择器。</string>
+    <string name="caramel_no_favourite_cosmetics_title">还没有收藏</string>
+    <string name="caramel_no_favourite_cosmetics_body">点按饰品上的星星即可收藏到这里。</string>
 </resources>

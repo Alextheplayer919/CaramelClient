@@ -3,6 +3,10 @@ package org.chimeramc.client.core.cosmetics;
 import android.content.Context;
 import android.content.SharedPreferences;
 
+import java.util.Collections;
+import java.util.LinkedHashSet;
+import java.util.Set;
+
 /**
  * Persistence for the equipped cosmetic selection.
  *
@@ -16,6 +20,7 @@ public final class CosmeticStore {
     private static final String KEY_CAPE = "equipped_cape";
     private static final String KEY_ACCESSORY = "equipped_accessory";
     private static final String KEY_PET = "equipped_pet";
+    private static final String KEY_FAVOURITES = "favourites";
 
     private final SharedPreferences prefs;
 
@@ -80,5 +85,38 @@ public final class CosmeticStore {
 
     public void setEquippedPet(String petId) {
         prefs.edit().putString(KEY_PET, petId == null ? CosmeticCatalog.NONE : petId).apply();
+    }
+
+    /** The ids the player has starred, in the order they were starred. */
+    public Set<String> getFavourites() {
+        Set<String> stored = prefs.getStringSet(KEY_FAVOURITES, null);
+        return stored == null ? Collections.<String>emptySet()
+                : Collections.unmodifiableSet(new LinkedHashSet<>(stored));
+    }
+
+    public boolean isFavourite(String cosmeticId) {
+        return cosmeticId != null && getFavourites().contains(cosmeticId);
+    }
+
+    /** Adds or removes a star, returning the new state so the caller does not re-read the store. */
+    public boolean toggleFavourite(String cosmeticId) {
+        if (cosmeticId == null || cosmeticId.isEmpty()) return false;
+        Set<String> next = toggledFavourite(getFavourites(), cosmeticId);
+        prefs.edit().putStringSet(KEY_FAVOURITES, next).apply();
+        return next.contains(cosmeticId);
+    }
+
+    /**
+     * The starred set after tapping [cosmeticId]: the pure rule behind [toggleFavourite].
+     *
+     * <p>Split out because the persistence is a one-line write while the rule — an id that is
+     * present leaves, one that is absent joins — is what the star's behaviour depends on, and this
+     * part can be tested without a device.
+     */
+    public static Set<String> toggledFavourite(Set<String> current, String cosmeticId) {
+        Set<String> next = new LinkedHashSet<>(current == null ? Collections.<String>emptySet() : current);
+        if (cosmeticId == null || cosmeticId.isEmpty()) return next;
+        if (!next.remove(cosmeticId)) next.add(cosmeticId);
+        return next;
     }
 }

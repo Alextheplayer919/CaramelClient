@@ -1539,4 +1539,6 @@
     <string name="performance_preset_performance">Производительность</string>
     <string name="performance_preset_note">Это задаёт переключатели ниже. Измените любой из них отдельно — ваш выбор сохранится.</string>
     <string name="file_picker_unavailable">На этом экране выбор файлов недоступен.</string>
+    <string name="caramel_no_favourite_cosmetics_title">Избранного пока нет</string>
+    <string name="caramel_no_favourite_cosmetics_body">Нажмите звёздочку на косметике, чтобы сохранить её здесь.</string>
 </resources>

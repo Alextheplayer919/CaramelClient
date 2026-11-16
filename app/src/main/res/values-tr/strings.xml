@@ -1527,4 +1527,6 @@ CaramelClient\'ın devam edebilmesi için taşımanın tamamlanması gerekiyor.<
     <string name="performance_preset_performance">Performans</string>
     <string name="performance_preset_note">Bu, aşağıdaki anahtarları ayarlar. Bunlardan birini tek başına değiştirirseniz seçiminiz korunur.</string>
     <string name="file_picker_unavailable">Bu ekranda kullanılabilir bir dosya seçici yok.</string>
+    <string name="caramel_no_favourite_cosmetics_title">Henüz favori yok</string>
+    <string name="caramel_no_favourite_cosmetics_body">Bir kozmetiği burada tutmak için yıldıza dokunun.</string>
 </resources>

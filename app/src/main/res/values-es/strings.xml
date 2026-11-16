@@ -1500,4 +1500,6 @@ La migración debe completarse antes de continuar con CaramelClient.</string>
     <string name="performance_preset_performance">Rendimiento</string>
     <string name="performance_preset_note">Esto ajusta los interruptores de abajo. Si cambias cualquiera de ellos por separado, se conserva tu elección.</string>
     <string name="file_picker_unavailable">No hay ningún selector de archivos disponible en esta pantalla.</string>
+    <string name="caramel_no_favourite_cosmetics_title">Aún no hay favoritos</string>
+    <string name="caramel_no_favourite_cosmetics_body">Toca la estrella de un cosmético para guardarlo aquí.</string>
 </resources>
