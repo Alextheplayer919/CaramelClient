@@ -121,6 +121,30 @@ data class CaramelScreenshotInfo(
     val path: String,
 )
 
+/** One group of release notes: a heading and the lines under it. */
+data class CaramelReleaseSection(
+    val title: String,
+    val lines: List<String>,
+)
+
+/**
+ * The current release's notes, shown by the Release notes popup.
+ *
+ * <p>Filled from the bundled `launcher/changelog.json` (the same document the first-run card reads)
+ * and the running build's own version, so the popup describes the build the user is on rather than a
+ * hard-coded list. [isEmpty] is true when the document carried nothing to show.
+ */
+data class CaramelReleaseNotes(
+    val version: String,
+    val headline: String,
+    val summary: String,
+    val dateLine: String,
+    val sections: List<CaramelReleaseSection>,
+) {
+    val isEmpty: Boolean
+        get() = headline.isEmpty() && summary.isEmpty() && sections.isEmpty()
+}
+
 /** One Xbox Live friend: the Friends card and modal draw these from PeopleHub. */
 data class CaramelFriendInfo(
     val xuid: String,
@@ -181,6 +205,17 @@ class CaramelLauncherState {
 
     /** Whether the "View all news" modal is open. */
     var newsAll by mutableStateOf(false)
+
+    /**
+     * The current release's notes, shown by the Release notes popup.
+     *
+     * <p>Read once from the bundled changelog when the launcher mounts, so the menu item is a
+     * property of the build rather than something re-read on every open.
+     */
+    var releaseNotes by mutableStateOf(CaramelReleaseNotes("", "", "", "", emptyList()))
+
+    /** Whether the Release notes popup is open. */
+    var releaseNotesOpen by mutableStateOf(false)
 
     /**
      * The page the in-app browser is showing, empty when it is closed.

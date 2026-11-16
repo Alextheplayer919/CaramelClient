@@ -61,6 +61,7 @@ fun CaramelLauncherScreen(
         CaramelAccountMenu(state, actions)
         CaramelScreenshotsModal(state, actions)
         CaramelNewsModal(state, actions)
+        CaramelReleaseNotesModal(state)
         CaramelFriendsModal(state, actions)
         CaramelAddAccountModal(state, actions)
         CaramelAccountSettingsModal(state, actions)

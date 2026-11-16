@@ -9,6 +9,7 @@ import androidx.compose.runtime.MutableState;
 import androidx.compose.ui.platform.ComposeView;
 import androidx.compose.ui.platform.ViewCompositionStrategy;
 
+import org.chimeramc.client.BuildConfig;
 import org.chimeramc.client.R;
 import org.chimeramc.client.core.changelog.ChangelogFeed;
 import org.chimeramc.client.core.cosmetics.CosmeticCatalog;
@@ -55,6 +56,7 @@ import org.chimeramc.client.ui.compose.caramel.CaramelScreenshotInfo;
 import org.chimeramc.client.ui.compose.caramel.CaramelServerInfo;
 import org.chimeramc.client.ui.compose.caramel.CaramelVersion;
 import org.chimeramc.client.ui.compose.caramel.launcher.CaramelLauncherHost;
+import org.chimeramc.client.ui.compose.caramel.launcher.CaramelReleaseNotesLoader;
 import org.chimeramc.client.util.AppExecutors;
 import org.chimeramc.client.util.AppLog;
 import org.chimeramc.client.util.LocalFileOpener;
@@ -176,6 +178,7 @@ public class MainActivity extends BaseActivity implements CaramelLauncherHost.Ac
         setContentView(buildComposeHost());
         initVersionManager();
         initContent();
+        loadReleaseNotes();
         refreshState();
     }
 
@@ -451,6 +454,24 @@ public class MainActivity extends BaseActivity implements CaramelLauncherHost.Ac
                 getString(R.string.caramel_news_honey_button),
                 "https://honeyclient.github.io/"));
         return out;
+    }
+
+    /** Reads the bundled release notes into the shape the Release notes popup draws. */
+    private void loadReleaseNotes() {
+        String json = null;
+        try (InputStream in = getAssets().open("launcher/changelog.json")) {
+            byte[] buf = new byte[8192];
+            StringBuilder sb = new StringBuilder();
+            int read;
+            while ((read = in.read(buf)) > 0) {
+                sb.append(new String(buf, 0, read, StandardCharsets.UTF_8));
+            }
+            json = sb.toString();
+        } catch (Throwable t) {
+            AppLog.warnOnce(TAG, "loadReleaseNotes", "Could not read the bundled release notes", t);
+        }
+        CaramelLauncherState s = launcherState.getValue();
+        s.setReleaseNotes(CaramelReleaseNotesLoader.fromJson(json, BuildConfig.VERSION_NAME));
     }
 
     private static String joinItems(List<String> items) {

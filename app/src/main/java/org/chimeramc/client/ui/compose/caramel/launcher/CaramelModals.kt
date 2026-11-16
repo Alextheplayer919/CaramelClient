@@ -120,7 +120,7 @@ fun CaramelAppMenu(state: CaramelLauncherState, actions: CaramelLauncherHost.Act
                     state.appMenu = false; state.instanceSettings = true
                 }
                 CaramelMenuItem(stringResource(R.string.caramel_menu_release_notes), Icons.Rounded.Article) {
-                    state.appMenu = false; state.tab = CaramelTab.News
+                    state.appMenu = false; state.releaseNotesOpen = true
                 }
                 CaramelMenuItem(stringResource(R.string.caramel_menu_about), Icons.Rounded.Info) {
                     state.appMenu = false; actions.openAccounts()
@@ -318,6 +318,78 @@ fun CaramelNewsModal(state: CaramelLauncherState, actions: CaramelLauncherHost.A
         }
     }
 }
+
+/**
+ * The Release notes popup: what the build the user is running actually changed.
+ *
+ * <p>The menu item used to jump to the News tab, which is a feed of posts rather than this release's
+ * notes, so "Release notes" did not show release notes. This reads the same bundled
+ * `launcher/changelog.json` the first-run card does and groups it as Added / Changed / Fixed, with
+ * the version, headline and date from the document. An unreadable document shows the empty line
+ * rather than a fabricated list.
+ */
+@Composable
+fun CaramelReleaseNotesModal(state: CaramelLauncherState) {
+    CaramelModal(state.releaseNotesOpen, { state.releaseNotesOpen = false }, Modifier.size(680.dp, 640.dp)) {
+        val notes = state.releaseNotes
+        Column(Modifier.fillMaxSize()) {
+            CaramelModalHeader(
+                stringResource(R.string.caramel_menu_release_notes),
+                if (notes.version.isEmpty()) null
+                else stringResource(R.string.changelog_version, notes.version),
+                { state.releaseNotesOpen = false },
+            )
+            if (notes.isEmpty) {
+                EmptyState(
+                    stringResource(R.string.changelog_title),
+                    stringResource(R.string.changelog_popup_empty),
+                    Modifier.fillMaxWidth().weight(1f).padding(horizontal = 32.dp),
+                )
+            } else {
+                LazyColumn(
+                    Modifier.weight(1f).padding(horizontal = 32.dp),
+                    verticalArrangement = Arrangement.spacedBy(18.dp),
+                ) {
+                    item {
+                        Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                            if (notes.headline.isNotEmpty()) {
+                                Text(notes.headline, style = T.Subtitle.copy(fontSize = 17.sp_))
+                            }
+                            if (notes.dateLine.isNotEmpty()) Text(notes.dateLine, style = T.Caption)
+                            if (notes.summary.isNotEmpty()) Text(notes.summary, style = T.Body)
+                        }
+                    }
+                    items(notes.sections, key = { it.title }) { section ->
+                        Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                            Text(releaseSectionLabel(section.title), style = T.Label.copy(color = C.Caramel))
+                            section.lines.forEach { line ->
+                                Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
+                                    Box(
+                                        Modifier.padding(top = 7.dp).size(5.dp)
+                                            .background(C.Text3, CircleShape),
+                                    )
+                                    Text(line, style = T.Body, modifier = Modifier.weight(1f))
+                                }
+                            }
+                        }
+                    }
+                    item { Spacer(Modifier.height(12.dp)) }
+                }
+            }
+        }
+    }
+}
+
+/** The translated heading for a release-note section key. */
+@Composable
+private fun releaseSectionLabel(key: String): String = stringResource(
+    when (key) {
+        CaramelReleaseNotesLoader.KIND_ADDED -> R.string.changelog_popup_added
+        CaramelReleaseNotesLoader.KIND_CHANGED -> R.string.changelog_popup_changed
+        CaramelReleaseNotesLoader.KIND_FIXED -> R.string.changelog_popup_fixed
+        else -> R.string.changelog_popup_more
+    },
+)
 
 /** The Friends modal: the active account's real Xbox Live friends, loaded by the activity. */
 @Composable
