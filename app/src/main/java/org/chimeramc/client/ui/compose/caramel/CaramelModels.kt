@@ -159,6 +159,12 @@ data class CaramelFriendInfo(
     val avatarUrl: String,
     val online: Boolean,
     val presence: String,
+    /**
+     * True when this account has been heard on a Caramel-only protocol, so the row may wear the
+     * Caramel badge. False for an ordinary Xbox account, which is the honest answer: the badge is a
+     * claim that the account runs CaramelClient, and only a Caramel channel is evidence of that.
+     */
+    val caramel: Boolean = false,
 )
 
 /**

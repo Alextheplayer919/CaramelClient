@@ -273,7 +273,8 @@ public class MainActivity extends BaseActivity implements CaramelLauncherHost.Ac
                 if (friends != null) {
                     for (XboxPeopleHub.Friend f : friends) {
                         rows.add(new CaramelFriendInfo(
-                                f.xuid, f.gamertag, f.displayPicRaw, f.isOnline(), f.presenceText));
+                                f.xuid, f.gamertag, f.displayPicRaw, f.isOnline(), f.presenceText,
+                                CaramelUserDirectory.isCaramelUser(f.xuid)));
                     }
                 }
                 mutateState(s -> {

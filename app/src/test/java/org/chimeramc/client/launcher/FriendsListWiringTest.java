@@ -57,4 +57,20 @@ public class FriendsListWiringTest {
         assertFalse("the modal must not draw the empty-state body as a row",
                 modals.contains("stringResource(R.string.caramel_no_friends_body),\n                            style = T.Body,\n                            modifier = Modifier.padding(start = 8.dp, top = 6.dp)"));
     }
+
+    @Test
+    public void aFriendWearsTheBadgeOnlyWhenConfirmedOnACaramelChannel() {
+        String activity = read(
+                "app/src/main/java/org/chimeramc/client/launcher/ui/activities/MainActivity.java");
+        assertTrue("a friend row's badge must come from the Caramel-user directory",
+                activity.contains("CaramelUserDirectory.isCaramelUser(f.xuid)"));
+        String labels = read(
+                "app/src/main/java/org/chimeramc/client/ui/compose/caramel/CaramelLabels.kt");
+        assertTrue("the friend row must draw the Caramel chip only for a confirmed account",
+                labels.contains("if (friend.caramel) CaramelUserChip()"));
+        String models = read(
+                "app/src/main/java/org/chimeramc/client/ui/compose/caramel/CaramelModels.kt");
+        assertTrue("CaramelFriendInfo must carry the caramel flag",
+                models.contains("val caramel: Boolean = false"));
+    }
 }

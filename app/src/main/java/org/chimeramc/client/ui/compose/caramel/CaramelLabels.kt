@@ -253,7 +253,15 @@ fun CaramelFriendRow(friend: CaramelFriendInfo, modifier: Modifier = Modifier) {
     ) {
         CaramelAvatarPicture(friend.avatarUrl, 32, online = friend.online)
         Column(Modifier.weight(1f)) {
-            Text(friend.gamertag, style = T.Label)
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(6.dp),
+            ) {
+                Text(friend.gamertag, style = T.Label)
+                // Only a friend confirmed on a Caramel-only channel wears the mark; an ordinary Xbox
+                // account shows as itself, so the badge stays a fact rather than decoration.
+                if (friend.caramel) CaramelUserChip()
+            }
             val presence = when {
                 friend.online && friend.presence.isNotEmpty() -> friend.presence
                 friend.online -> stringResource(R.string.caramel_account_online)
@@ -261,6 +269,31 @@ fun CaramelFriendRow(friend: CaramelFriendInfo, modifier: Modifier = Modifier) {
             }
             Text(presence, style = T.Caption.copy(color = if (friend.online) C.Green else C.Text3))
         }
+    }
+}
+
+/**
+ * The CaramelClient mark beside a confirmed Caramel user's name.
+ *
+ * <p>Shared by the add-friend result and every friend row, so a confirmed account looks the same
+ * wherever it is shown. The row only draws it when the account was heard on a Caramel-only channel;
+ * an ordinary Xbox account shows without it.
+ */
+@Composable
+fun CaramelUserChip(modifier: Modifier = Modifier) {
+    val painter = painterResource(R.drawable.ic_caramel_badge)
+    Row(
+        modifier.height(20.dp).clip(RoundedCornerShape(50)).background(C.Caramel.copy(0.16f))
+            .border(1.dp, C.Caramel.copy(0.5f), RoundedCornerShape(50)).padding(horizontal = 8.dp),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(4.dp),
+    ) {
+        Image(
+            painter,
+            contentDescription = stringResource(R.string.caramel_user_badge),
+            modifier = Modifier.size(13.dp),
+        )
+        Text(stringResource(R.string.caramel_user_badge), style = T.Chip.copy(color = C.Caramel))
     }
 }
 

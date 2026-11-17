@@ -73,6 +73,7 @@ import org.chimeramc.client.R
 import org.chimeramc.client.ui.compose.caramel.C
 import org.chimeramc.client.ui.compose.caramel.CaramelAvatarPicture
 import org.chimeramc.client.ui.compose.caramel.CaramelFriendRow
+import org.chimeramc.client.ui.compose.caramel.CaramelUserChip
 import org.chimeramc.client.ui.compose.caramel.CaramelFoundUser
 import org.chimeramc.client.ui.compose.caramel.CaramelLauncherState
 import org.chimeramc.client.ui.compose.caramel.CaramelModal
@@ -720,16 +721,7 @@ private fun FoundAccountRow(user: CaramelFoundUser, isCaramel: Boolean) {
 /** The CaramelClient mark beside a confirmed Caramel user's name. */
 @Composable
 private fun CaramelUserBadge() {
-    val painter = painterResource(R.drawable.ic_caramel_badge)
-    Row(
-        Modifier.height(20.dp).clip(RoundedCornerShape(50)).background(C.Caramel.copy(0.16f))
-            .border(1.dp, C.Caramel.copy(0.5f), RoundedCornerShape(50)).padding(horizontal = 8.dp),
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.spacedBy(4.dp),
-    ) {
-        Image(painter, contentDescription = stringResource(R.string.caramel_user_badge), modifier = Modifier.size(13.dp))
-        Text(stringResource(R.string.caramel_user_badge), style = T.Chip.copy(color = C.Caramel))
-    }
+    CaramelUserChip()
 }
 
 /** A one-line result banner with a leading icon, used for lookup and request outcomes. */
