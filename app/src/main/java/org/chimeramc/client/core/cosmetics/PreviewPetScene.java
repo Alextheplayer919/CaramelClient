@@ -25,6 +25,17 @@ public final class PreviewPetScene {
      */
     public static final float OFFSET_X = 11f;
 
+    /**
+     * The pet's default depth shift, in model pixels, so it stands <em>beside</em> the player rather
+     * than in front of the camera.
+     *
+     * <p>A pet's body plan starts at {@link PetModel#BASE_Z} (about nine blocks toward the camera),
+     * which under the preview's perspective magnified the pet and pushed the character back — the
+     * "the pet is in the front and the skin looks far away" report. This shifts the pet's depth
+     * centre onto the player's, so the two stand side by side at one scale.
+     */
+    public static final float OFFSET_Z = -14f;
+
     /** The stable bone order the Canvas pass used, kept so grouping is unchanged. */
     private static final String[] BONES = {
             PetModel.BONE_ROOT, PetModel.BONE_TAIL, PetModel.BONE_WING_L,
@@ -44,6 +55,30 @@ public final class PreviewPetScene {
      */
     public static void addPet(PreviewScene scene, CosmeticCatalog.Pet pet, PetPose pose,
                               CosmeticCatalog.PetLocomotion locomotion) {
+        addPetAt(scene, pet, pose, locomotion, OFFSET_X, OFFSET_Z);
+    }
+
+    /**
+     * Adds the procedural pet to {@code scene} at an explicit lateral offset.
+     *
+     * <p>The offset is a parameter so the framing rule can be tuned and tested: a smaller offset lets
+     * the pet sit inside the character's own frame, so it never forces the fit to zoom the skin out.
+     */
+    public static void addPetAt(PreviewScene scene, CosmeticCatalog.Pet pet, PetPose pose,
+                                CosmeticCatalog.PetLocomotion locomotion, float offsetX) {
+        addPetAt(scene, pet, pose, locomotion, offsetX, 0f);
+    }
+
+    /**
+     * Adds the procedural pet to {@code scene} at an explicit lateral offset and depth shift.
+     *
+     * <p>Both offsets are parameters so the placement can be tuned and unit-tested; the defaults
+     * stand the pet beside the player ({@link #OFFSET_X}, {@link #OFFSET_Z}) rather than at the body
+     * plan's origin nine blocks toward the camera.
+     */
+    public static void addPetAt(PreviewScene scene, CosmeticCatalog.Pet pet, PetPose pose,
+                                CosmeticCatalog.PetLocomotion locomotion, float offsetX,
+                                float offsetZ) {
         if (scene == null || pet == null) return;
         PetModel.Body body = PetModel.body(pet.species, pet.scale);
         List<PetModel.Part> parts = PetModel.parts(pet.species, pet.scale);
@@ -70,14 +105,14 @@ public final class PreviewPetScene {
                 if (!part.bone.equals(bone)) continue;
                 int color = part.accent ? accent : bodyColor;
                 if (part.role == PetModel.Role.LEG) color = dark;
-                addPart(scene, part, pivot, rotX, rotY, rotZ, color, OFFSET_X, offsetY);
+                addPart(scene, part, pivot, rotX, rotY, rotZ, color, offsetX, offsetY, offsetZ);
             }
         }
     }
 
     private static void addPart(PreviewScene scene, PetModel.Part part, float[] pivot,
                                 float rotX, float rotY, float rotZ, int color,
-                                float offX, float offY) {
+                                float offX, float offY, float offZ) {
         float x0 = part.x, y0 = part.y, z0 = part.z;
         float x1 = part.x + part.sx, y1 = part.y + part.sy, z1 = part.z + part.sz;
 
@@ -95,7 +130,7 @@ public final class PreviewPetScene {
                 float[] p = PreviewRotations.aboutPivot(c[i], pivot, rotX, rotY, rotZ);
                 corners[i][0] = p[0] + offX;
                 corners[i][1] = p[1] + offY;
-                corners[i][2] = p[2];
+                corners[i][2] = p[2] + offZ;
             }
             PreviewScene.Face f = scene.addFlatQuad(corners, shaded);
             if (f == null) continue;
