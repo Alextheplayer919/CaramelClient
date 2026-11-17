@@ -76,7 +76,7 @@ internal object CosmeticTileRenderer {
     private fun renderCape(context: Context, id: String, size: Int, out: IntArray): Boolean {
         val cape = CosmeticCatalog.capes().firstOrNull { it.id == id } ?: return false
         if (!AuthoredCapeTextures.hasAuthoredTexture(cape.id)) {
-            CapeThumbnail.render(cape, size, size, out, 0)
+            CapeThumbnail.renderFitted(cape, size, size, out, 0)
             return true
         }
         val atlas = decodeAsset(context,
@@ -86,14 +86,23 @@ internal object CosmeticTileRenderer {
         val pixels = IntArray(aw * ah)
         atlas.getPixels(pixels, 0, aw, 0, 0, aw, ah)
         atlas.recycle()
-        for (y in 0 until size) {
-            val v = (y + 0.5f) / size
+        // Letterbox the 10:16 panel at its true aspect ratio, so the whole cape shows undistorted.
+        var clothW = size
+        var clothH = Math.round(size / CapeThumbnail.ASPECT)
+        if (clothH > size) {
+            clothH = size
+            clothW = Math.round(size * CapeThumbnail.ASPECT)
+        }
+        val x0 = (size - clothW) / 2
+        val y0 = (size - clothH) / 2
+        for (y in 0 until clothH) {
+            val v = (y + 0.5f) / clothH
             val verticalShade = 1.0f - 0.16f * v
-            for (x in 0 until size) {
-                val u = (x + 0.5f) / size
+            for (x in 0 until clothW) {
+                val u = (x + 0.5f) / clothW
                 val colour = CapeAtlas.sample(pixels, aw, ah, u, v)
                 val sideShade = 0.94f + 0.06f * (1f - Math.abs(u - 0.5f) * 2f)
-                out[y * size + x] = scaleArgb(colour, verticalShade * sideShade)
+                out[(y0 + y) * size + x0 + x] = scaleArgb(colour, verticalShade * sideShade)
             }
         }
         return true

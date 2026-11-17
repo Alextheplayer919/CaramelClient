@@ -87,4 +87,23 @@ public class CapeThumbnailTest {
                 16, 16, tooSmall, 0);
         assertTrue(true);
     }
+
+    @Test
+    public void theFittedThumbnailShowsTheWholeCapeAtItsAspectRatio() {
+        CosmeticCatalog.Cape cape = new CosmeticCatalog.Cape(
+                "t", "Test", 0xFF102030, 0xFF405060, 0xFFA0B0C0,
+                CosmeticCatalog.CapePattern.SOLID, false, false);
+        int size = 48;
+        int[] out = new int[size * size];
+        CapeThumbnail.renderFitted(cape, size, size, out, 0);
+        // A 10:16 cloth is taller than the tile is wide, so it is pillarboxed: the left and right
+        // edge columns stay empty, and the cloth spans nearly the full height.
+        int leftColumn = 0;
+        for (int y = 0; y < size; y++) if ((out[y * size] >>> 24) != 0) leftColumn++;
+        assertEquals("the cloth must be pillarboxed, not stretched to the full width", 0, leftColumn);
+        int centreColumn = 0;
+        for (int y = 0; y < size; y++) if ((out[y * size + size / 2] >>> 24) != 0) centreColumn++;
+        assertTrue("the cloth must fill most of the tile height: " + centreColumn,
+                centreColumn >= size - 2);
+    }
 }

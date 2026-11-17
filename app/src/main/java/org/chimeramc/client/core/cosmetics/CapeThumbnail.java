@@ -38,20 +38,49 @@ public final class CapeThumbnail {
     public static void render(CosmeticCatalog.Cape cape, int width, int height, int[] out,
                               int empty) {
         if (out == null || width <= 0 || height <= 0 || out.length < width * height) return;
+        java.util.Arrays.fill(out, 0, width * height, empty);
+        if (cape == null) return;
+        drawCloth(cape, width, width, height, 0, 0, out);
+    }
 
-        if (cape == null) {
-            java.util.Arrays.fill(out, 0, width * height, empty);
-            return;
+    /**
+     * Fills {@code out} with the whole cape, centred and undistorted inside a wider buffer.
+     *
+     * <p>The grid's tile is a square, but a cape is taller than it is wide (10x16). Stretching the
+     * cloth to the square squashed it, and cropping it to the square cut the hem off, so the tile
+     * showed a distorted or truncated cape. This letterboxes the cloth at its true aspect ratio, so
+     * the whole cape shows and the tile reads as the garment the player is about to equip.
+     */
+    public static void renderFitted(CosmeticCatalog.Cape cape, int width, int height, int[] out,
+                                    int empty) {
+        if (out == null || width <= 0 || height <= 0 || out.length < width * height) return;
+        java.util.Arrays.fill(out, 0, width * height, empty);
+        if (cape == null) return;
+        // Fit the 10:16 cloth inside the buffer, centred, preserving its aspect ratio.
+        int clothW = width;
+        int clothH = Math.round(width / ASPECT);
+        if (clothH > height) {
+            clothH = height;
+            clothW = Math.round(height * ASPECT);
         }
+        int x0 = (width - clothW) / 2;
+        int y0 = (height - clothH) / 2;
+        drawCloth(cape, width, clothW, clothH, x0, y0, out);
+    }
 
-        // The cloth occupies the full buffer; a small margin makes the rounded card's edge show the
-        // card colour rather than clipping the weave.
-        for (int y = 0; y < height; y++) {
-            float v = (y + 0.5f) / height;
+    /**
+     * Paints the cloth into the {@code clothW x clothH} rect at {@code (x0, y0)}.
+     *
+     * @param stride the buffer's row stride in pixels
+     */
+    private static void drawCloth(CosmeticCatalog.Cape cape, int stride, int clothW, int clothH,
+                                  int x0, int y0, int[] out) {
+        for (int y = 0; y < clothH; y++) {
+            float v = (y + 0.5f) / clothH;
             // A vertical shade: the hem is a touch darker, so the sheet reads as hanging.
             float verticalShade = 1.0f - 0.16f * v;
-            for (int x = 0; x < width; x++) {
-                float u = (x + 0.5f) / width;
+            for (int x = 0; x < clothW; x++) {
+                float u = (x + 0.5f) / clothW;
                 int color = CapePatterns.colorAt(cape.pattern, u, v, cape.color, cape.accentColor);
                 if (cape.pattern == CosmeticCatalog.CapePattern.OPTIFINE
                         && CapePatterns.optifineMonogramAt(u, v)) {
@@ -59,7 +88,7 @@ public final class CapeThumbnail {
                 }
                 // A soft side shade so the sheet has a lit and a shadow edge rather than being flat.
                 float sideShade = 0.94f + 0.06f * (1f - Math.abs(u - 0.5f) * 2f);
-                out[y * width + x] = scale(color, verticalShade * sideShade);
+                out[(y0 + y) * stride + x0 + x] = scale(color, verticalShade * sideShade);
             }
         }
     }
