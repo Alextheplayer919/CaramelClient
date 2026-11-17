@@ -700,8 +700,9 @@ public class CapePreviewView extends View {
             // Phase D: the whole scene — character, pet, cape, accessories, authored meshes — is
             // rasterised by the pure software renderer, so it needs no Canvas layers and the depth
             // buffer resolves every piece against every other.
-            int internalW = Math.min(w * rasterSupersample, RASTER_MAX_EDGE);
-            int internalH = Math.min(h * rasterSupersample, RASTER_MAX_EDGE);
+            int[] internal = PreviewQuality.internalSize(w, h, rasterSupersample, RASTER_MAX_EDGE);
+            int internalW = internal[0];
+            int internalH = internal[1];
             Bitmap target = ensureFrame(internalW, internalH);
             if (target == null) {
                 // No offscreen target could be allocated: draw nothing rather than a broken half-frame.
