@@ -132,13 +132,15 @@ fun LoaderTile(loader: CaramelLoader, selected: Boolean, onClick: () -> Unit, mo
         if (selected) {
             // The tick sits on the glyph's centre, not the tile's top-right corner: it marks the
             // chosen loader, and a corner badge read as a notification dot floating off the icon.
+            // It is drawn large enough to read at a glance (it covers most of the 44dp tile) with a
+            // ring in the tile colour so it still separates from the glyph behind it.
             Box(
                 Modifier
-                    .size(20.dp)
+                    .size(30.dp)
                     .background(C.Green, CircleShape)
-                    .border(2.dp, C.Navy, CircleShape),
+                    .border(2.5.dp, C.Navy, CircleShape),
                 Alignment.Center,
-            ) { Icon(Icons.Rounded.Check, null, Modifier.size(13.dp), C.OnGreen) }
+            ) { Icon(Icons.Rounded.Check, null, Modifier.size(20.dp), C.OnGreen) }
         }
     }
 }
