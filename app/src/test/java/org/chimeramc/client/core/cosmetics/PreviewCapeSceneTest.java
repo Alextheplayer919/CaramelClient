@@ -23,15 +23,19 @@ public class PreviewCapeSceneTest {
     }
 
     @Test
-    public void theClothBecomesAGridOfQuads() {
+    public void theClothBecomesASlabWithARim() {
         PreviewScene scene = new PreviewScene();
         PreviewCapeScene.addCape(scene, cape(), settledCloth());
-        int expected = (CapeSimulator.COLS - 1) * (CapeSimulator.ROWS - 1);
-        assertEquals(expected, scene.faces().size());
+        int cells = (CapeSimulator.COLS - 1) * (CapeSimulator.ROWS - 1);
+        int rim = 2 * (CapeSimulator.COLS - 1) + 2 * (CapeSimulator.ROWS - 1);
+        // A 16x10x1 slab: a front sheet, a back sheet, and a rim band on each of the four edges.
+        assertEquals(2 * cells + rim, scene.faces().size());
         for (PreviewScene.Face f : scene.faces()) {
             assertTrue("a cape quad is not flat-coloured", f.flatColor != 0);
-            assertTrue("the cloth must be visible from both sides", f.doubleSided);
         }
+        // The rim is the thickness; it is visible from either side.
+        long doubleSided = scene.faces().stream().filter(f -> f.doubleSided).count();
+        assertEquals(rim, doubleSided);
     }
 
     @Test

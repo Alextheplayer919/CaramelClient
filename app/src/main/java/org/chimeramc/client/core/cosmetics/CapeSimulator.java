@@ -53,6 +53,13 @@ public final class CapeSimulator {
     /** The furthest the panel leans back, in degrees, at a full-speed run. */
     public static final float MAX_SWING_DEG = 22f;
 
+    /**
+     * The resting lean, in degrees, so the hem sits a few degrees clear of the player's back even
+     * when the player is still. A real cape hangs away from the body at the bottom rather than lying
+     * flat against it, which is what stops the slab from z-fighting the torso.
+     */
+    public static final float REST_SWING_DEG = 5f;
+
     /** The speed (blocks/s) that maps to a full swing; a walk leans only a little. */
     public static final float FULL_SWING_SPEED = 2.6f;
 
@@ -91,10 +98,10 @@ public final class CapeSimulator {
         }
     }
 
-    /** Resets the panel to its rest shape beneath the given anchor, hanging straight. */
+    /** Resets the panel to its rest shape beneath the given anchor, hanging with its resting lean. */
     public void reset(float anchorX, float anchorY, float anchorZ) {
         computeRestOffsets();
-        swingDeg = 0f;
+        swingDeg = REST_SWING_DEG;
         accumulator = 0f;
         initialised = true;
         place(anchorX, anchorY, anchorZ);
@@ -136,8 +143,9 @@ public final class CapeSimulator {
         float fraction = Math.min(1f, speed / FULL_SWING_SPEED);
         // Positive, because -z is behind the player: place() maps the angle to z = sin(angle) * ly
         // with ly negative below the hinge, so a positive angle moves the hem to a smaller z (behind
-        // the back). The old negative sign moved it to +z, into the player.
-        float target = MAX_SWING_DEG * fraction;
+        // the back). The old negative sign moved it to +z, into the player. The resting lean keeps
+        // the hem a few degrees off the back even at rest.
+        float target = REST_SWING_DEG + (MAX_SWING_DEG - REST_SWING_DEG) * fraction;
         // First-order lag: an exponential approach whose per-step factor derives from the time
         // constant, so the settling time does not change with the timestep.
         float alpha = 1f - (float) Math.exp(-dt / SWING_SMOOTHING_SECONDS);

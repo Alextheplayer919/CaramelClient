@@ -57,4 +57,12 @@ public class PreviewRenderCacheTest {
         // No cape, no pet and no always-animate opt-in: the editor's idle case.
         assertFalse(PreviewRenderCache.wantsAnimation(true, true, true, true, false, false));
     }
+
+    @Test
+    public void anIdleFrameIsThrottledToTheIdleInterval() {
+        // A frame that arrives inside the interval is skipped; one at or past it is drawn.
+        assertFalse(PreviewRenderCache.idleFrameDue(1000L, 1000L + PreviewRenderCache.IDLE_FRAME_INTERVAL_MS - 1));
+        assertTrue(PreviewRenderCache.idleFrameDue(1000L, 1000L + PreviewRenderCache.IDLE_FRAME_INTERVAL_MS));
+        assertTrue(PreviewRenderCache.idleFrameDue(1000L, 2000L));
+    }
 }

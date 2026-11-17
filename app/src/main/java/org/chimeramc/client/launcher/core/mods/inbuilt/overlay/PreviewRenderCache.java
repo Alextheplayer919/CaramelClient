@@ -37,4 +37,24 @@ public final class PreviewRenderCache {
         return animationsEnabled && viewVisible && attached && windowVisible
                 && (alwaysAnimate || hasCapeOrPet);
     }
+
+    /**
+     * The minimum interval between idle frames, in milliseconds.
+     *
+     * <p>The preview rasterises the whole scene in software every frame, so the idle turntable — a
+     * slow, gentle turn with nothing the user is doing — does not need the display's full refresh
+     * rate. Capping the idle at ~30fps halves the per-second rasterisation cost while staying smooth
+     * for a turn this slow, which is the "the cosmetics tab lags" report. A drag or a flick is
+     * interactive and is never throttled.
+     */
+    public static final long IDLE_FRAME_INTERVAL_MS = 33L;
+
+    /**
+     * Whether an idle frame is due, given the last drawn frame's time.
+     *
+     * <p>Only the idle path asks this; an interactive frame (a drag, a flick) is drawn immediately.
+     */
+    public static boolean idleFrameDue(long lastDrawMs, long nowMs) {
+        return nowMs - lastDrawMs >= IDLE_FRAME_INTERVAL_MS;
+    }
 }

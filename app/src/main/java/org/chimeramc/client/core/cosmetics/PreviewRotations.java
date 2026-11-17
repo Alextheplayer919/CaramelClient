@@ -66,7 +66,10 @@ public final class PreviewRotations {
             int idx = PetModel.BONE_LEG_A.equals(bone) ? 0
                     : PetModel.BONE_LEG_B.equals(bone) ? 1 : 2;
             float swing = pose.legSwing * (idx == 1 ? -1f : 1f);
-            return new float[]{0f, 0f, swing * 30f};
+            // A leg swings forward and back about the hip's X axis. The old rotation was about Z,
+            // which is a sideways splay: a walking parrot's legs scissored side to side while it
+            // faced forward, which is the "your x axis is off" report.
+            return new float[]{swing * 30f, 0f, 0f};
         }
         return null;
     }

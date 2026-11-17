@@ -43,4 +43,30 @@ public class PreviewQualityTest {
         assertEquals(PreviewQuality.HARDWARE_SUPERSAMPLE,
                 PreviewQuality.supersampleForNativeCode(1));
     }
+
+    @Test
+    public void theInternalSizeKeepsTheViewAspectRatio() {
+        // A wide view: only the longest edge may be capped, so the shape is preserved.
+        int[] wide = PreviewQuality.internalSize(2000, 500, 2, 1024);
+        assertEquals(1024, wide[0]);
+        assertEquals(256, wide[1]);
+        // A tall view: the cap moves to the height and the width scales with it.
+        int[] tall = PreviewQuality.internalSize(400, 1600, 2, 1024);
+        assertEquals(256, tall[0]);
+        assertEquals(1024, tall[1]);
+    }
+
+    @Test
+    public void aViewUnderTheCapIsOnlySupersampled() {
+        int[] size = PreviewQuality.internalSize(320, 240, 2, 1024);
+        assertEquals(640, size[0]);
+        assertEquals(480, size[1]);
+    }
+
+    @Test
+    public void theInternalSizeNeverGoesBelowOnePixel() {
+        int[] size = PreviewQuality.internalSize(0, 0, 0, 1024);
+        assertEquals(1, size[0]);
+        assertEquals(1, size[1]);
+    }
 }

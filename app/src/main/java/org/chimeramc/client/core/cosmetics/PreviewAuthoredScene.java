@@ -25,7 +25,7 @@ public final class PreviewAuthoredScene {
                                     int geoTexW, int geoTexH,
                                     float headPitch, float headYaw, boolean headLooked) {
         addMesh(scene, mesh, atlas, atlasW, atlasH, geoTexW, geoTexH, 0f, 0f, 0f,
-                headPitch, headYaw, headLooked, null);
+                headPitch, headYaw, headLooked, null, true);
     }
 
     /** Adds an authored pet mesh at a model-space offset, animated by {@code pose}. */
@@ -34,14 +34,15 @@ public final class PreviewAuthoredScene {
                               int geoTexW, int geoTexH,
                               float offsetX, float offsetY, float offsetZ, PetPose pose) {
         addMesh(scene, mesh, atlas, atlasW, atlasH, geoTexW, geoTexH, offsetX, offsetY, offsetZ,
-                0f, 0f, false, pose);
+                0f, 0f, false, pose, false);
     }
 
     private static void addMesh(PreviewScene scene, List<PreviewMeshModel.Box> mesh,
                                 int[] atlas, int atlasW, int atlasH,
                                 int geoTexW, int geoTexH,
                                 float offsetX, float offsetY, float offsetZ,
-                                float headPitch, float headYaw, boolean headLooked, PetPose pose) {
+                                float headPitch, float headYaw, boolean headLooked, PetPose pose,
+                                boolean doubleSided) {
         if (scene == null || mesh == null || mesh.isEmpty() || atlas == null) return;
         // The geometry declares the atlas its UVs are written against; the decoded bitmap can be a
         // different size (many shipped PNGs are not 64x64). UV normalisation must use the geometry's
@@ -87,9 +88,11 @@ public final class PreviewAuthoredScene {
                 PreviewScene.Face f = scene.addQuad(corners, uvArr, atlas, atlasW, atlasH);
                 if (f == null) continue;
                 f.nx = n[0]; f.ny = n[1]; f.nz = n[2];
-                // An authored mesh is a closed solid, so a back face is genuinely hidden; the cull
-                // happens in PreviewScene.render by the normal.
-                f.doubleSided = false;
+                // A head-worn accessory is drawn from both sides: many hats and horns are open shells
+                // with no back face authored, so a single-sided cull left them see-through from the
+                // angles where only the inner surface faced the camera. A pet is a closed solid, so a
+                // back face is genuinely hidden and stays culled.
+                f.doubleSided = doubleSided;
                 f.alphaTest = true;
                 f.blend = true;
                 f.shade = PreviewLighting.shadeGreyForNormal(n[0], n[1], n[2], 1f) / 255f;

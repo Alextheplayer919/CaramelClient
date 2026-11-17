@@ -14,8 +14,16 @@ import java.util.List;
  */
 public final class PreviewPetScene {
 
-    /** Where the pet stands beside the player, in model pixels, matching the Canvas pass. */
-    public static final float OFFSET_X = 20f;
+    /**
+     * Where the pet stands beside the player, in model pixels.
+     *
+     * <p>The pet is framed on the same camera as the player, so its offset is what decides whether
+     * the pair fits. It used to be 20px, which pushed the union's bounds wide enough that fitting the
+     * whole scene zoomed the character out until it read as "far away" while the pet filled the
+     * foreground. 11px sits the pet just clear of the torso's right edge, inside the frame the
+     * character sets.
+     */
+    public static final float OFFSET_X = 11f;
 
     /** The stable bone order the Canvas pass used, kept so grouping is unchanged. */
     private static final String[] BONES = {
