@@ -2861,6 +2861,9 @@ CaramelClient must complete the migration before continuing.</string>
     <string name="caramel_no_favourite_cosmetics_title">No favourites yet</string>
     <string name="caramel_no_favourite_cosmetics_body">Tap the star on a cosmetic to keep it here.</string>
     <string name="caramel_skin_preview">3D skin preview</string>
+    <string name="caramel_skin_signed_out_hint">Sign in to load your Minecraft skin.</string>
+    <string name="caramel_cosmetics_signed_out_title">Sign in to use cosmetics</string>
+    <string name="caramel_cosmetics_signed_out_body">Your capes, hats and pets wear on your signed-in account.</string>
     <string name="caramel_news_sub">Updates, events and community posts</string>
     <string name="caramel_featured">Featured</string>
     <string name="caramel_store_sub">Cosmetics, bundles and Caramel+</string>

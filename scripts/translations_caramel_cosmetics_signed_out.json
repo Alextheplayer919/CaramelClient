@@ -1,0 +1,52 @@
+{
+  "es": {
+    "caramel_cosmetics_signed_out_title": "Inicia sesión para usar cosméticos",
+    "caramel_cosmetics_signed_out_body": "Tus capas, sombreros y mascotas se aplican a tu cuenta.",
+    "caramel_skin_signed_out_hint": "Inicia sesión para cargar tu skin de Minecraft."
+  },
+  "fr": {
+    "caramel_cosmetics_signed_out_title": "Connectez-vous pour utiliser les cosmétiques",
+    "caramel_cosmetics_signed_out_body": "Vos capes, chapeaux et animaux s’appliquent à votre compte connecté.",
+    "caramel_skin_signed_out_hint": "Connectez-vous pour charger votre skin Minecraft."
+  },
+  "hi": {
+    "caramel_cosmetics_signed_out_title": "कॉस्मेटिक्स उपयोग करने के लिए साइन इन करें",
+    "caramel_cosmetics_signed_out_body": "आपकी केप, टोपी और पालतू आपके साइन-इन खाते पर लागू होते हैं।",
+    "caramel_skin_signed_out_hint": "अपनी Minecraft स्किन लोड करने के लिए साइन इन करें।"
+  },
+  "id": {
+    "caramel_cosmetics_signed_out_title": "Masuk untuk memakai kosmetik",
+    "caramel_cosmetics_signed_out_body": "Jubah, topi, dan peliharaan Anda dipakai pada akun yang masuk.",
+    "caramel_skin_signed_out_hint": "Masuk untuk memuat skin Minecraft Anda."
+  },
+  "ja": {
+    "caramel_cosmetics_signed_out_title": "コスメを使うにはサインインしてください",
+    "caramel_cosmetics_signed_out_body": "マント、帽子、ペットはサインイン中のアカウントに適用されます。",
+    "caramel_skin_signed_out_hint": "Minecraftのスキンを読み込むにはサインインしてください。"
+  },
+  "pt": {
+    "caramel_cosmetics_signed_out_title": "Entre para usar cosméticos",
+    "caramel_cosmetics_signed_out_body": "Suas capas, chapéus e mascotes são aplicados à sua conta conectada.",
+    "caramel_skin_signed_out_hint": "Entre para carregar sua skin do Minecraft."
+  },
+  "ru": {
+    "caramel_cosmetics_signed_out_title": "Войдите, чтобы использовать косметику",
+    "caramel_cosmetics_signed_out_body": "Плащи, шляпы и питомцы применяются к вашей учётной записи.",
+    "caramel_skin_signed_out_hint": "Войдите, чтобы загрузить свой скин Minecraft."
+  },
+  "tr": {
+    "caramel_cosmetics_signed_out_title": "Kozmetikleri kullanmak için oturum açın",
+    "caramel_cosmetics_signed_out_body": "Pelerinler, şapkalar ve evcil hayvanlar oturum açtığınız hesaba uygulanır.",
+    "caramel_skin_signed_out_hint": "Minecraft skininizi yüklemek için oturum açın."
+  },
+  "vi": {
+    "caramel_cosmetics_signed_out_title": "Đăng nhập để dùng trang phục",
+    "caramel_cosmetics_signed_out_body": "Áo choàng, mũ và thú cưng gắn với tài khoản đã đăng nhập của bạn.",
+    "caramel_skin_signed_out_hint": "Đăng nhập để tải skin Minecraft của bạn."
+  },
+  "zh-rCN": {
+    "caramel_cosmetics_signed_out_title": "登录后即可使用装饰",
+    "caramel_cosmetics_signed_out_body": "你的披风、帽子和宠物将应用于已登录的账户。",
+    "caramel_skin_signed_out_hint": "登录以加载你的 Minecraft 皮肤。"
+  }
+}
