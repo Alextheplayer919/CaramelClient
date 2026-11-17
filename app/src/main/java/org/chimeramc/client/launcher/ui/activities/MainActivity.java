@@ -878,6 +878,7 @@ public class MainActivity extends BaseActivity implements CaramelLauncherHost.Ac
             s.setSignInError("");
             s.setDeviceCode("");
             s.setDeviceCodeUrl("");
+            s.setSignInWebOpen(false);
             s.setBusyMessage(getString(R.string.caramel_sign_in_starting));
         });
         AppExecutors.run(AppExecutors.Kind.NETWORK, "caramel-sign-in", () -> {
@@ -885,14 +886,14 @@ public class MainActivity extends BaseActivity implements CaramelLauncherHost.Ac
             try {
                 BedrockAuthManager manager = MsftAuthManager.loginWithDeviceCode(
                         code -> runOnUiThread(() -> {
-                            // The code is shown first and the browser opened second, so the user
-                            // returns to a modal that already carries the code and the link.
+                            // The code is stored and the in-app page opened, so the user returns to a
+                            // modal that already carries the code and the pre-filled link.
                             mutateState(s -> {
                                 s.setDeviceCode(code.getUserCode());
                                 s.setDeviceCodeUrl(code.getDirectVerificationUri());
+                                s.setSignInWebOpen(true);
                                 s.setBusyMessage(getString(R.string.caramel_waiting_sign_in));
                             });
-                            UrlOpener.open(this, code.getDirectVerificationUri());
                         }),
                         org.chimeramc.client.core.auth.Cancellation.none(),
                         state -> { });
@@ -911,6 +912,7 @@ public class MainActivity extends BaseActivity implements CaramelLauncherHost.Ac
                     if (error == null) {
                         s.setDeviceCode("");
                         s.setDeviceCodeUrl("");
+                        s.setSignInWebOpen(false);
                         s.setAddAccount(false);
                     }
                 });
