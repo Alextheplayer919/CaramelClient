@@ -467,7 +467,7 @@ fun CaramelFriendsModal(state: CaramelLauncherState, actions: CaramelLauncherHos
  */
 @Composable
 fun CaramelAddAccountModal(state: CaramelLauncherState, actions: CaramelLauncherHost.Actions) {
-    CaramelModal(state.addAccount, { state.addAccount = false }, Modifier.size(460.dp, 560.dp)) {
+    CaramelModal(state.addAccount, { state.addAccount = false }, Modifier.size(460.dp, 640.dp)) {
         Column(Modifier.fillMaxSize()) {
             CaramelModalHeader(
                 stringResource(R.string.caramel_add_account_title),
@@ -512,12 +512,6 @@ fun CaramelAddAccountModal(state: CaramelLauncherState, actions: CaramelLauncher
                     if (state.deviceCode.isNotEmpty()) {
                         Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
                             GlassButton(
-                                stringResource(R.string.ms_device_code_open_browser),
-                                actions::openDeviceCodePage,
-                                icon = Icons.Rounded.Public,
-                                height = 34,
-                            )
-                            GlassButton(
                                 stringResource(R.string.ms_device_code_copy),
                                 actions::copyDeviceCode,
                                 icon = Icons.Rounded.ContentCopy,
@@ -547,6 +541,28 @@ fun CaramelAddAccountModal(state: CaramelLauncherState, actions: CaramelLauncher
                     style = T.Body.copy(fontSize = 12.5.sp_, textAlign = TextAlign.Center),
                     modifier = Modifier.fillMaxWidth(),
                 )
+                // The page Microsoft issued for this code, hosted in the app so the user never
+                // leaves the launcher. A short "open in browser" escape hatch stays under it for the
+                // sign-in steps an embedded WebView cannot finish.
+                if (state.signInWebOpen && state.deviceCodeUrl.isNotEmpty()) {
+                    Text(
+                        stringResource(R.string.caramel_sign_in_page_title),
+                        style = T.Label,
+                        modifier = Modifier.align(Alignment.CenterHorizontally),
+                    )
+                    CaramelSignInWebView(
+                        state.deviceCodeUrl,
+                        Modifier.fillMaxWidth().height(320.dp)
+                            .clip(RoundedCornerShape(16.dp))
+                            .border(1.dp, Color.White.copy(0.16f), RoundedCornerShape(16.dp)),
+                    )
+                    GlassButton(
+                        stringResource(R.string.ms_device_code_open_browser),
+                        actions::openDeviceCodePage,
+                        icon = Icons.Rounded.Public,
+                        height = 34,
+                    )
+                }
             }
             CaramelRule()
             Row(Modifier.fillMaxWidth().padding(24.dp, 18.dp), verticalAlignment = Alignment.CenterVertically) {

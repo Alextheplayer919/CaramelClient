@@ -1545,4 +1545,8 @@ Quá trình chuyển đổi phải hoàn tất trước khi CaramelClient có th
     <string name="caramel_loader_unavailable">Trình tải trước này chưa được tạo.</string>
     <string name="caramel_loaders_note">Chỉ SweetLoader đã được tạo. RustyLoader và LightningLoader chưa sẵn sàng.</string>
     <string name="splash_show_tagline">Trải nghiệm Bedrock tuyệt nhất bạn có thể có</string>
+    <string name="caramel_sign_in_page_title">Trang đăng nhập Microsoft</string>
+    <string name="caramel_cosmetics_signed_out_title">Đăng nhập để dùng trang phục</string>
+    <string name="caramel_cosmetics_signed_out_body">Áo choàng, mũ và thú cưng gắn với tài khoản đã đăng nhập của bạn.</string>
+    <string name="caramel_skin_signed_out_hint">Đăng nhập để tải skin Minecraft của bạn.</string>
 </resources>

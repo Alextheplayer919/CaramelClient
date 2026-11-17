@@ -1536,4 +1536,8 @@
     <string name="caramel_loader_unavailable">此预加载器尚未制作。</string>
     <string name="caramel_loaders_note">目前只做好了 SweetLoader。RustyLoader 和 LightningLoader 尚未就绪。</string>
     <string name="splash_show_tagline">你能获得的最佳基岩版体验</string>
+    <string name="caramel_sign_in_page_title">Microsoft 登录页面</string>
+    <string name="caramel_cosmetics_signed_out_title">登录后即可使用装饰</string>
+    <string name="caramel_cosmetics_signed_out_body">你的披风、帽子和宠物将应用于已登录的账户。</string>
+    <string name="caramel_skin_signed_out_hint">登录以加载你的 Minecraft 皮肤。</string>
 </resources>

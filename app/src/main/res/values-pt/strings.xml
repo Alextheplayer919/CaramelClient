@@ -1515,4 +1515,8 @@ A migração deve ser concluída antes que o CaramelClient continue.</string>
     <string name="caramel_loader_unavailable">Este pré-carregador ainda não foi criado.</string>
     <string name="caramel_loaders_note">Só o SweetLoader está criado. RustyLoader e LightningLoader ainda não estão prontos.</string>
     <string name="splash_show_tagline">A melhor experiência de Bedrock que você pode ter</string>
+    <string name="caramel_sign_in_page_title">Página de entrada da Microsoft</string>
+    <string name="caramel_cosmetics_signed_out_title">Entre para usar cosméticos</string>
+    <string name="caramel_cosmetics_signed_out_body">Suas capas, chapéus e mascotes são aplicados à sua conta conectada.</string>
+    <string name="caramel_skin_signed_out_hint">Entre para carregar sua skin do Minecraft.</string>
 </resources>

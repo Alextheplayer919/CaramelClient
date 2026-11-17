@@ -50,10 +50,22 @@ public class SignInFlowTest {
     }
 
     @Test
-    public void theBrowserIsOpenedAtTheVerificationLink() throws IOException {
+    public void theSignInPageOpensInApp() throws IOException {
         String body = startSignInBody();
-        assertTrue("the browser must be opened, otherwise the user never sees where to enter the code",
-                body.contains("UrlOpener.open("));
+        assertTrue("the verification page must open in the launcher's own WebView, so the user does "
+                + "not leave the app to finish signing in", body.contains("setSignInWebOpen(true)"));
+    }
+
+    @Test
+    public void theBrowserFallbackIsStillWired() throws IOException {
+        String source = read(ROOT.resolve(
+                "app/src/main/java/org/chimeramc/client/launcher/ui/activities/MainActivity.java"));
+        int start = source.indexOf("public void openDeviceCodePage()");
+        assertTrue("the deliberate system-browser fallback must stay for sign-in steps a WebView "
+                + "cannot finish", start >= 0);
+        int end = source.indexOf("@Override", start);
+        String body = end < 0 ? source.substring(start) : source.substring(start, end);
+        assertTrue("the fallback must still open the browser", body.contains("UrlOpener.open("));
     }
 
     @Test

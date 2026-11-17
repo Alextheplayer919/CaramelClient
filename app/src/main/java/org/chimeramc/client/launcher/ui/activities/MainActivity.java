@@ -856,6 +856,10 @@ public class MainActivity extends BaseActivity implements CaramelLauncherHost.Ac
      * discarded, so the modal closed with no account, no code and no message. This runs the flow the
      * device-code path actually supports (the Bedrock title id is an MSA title, so the MSAL browser
      * flow cannot authenticate it) and reports each step into the modal.
+     *
+     * <p>The page itself opens in the launcher's own WebView rather than the system browser: the
+     * user stays in the app to enter the code. [openDeviceCodePage] remains the deliberate fallback
+     * to the system browser.
      */
     @Override
     public void startSignIn() {
@@ -906,6 +910,13 @@ public class MainActivity extends BaseActivity implements CaramelLauncherHost.Ac
         });
     }
 
+    /**
+     * The deliberate escape hatch: opens the verification page in the system browser.
+     *
+     * <p>The sign-in page normally renders in the launcher's own WebView. Some Microsoft sign-in
+     * steps (a hardware-key prompt, an account picker that blocks a WebView) do not complete in an
+     * embedded view, so the user can still hand this one page to their browser from the modal.
+     */
     @Override
     public void openDeviceCodePage() {
         CaramelLauncherState s = launcherState.getValue();

@@ -37,6 +37,70 @@ import org.chimeramc.client.ui.compose.caramel.T
 import org.chimeramc.client.ui.compose.caramel.sp_
 
 /**
+ * The Microsoft sign-in page, hosted inside the launcher rather than handed to the system browser.
+ *
+ * <p>It is the same embedded-browser machinery the news modal uses: JavaScript on (the sign-in flow
+ * needs it), DOM storage on (the flow keeps state there), and every navigation kept inside the view
+ * so the user never leaves the app to finish signing in. The verification page is the one Microsoft
+ * issued for this device code, opened at [url].
+ */
+@SuppressLint("SetJavaScriptEnabled")
+@Composable
+fun CaramelSignInWebView(url: String, modifier: Modifier = Modifier) {
+    var progress by remember { mutableStateOf(0) }
+    var loading by remember { mutableStateOf(true) }
+    Column(modifier) {
+        if (loading) {
+            LinearProgressIndicator(
+                progress = { progress / 100f },
+                modifier = Modifier.fillMaxWidth(),
+                color = C.Caramel,
+            )
+        }
+        AndroidView(
+            modifier = Modifier.fillMaxWidth().weight(1f),
+            factory = { context ->
+                WebView(context).apply {
+                    layoutParams = ViewGroup.LayoutParams(
+                        ViewGroup.LayoutParams.MATCH_PARENT,
+                        ViewGroup.LayoutParams.MATCH_PARENT,
+                    )
+                    settings.javaScriptEnabled = true
+                    settings.domStorageEnabled = true
+                    settings.cacheMode = WebSettings.LOAD_DEFAULT
+                    settings.userAgentString = settings.userAgentString + " CaramelClient"
+                    webViewClient = object : WebViewClient() {
+                        override fun shouldOverrideUrlLoading(view: WebView, request: WebResourceRequest): Boolean {
+                            view.loadUrl(request.url.toString())
+                            return true
+                        }
+
+                        override fun onPageStarted(view: WebView, url: String?, favicon: Bitmap?) {
+                            loading = true
+                            progress = 0
+                        }
+
+                        override fun onPageFinished(view: WebView, url: String?) {
+                            loading = false
+                        }
+                    }
+                    webChromeClient = object : android.webkit.WebChromeClient() {
+                        override fun onProgressChanged(view: WebView, newProgress: Int) {
+                            progress = newProgress
+                            loading = newProgress < 100
+                        }
+                    }
+                    loadUrl(url)
+                }
+            },
+            update = { view ->
+                if (url.isNotEmpty() && view.url != url) view.loadUrl(url)
+            },
+        )
+    }
+}
+
+/**
  * The launcher's own browser: a news post's link opens here, not in the system browser.
  *
  * <p>A WebView rather than an intent, so the user never leaves the app. The page is a real one — the

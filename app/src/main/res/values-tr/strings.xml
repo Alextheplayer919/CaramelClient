@@ -1542,4 +1542,8 @@ CaramelClient\'ın devam edebilmesi için taşımanın tamamlanması gerekiyor.<
     <string name="caramel_loader_unavailable">Bu ön yükleyici henüz yapılmadı.</string>
     <string name="caramel_loaders_note">Yalnızca SweetLoader hazır. RustyLoader ve LightningLoader henüz hazır değil.</string>
     <string name="splash_show_tagline">Elde edebileceğiniz en iyi Bedrock deneyimi</string>
+    <string name="caramel_sign_in_page_title">Microsoft oturum açma sayfası</string>
+    <string name="caramel_cosmetics_signed_out_title">Kozmetikleri kullanmak için oturum açın</string>
+    <string name="caramel_cosmetics_signed_out_body">Pelerinler, şapkalar ve evcil hayvanlar oturum açtığınız hesaba uygulanır.</string>
+    <string name="caramel_skin_signed_out_hint">Minecraft skininizi yüklemek için oturum açın.</string>
 </resources>

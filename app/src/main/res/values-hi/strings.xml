@@ -1543,4 +1543,8 @@ CaramelClient जारी रखने से पहले माइग्र�
     <string name="caramel_loader_unavailable">यह प्रीलोडर अभी बनाया नहीं गया है।</string>
     <string name="caramel_loaders_note">केवल SweetLoader बना है। RustyLoader और LightningLoader अभी तैयार नहीं हैं।</string>
     <string name="splash_show_tagline">बेडरॉक का सबसे बढ़िया अनुभव जो आप पा सकते हैं</string>
+    <string name="caramel_sign_in_page_title">Microsoft साइन-इन पृष्ठ</string>
+    <string name="caramel_cosmetics_signed_out_title">कॉस्मेटिक्स उपयोग करने के लिए साइन इन करें</string>
+    <string name="caramel_cosmetics_signed_out_body">आपकी केप, टोपी और पालतू आपके साइन-इन खाते पर लागू होते हैं।</string>
+    <string name="caramel_skin_signed_out_hint">अपनी Minecraft स्किन लोड करने के लिए साइन इन करें।</string>
 </resources>

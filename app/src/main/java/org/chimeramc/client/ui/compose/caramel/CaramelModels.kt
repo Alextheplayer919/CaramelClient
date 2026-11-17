@@ -264,6 +264,16 @@ class CaramelLauncherState {
     /** Why the last sign-in attempt failed, empty when it has not failed. */
     var signInError by mutableStateOf("")
 
+    /**
+     * True while the sign-in modal is showing the in-app Microsoft page.
+     *
+     * <p>The device-code flow used to hand the user to the system browser the moment Microsoft
+     * issued a code, so they left the launcher to finish signing in. The launcher already hosts its
+     * own WebView for news links; the sign-in page opens in that same in-app surface instead, and
+     * this flag is what makes the modal swap from the code panel to the page.
+     */
+    var signInWebOpen by mutableStateOf(false)
+
     /** The gamertag typed into the Add friend modal. */
     var friendQuery by mutableStateOf("")
 
