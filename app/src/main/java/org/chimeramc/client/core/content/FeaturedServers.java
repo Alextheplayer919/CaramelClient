@@ -41,9 +41,8 @@ public final class FeaturedServers {
                     new Featured("The Hive", "geo.hivebedrock.network", DEFAULT_PORT),
                     new Featured("CubeCraft", "mco.cubecraft.net", DEFAULT_PORT),
                     new Featured("Galaxite", "play.galaxite.net", DEFAULT_PORT),
-                    new Featured("InPvP", "play.inpvp.net", DEFAULT_PORT),
-                    new Featured("Lifeboat", "play.lbsg.net", DEFAULT_PORT),
-                    new Featured("NetherGames", "play.nethergames.org", DEFAULT_PORT))));
+                    new Featured("Mineville Zeqa", "play.inpvp.net", DEFAULT_PORT),
+                    new Featured("Lifeboat", "play.lbsg.net", DEFAULT_PORT))));
 
     private FeaturedServers() {
     }

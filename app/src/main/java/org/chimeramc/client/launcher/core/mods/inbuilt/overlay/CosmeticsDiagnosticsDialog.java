@@ -16,7 +16,6 @@ import android.widget.CheckBox;
 import android.widget.LinearLayout;
 import android.widget.ScrollView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.appcompat.app.AlertDialog;
 
@@ -117,7 +116,7 @@ final class CosmeticsDiagnosticsDialog {
             String text = CosmeticsDiagnosticsReport.readLive(activity);
             reportView.setText(text);
             copyToClipboard(activity, text);
-            Toast.makeText(activity, R.string.cosmetics_diagnostics_copied, Toast.LENGTH_SHORT).show();
+            org.chimeramc.client.ui.compose.caramel.CaramelNoticeBus.post(activity, R.string.cosmetics_diagnostics_copied);
         });
         buttons.addView(copy);
 
@@ -143,11 +142,11 @@ final class CosmeticsDiagnosticsDialog {
         copyCrash.setOnClickListener(v -> {
             String crash = readLastCrash(activity);
             if (crash.isEmpty()) {
-                Toast.makeText(activity, R.string.crash_report_none, Toast.LENGTH_SHORT).show();
+                org.chimeramc.client.ui.compose.caramel.CaramelNoticeBus.post(activity, R.string.crash_report_none);
                 return;
             }
             copyToClipboard(activity, crash);
-            Toast.makeText(activity, R.string.crash_report_copied, Toast.LENGTH_SHORT).show();
+            org.chimeramc.client.ui.compose.caramel.CaramelNoticeBus.post(activity, R.string.crash_report_copied);
         });
         crashButtons.addView(copyCrash);
 
@@ -156,7 +155,7 @@ final class CosmeticsDiagnosticsDialog {
         shareCrash.setOnClickListener(v -> {
             String crash = readLastCrash(activity);
             if (crash.isEmpty()) {
-                Toast.makeText(activity, R.string.crash_report_none, Toast.LENGTH_SHORT).show();
+                org.chimeramc.client.ui.compose.caramel.CaramelNoticeBus.post(activity, R.string.crash_report_none);
                 return;
             }
             shareText(activity, crash, activity.getString(R.string.crash_report_share_title));

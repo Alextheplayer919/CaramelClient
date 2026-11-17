@@ -73,13 +73,14 @@ public final class MinecraftSessionRestarter {
         java.util.List<Long> history = readRelaunchHistory(appContextForBudget);
         if (RelaunchBudget.decide(history, now) == RelaunchBudget.Decision.REFUSED_TOO_MANY) {
             // A toast, not a dialog: this runs over the running game, whose activity uses a
-            // full-screen theme a dialog would fight with, and the message is short.
+            // full-screen theme a dialog would fight with, and the message is short. The notice bus
+            // draws the launcher's own toast when one is mounted and falls back to the system bubble
+            // when the game has the foreground, so the message wears the same surface either way.
             final Context toastContext = activity.getApplicationContext();
             final int max = RelaunchBudget.MAX_IN_WINDOW;
-            MAIN.post(() -> android.widget.Toast.makeText(toastContext,
-                    toastContext.getString(org.chimeramc.client.R.string.session_restart_loop_message,
-                            max),
-                    android.widget.Toast.LENGTH_LONG).show());
+            org.chimeramc.client.ui.compose.caramel.CaramelNoticeBus.postWarning(toastContext,
+                    toastContext.getString(
+                            org.chimeramc.client.R.string.session_restart_loop_message, max));
             return false;
         }
 

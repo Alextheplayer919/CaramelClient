@@ -1519,7 +1519,7 @@
     <string name="caramel_news_honey_title">HoneyClient скоро..</string>
     <string name="caramel_news_honey_body">Новый клиент уже в пути. Нажмите ниже, чтобы увидеть, что создаёт HoneyClient.</string>
     <string name="caramel_news_honey_meta">Объявление</string>
-    <string name="caramel_news_honey_button">Нажмите для подробностей!</string>
+    <string name="caramel_news_honey_button">Подробнее</string>
     <string name="caramel_checking_updates">Проверка обновлений…</string>
     <string name="caramel_update_available_version">Доступна версия %1$s. Нажмите «Скачать обновление», чтобы установить её.</string>
     <string name="caramel_update_check_failed">Не удалось проверить обновления. Проверьте подключение и повторите попытку.</string>
@@ -1554,4 +1554,8 @@
     <string name="caramel_loader_unavailable">Этот предзагрузчик ещё не создан.</string>
     <string name="caramel_loaders_note">Готов только SweetLoader. RustyLoader и LightningLoader ещё не готовы.</string>
     <string name="splash_show_tagline">Лучший опыт Bedrock, какой только возможен</string>
+    <string name="caramel_sign_in_page_title">Страница входа Microsoft</string>
+    <string name="caramel_cosmetics_signed_out_title">Войдите, чтобы использовать косметику</string>
+    <string name="caramel_cosmetics_signed_out_body">Плащи, шляпы и питомцы применяются к вашей учётной записи.</string>
+    <string name="caramel_skin_signed_out_hint">Войдите, чтобы загрузить свой скин Minecraft.</string>
 </resources>

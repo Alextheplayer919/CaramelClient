@@ -8,7 +8,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.pm.ApplicationInfo;
 import android.os.Build;
-import android.widget.Toast;
 
 import org.chimeramc.client.R;
 import org.chimeramc.client.core.versions.GameVersion;
@@ -242,9 +241,12 @@ public class MinecraftLauncher {
         LaunchErrorDiagnosis.Cause cause = LaunchErrorDiagnosis.classifyText(message);
         String text = activity.getString(LaunchErrorDiagnosis.messageRes(cause))
                 + (message != null && !message.isEmpty() ? "\n\n" + message : "");
-        activity.runOnUiThread(() -> Toast.makeText(
-                activity, text, Toast.LENGTH_LONG).show()
-        );
+        // The launcher already names the classified cause on its own Caramel toast (see
+        // MainActivity.launch's onLaunchFailed). Raising a raw system Toast as well would draw two
+        // bubbles for one failure, and the square system bubble ignores the launcher's visual
+        // language and reduce-motion setting — the exact thing the Caramel notice replaced. The
+        // detail is not lost: it is logged here and surfaced on the launcher's toast.
+        Log.e(TAG, "Launch error: " + text);
     }
 
     private void notifyLaunchStarted(LaunchCallback callback) {

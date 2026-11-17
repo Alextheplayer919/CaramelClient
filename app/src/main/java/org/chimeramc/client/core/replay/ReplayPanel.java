@@ -16,7 +16,6 @@ import android.widget.LinearLayout;
 import android.widget.ScrollView;
 import android.widget.SeekBar;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import org.chimeramc.client.R;
 import org.chimeramc.client.ui.animation.DynamicAnim;
@@ -120,7 +119,7 @@ public final class ReplayPanel {
             // exactly the state the panel shows before Record was ever pressed, so the press looked
             // ignored. The failure is named and the library is rescanned in case a partial clip was
             // left behind.
-            Toast.makeText(activity, R.string.replay_capture_failed, Toast.LENGTH_LONG).show();
+            org.chimeramc.client.ui.compose.caramel.CaramelNoticeBus.postWarning(activity, R.string.replay_capture_failed);
             refreshLibrary();
         }
     };
@@ -366,13 +365,12 @@ public final class ReplayPanel {
                                     .fileStamp(System.currentTimeMillis()));
             activity.runOnUiThread(() -> {
                 if (written == null) {
-                    Toast.makeText(activity, R.string.replay_save_native_empty,
-                            Toast.LENGTH_LONG).show();
+                    org.chimeramc.client.ui.compose.caramel.CaramelNoticeBus.postWarning(activity, R.string.replay_save_native_empty);
                     return;
                 }
                 refreshLibrary();
-                Toast.makeText(activity, activity.getString(R.string.replay_save_native_done,
-                        written.getName()), Toast.LENGTH_LONG).show();
+                org.chimeramc.client.ui.compose.caramel.CaramelNoticeBus.post(activity, activity.getString(R.string.replay_save_native_done,
+                        written.getName()));
             });
         });
     }
@@ -939,9 +937,8 @@ public final class ReplayPanel {
             }
             final File trimmed = result;
             mainHandler.post(() -> {
-                Toast.makeText(activity, trimmed != null
-                        ? R.string.replay_clip_saved : R.string.replay_export_failed,
-                        Toast.LENGTH_SHORT).show();
+                org.chimeramc.client.ui.compose.caramel.CaramelNoticeBus.post(activity, trimmed != null
+                        ? R.string.replay_clip_saved : R.string.replay_export_failed);
                 if (trimmed != null) refreshLibrary();
             });
         }));
@@ -956,13 +953,11 @@ public final class ReplayPanel {
                 uri = ReplayExporter.exportToGallery(activity, clip);
             } catch (Throwable t) {
                 Log.w(TAG, "Replay export failed", t);
-                mainHandler.post(() -> Toast.makeText(activity, R.string.replay_export_failed,
-                        Toast.LENGTH_SHORT).show());
+                org.chimeramc.client.ui.compose.caramel.CaramelNoticeBus.post(activity, R.string.replay_export_failed);
                 return;
             }
-            mainHandler.post(() -> Toast.makeText(activity, uri != null
-                    ? R.string.replay_exported : R.string.replay_export_failed,
-                    Toast.LENGTH_SHORT).show());
+            org.chimeramc.client.ui.compose.caramel.CaramelNoticeBus.post(activity, uri != null
+                    ? R.string.replay_exported : R.string.replay_export_failed);
         });
     }
 
@@ -975,7 +970,7 @@ public final class ReplayPanel {
      */
     private void shareClip(ReplayClip clip) {
         if (clip == null || clip.file() == null || !clip.file().isFile()) {
-            Toast.makeText(activity, R.string.replay_share_failed, Toast.LENGTH_SHORT).show();
+            org.chimeramc.client.ui.compose.caramel.CaramelNoticeBus.post(activity, R.string.replay_share_failed);
             return;
         }
         ReplayShareSheet.share(activity, clip);
@@ -994,7 +989,7 @@ public final class ReplayPanel {
             if (clip.favorite()) favorites.add(clip);
         }
         if (!ReplayStitch.isStitchable(favorites)) {
-            Toast.makeText(activity, R.string.replay_stitch_needs_two, Toast.LENGTH_SHORT).show();
+            org.chimeramc.client.ui.compose.caramel.CaramelNoticeBus.post(activity, R.string.replay_stitch_needs_two);
             return;
         }
         runOnIo(() -> {
@@ -1005,14 +1000,12 @@ public final class ReplayPanel {
                 reel = ReplayExporter.stitch(activity, favorites);
             } catch (Throwable t) {
                 Log.w(TAG, "Replay stitch failed", t);
-                mainHandler.post(() -> Toast.makeText(activity, R.string.replay_stitch_failed,
-                        Toast.LENGTH_SHORT).show());
+                org.chimeramc.client.ui.compose.caramel.CaramelNoticeBus.post(activity, R.string.replay_stitch_failed);
                 return;
             }
             mainHandler.post(() -> {
-                Toast.makeText(activity, reel != null
-                        ? R.string.replay_reel_saved : R.string.replay_stitch_failed,
-                        Toast.LENGTH_SHORT).show();
+                org.chimeramc.client.ui.compose.caramel.CaramelNoticeBus.post(activity, reel != null
+                        ? R.string.replay_reel_saved : R.string.replay_stitch_failed);
                 if (reel != null) refreshLibrary();
             });
         });
@@ -1025,8 +1018,7 @@ public final class ReplayPanel {
                 renamed = repository.rename(clip, name);
             } catch (Throwable t) {
                 Log.w(TAG, "Replay rename failed", t);
-                mainHandler.post(() -> Toast.makeText(activity, R.string.replay_rename_failed,
-                        Toast.LENGTH_SHORT).show());
+                org.chimeramc.client.ui.compose.caramel.CaramelNoticeBus.post(activity, R.string.replay_rename_failed);
                 return;
             }
             mainHandler.post(() -> {
@@ -1034,8 +1026,7 @@ public final class ReplayPanel {
                     ReplayThumbnails.invalidate(clip.file());
                     refreshLibrary();
                 } else {
-                    Toast.makeText(activity, R.string.replay_rename_failed,
-                            Toast.LENGTH_SHORT).show();
+                    org.chimeramc.client.ui.compose.caramel.CaramelNoticeBus.post(activity, R.string.replay_rename_failed);
                 }
             });
         }));
@@ -1049,7 +1040,7 @@ public final class ReplayPanel {
         ReplayCinematicDialog.show(activity, style, existing, camera, clip.durationMs(), path -> {
             clip.setCameraPath(path);
             repository.updateSidecar(clip);
-            Toast.makeText(activity, R.string.replay_cinematic_saved, Toast.LENGTH_SHORT).show();
+            org.chimeramc.client.ui.compose.caramel.CaramelNoticeBus.post(activity, R.string.replay_cinematic_saved);
             refreshLibrary();
         });
     }
@@ -1102,30 +1093,27 @@ public final class ReplayPanel {
             } catch (Throwable t) {
                 org.chimeramc.client.util.AppLog.warnOnce("CaramelClient", "replay:read",
                         "Could not read the BerryAPI replay file", t);
-                activity.runOnUiThread(() -> Toast.makeText(activity,
-                        R.string.replay_berry_read_failed, Toast.LENGTH_SHORT).show());
+                org.chimeramc.client.ui.compose.caramel.CaramelNoticeBus.post(activity, R.string.replay_berry_read_failed);
                 return;
             }
             final int status = berryReplay.load(bytes);
             final BerryReplaySource.Snapshot snap = berryReplay.snapshot();
             activity.runOnUiThread(() -> {
                 if (status != org.chimeramc.client.core.replay.ReplayAbi.OK) {
-                    Toast.makeText(activity, activity.getString(
+                    org.chimeramc.client.ui.compose.caramel.CaramelNoticeBus.postWarning(activity, activity.getString(
                             R.string.replay_berry_load_failed,
-                            org.chimeramc.client.core.replay.ReplayAbi.statusName(status)),
-                            Toast.LENGTH_LONG).show();
+                            org.chimeramc.client.core.replay.ReplayAbi.statusName(status)));
                     return;
                 }
                 if (!snap.loaded) {
-                    Toast.makeText(activity, R.string.replay_berry_read_failed,
-                            Toast.LENGTH_SHORT).show();
+                    org.chimeramc.client.ui.compose.caramel.CaramelNoticeBus.post(activity, R.string.replay_berry_read_failed);
                     return;
                 }
                 // BerryAPI drives the review from its own frame clock, so the panel only reports the
                 // timeline and lets the library play it.
                 berryReplay.play();
-                Toast.makeText(activity, activity.getString(
-                        R.string.replay_berry_playing, snap.tickLength()), Toast.LENGTH_SHORT).show();
+                org.chimeramc.client.ui.compose.caramel.CaramelNoticeBus.post(activity, activity.getString(
+                        R.string.replay_berry_playing, snap.tickLength()));
             });
         });
     }
@@ -1138,7 +1126,7 @@ public final class ReplayPanel {
     private void openClip(ReplayClip clip) {
         selected = clip;
         if (clip == null || clip.file() == null || !clip.file().isFile()) {
-            Toast.makeText(activity, R.string.replay_playback_hint, Toast.LENGTH_SHORT).show();
+            org.chimeramc.client.ui.compose.caramel.CaramelNoticeBus.post(activity, R.string.replay_playback_hint);
             return;
         }
         // A BerryAPI-format replay is played by BerryAPI's own system when it is present: it owns the
@@ -1193,9 +1181,8 @@ public final class ReplayPanel {
     private void toggleFavorite(ReplayClip clip) {
         clip.setFavorite(!clip.favorite());
         repository.updateSidecar(clip);
-        Toast.makeText(activity, clip.favorite()
-                ? R.string.replay_favorited_on : R.string.replay_favorited_off,
-                Toast.LENGTH_SHORT).show();
+        org.chimeramc.client.ui.compose.caramel.CaramelNoticeBus.post(activity, clip.favorite()
+                ? R.string.replay_favorited_on : R.string.replay_favorited_off);
         renderLibrary();
     }
 
@@ -1241,8 +1228,7 @@ public final class ReplayPanel {
                             ReplayThumbnails.invalidate(clip.file());
                         } catch (Throwable t) {
                             Log.w(TAG, "Replay delete failed", t);
-                            mainHandler.post(() -> Toast.makeText(activity,
-                                    R.string.replay_delete_failed, Toast.LENGTH_SHORT).show());
+                            org.chimeramc.client.ui.compose.caramel.CaramelNoticeBus.post(activity, R.string.replay_delete_failed);
                         }
                         mainHandler.post(() -> {
                             if (selected == clip) selected = null;

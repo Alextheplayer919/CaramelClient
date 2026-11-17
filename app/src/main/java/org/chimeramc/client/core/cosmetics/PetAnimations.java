@@ -196,8 +196,8 @@ public final class PetAnimations {
                 return anim(1.2f,
                         bone("head", "[0, \"math.sin(query.anim_time * 90) * 6\", 0]",
                                 "[0, \"math.sin(query.anim_time * 180) * 0.2\", 0]", null),
-                        bone("leg_a", "[0, 0, \"math.sin(query.anim_time * 200) * 8\"]", null, null),
-                        bone("leg_b", "[0, 0, \"math.sin(query.anim_time * 200 + 180) * 8\"]", null, null));
+                        bone("leg_a", "[\"math.sin(query.anim_time * 200) * 8\", 0, 0]", null, null),
+                        bone("leg_b", "[\"math.sin(query.anim_time * 200 + 180) * 8\", 0, 0]", null, null));
             default:
                 return anim(2.4f,
                         bone("pet", null, "[0, \"math.sin(query.anim_time * 160) * 0.25\", 0]", null),
@@ -242,15 +242,15 @@ public final class PetAnimations {
             case CRAWLER:
                 return anim(run ? 0.55f : 0.9f,
                         bone("pet", null, "[0, \"math.abs(math.sin(query.anim_time * " + sp + ")) * " + f(bob * 0.5f) + "\", " + followZ() + "]", null),
-                        bone("leg_a", "[0, 0, \"math.sin(query.anim_time * " + sp + ") * " + f(legDeg) + "\"]", null, null),
-                        bone("leg_b", "[0, 0, \"math.sin(query.anim_time * " + sp + " + 180) * " + f(legDeg) + "\"]", null, null),
-                        bone("leg_c", "[0, 0, \"math.sin(query.anim_time * " + sp + " + 90) * " + f(legDeg) + "\"]", null, null));
+                        bone("leg_a", "[\"math.sin(query.anim_time * " + sp + ") * " + f(legDeg) + "\", 0, 0]", null, null),
+                        bone("leg_b", "[\"math.sin(query.anim_time * " + sp + " + 180) * " + f(legDeg) + "\", 0, 0]", null, null),
+                        bone("leg_c", "[\"math.sin(query.anim_time * " + sp + " + 90) * " + f(legDeg) + "\", 0, 0]", null, null));
             default:
                 return anim(run ? 0.6f : 1.0f,
                         bone("pet", null, "[0, \"math.abs(math.sin(query.anim_time * " + sp + ")) * " + f(bob) + "\", " + followZ() + "]", null),
                         bone("head", null, "[0, \"math.sin(query.anim_time * " + sp + " + 45) * " + f(amp * 0.5f) + "\", 0]", null),
-                        bone("leg_a", "[0, 0, \"math.sin(query.anim_time * " + sp + ") * " + f(legDeg) + "\"]", null, null),
-                        bone("leg_b", "[0, 0, \"math.sin(query.anim_time * " + sp + " + 180) * " + f(legDeg) + "\"]", null, null),
+                        bone("leg_a", "[\"math.sin(query.anim_time * " + sp + ") * " + f(legDeg) + "\", 0, 0]", null, null),
+                        bone("leg_b", "[\"math.sin(query.anim_time * " + sp + " + 180) * " + f(legDeg) + "\", 0, 0]", null, null),
                         bone("tail", "[0, \"math.sin(query.anim_time * " + sp + ") * " + f(legDeg * 0.6f) + "\", 0]", null, null));
         }
     }
@@ -298,8 +298,8 @@ public final class PetAnimations {
             default:
                 return anim(1.1f,
                         bone("pet", null, "[0, \"math.sin(query.anim_time * 300) * 0.7\", 0]", null),
-                        bone("leg_a", "[0, 0, \"math.sin(query.anim_time * 400) * 30\"]", null, null),
-                        bone("leg_b", "[0, 0, \"math.sin(query.anim_time * 400 + 180) * 30\"]", null, null),
+                        bone("leg_a", "[\"math.sin(query.anim_time * 400) * 30\", 0, 0]", null, null),
+                        bone("leg_b", "[\"math.sin(query.anim_time * 400 + 180) * 30\", 0, 0]", null, null),
                         bone("head", "[0, \"math.sin(query.anim_time * 200) * 8\", 0]", null, null));
         }
     }
@@ -319,13 +319,13 @@ public final class PetAnimations {
             case CRAWLER:
                 return anim(1.4f,
                         bone("pet", null, "[0, \"math.sin(query.anim_time * 200) * 0.3\", 0]", null),
-                        bone("leg_a", "[0, 0, \"math.sin(query.anim_time * 300) * 22\"]", null, null),
-                        bone("leg_b", "[0, 0, \"math.sin(query.anim_time * 300 + 180) * 22\"]", null, null));
+                        bone("leg_a", "[\"math.sin(query.anim_time * 300) * 22\", 0, 0]", null, null),
+                        bone("leg_b", "[\"math.sin(query.anim_time * 300 + 180) * 22\", 0, 0]", null, null));
             default:
                 return anim(1.3f,
                         bone("pet", null, "[0, \"math.sin(query.anim_time * 200) * 0.3\", 0]", null),
-                        bone("leg_a", "[0, 0, \"math.sin(query.anim_time * 300) * 26\"]", null, null),
-                        bone("leg_b", "[0, 0, \"math.sin(query.anim_time * 300 + 180) * 26\"]", null, null),
+                        bone("leg_a", "[\"math.sin(query.anim_time * 300) * 26\", 0, 0]", null, null),
+                        bone("leg_b", "[\"math.sin(query.anim_time * 300 + 180) * 26\", 0, 0]", null, null),
                         bone("tail", "[0, \"math.sin(query.anim_time * 240) * 18\", 0]", null, null));
         }
     }
@@ -340,9 +340,9 @@ public final class PetAnimations {
                                 f(o[1]) + " + math.abs(math.sin(query.anim_time * 720)) * 0.15",
                                 f(o[2]) + " + math.cos(query.anim_time * 360) * 0.5"), null),
                 bone("head", "[0, \"math.sin(query.anim_time * 360) * 10\", 0]", null, null),
-                bone("leg_a", "[0, 0, \"math.sin(query.anim_time * 1080) * 26\"]", null, null),
-                bone("leg_b", "[0, 0, \"math.sin(query.anim_time * 1080 + 180) * 26\"]", null, null),
-                bone("leg_c", "[0, 0, \"math.sin(query.anim_time * 1080 + 90) * 26\"]", null, null));
+                bone("leg_a", "[\"math.sin(query.anim_time * 1080) * 26\", 0, 0]", null, null),
+                bone("leg_b", "[\"math.sin(query.anim_time * 1080 + 180) * 26\", 0, 0]", null, null),
+                bone("leg_c", "[\"math.sin(query.anim_time * 1080 + 90) * 26\", 0, 0]", null, null));
     }
 
     /** Crouching: stop, hold still, and look around (head + antennae sweep). */
@@ -362,9 +362,9 @@ public final class PetAnimations {
                         posExpr(f(o[0]), f(o[1]) + " + math.sin(query.anim_time * 720) * 0.08",
                                 f(o[2]) + " - 0.3"), null),
                 bone("head", "[-20, 0, 0]", null, null),
-                bone("leg_a", "[0, 0, \"math.sin(query.anim_time * 1440) * 18\"]", null, null),
-                bone("leg_b", "[0, 0, \"math.sin(query.anim_time * 1440 + 180) * 18\"]", null, null),
-                bone("leg_c", "[0, 0, \"math.sin(query.anim_time * 1440 + 90) * 18\"]", null, null));
+                bone("leg_a", "[\"math.sin(query.anim_time * 1440) * 18\", 0, 0]", null, null),
+                bone("leg_b", "[\"math.sin(query.anim_time * 1440 + 180) * 18\", 0, 0]", null, null),
+                bone("leg_c", "[\"math.sin(query.anim_time * 1440 + 90) * 18\", 0, 0]", null, null));
     }
 
     /** Swimming: a low, surface-bobbing cling that paddles — distinct from the airborne lean. */
@@ -374,9 +374,9 @@ public final class PetAnimations {
                         posExpr(f(o[0]), f(o[1]) + " + math.sin(query.anim_time * 200) * 0.25",
                                 f(o[2])), null),
                 bone("head", "[8, \"math.sin(query.anim_time * 160) * 12\", 0]", null, null),
-                bone("leg_a", "[0, 0, \"math.sin(query.anim_time * 420) * 30\"]", null, null),
-                bone("leg_b", "[0, 0, \"math.sin(query.anim_time * 420 + 180) * 30\"]", null, null),
-                bone("leg_c", "[0, 0, \"math.sin(query.anim_time * 420 + 90) * 30\"]", null, null));
+                bone("leg_a", "[\"math.sin(query.anim_time * 420) * 30\", 0, 0]", null, null),
+                bone("leg_b", "[\"math.sin(query.anim_time * 420 + 180) * 30\", 0, 0]", null, null),
+                bone("leg_c", "[\"math.sin(query.anim_time * 420 + 90) * 30\", 0, 0]", null, null));
     }
 
     // ---- JSON helpers --------------------------------------------------------------------

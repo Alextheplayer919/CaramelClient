@@ -5,6 +5,7 @@ import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.ReadOnlyComposable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.graphics.Color
@@ -79,17 +80,62 @@ private val Inter = FontFamily(
 
 /** Short alias, matching the pack's `T`. */
 object CaramelType {
-    val Display = TextStyle(fontFamily = Poppins, fontWeight = FontWeight.Bold, fontSize = 24.sp, color = C.Text)
-    val Title = TextStyle(fontFamily = Poppins, fontWeight = FontWeight.Medium, fontSize = 16.sp, color = C.Text)
-    val Subtitle = TextStyle(fontFamily = Poppins, fontWeight = FontWeight.Medium, fontSize = 14.sp, color = C.Text)
-    val Button = TextStyle(fontFamily = Poppins, fontWeight = FontWeight.Medium, fontSize = 14.sp, color = C.Text)
-    val Label = TextStyle(fontFamily = Inter, fontWeight = FontWeight.SemiBold, fontSize = 13.sp, color = C.Text)
-    val Body = TextStyle(fontFamily = Inter, fontWeight = FontWeight.Normal, fontSize = 12.sp, color = C.Text2)
-    val Caption = TextStyle(fontFamily = Inter, fontWeight = FontWeight.Normal, fontSize = 11.sp, color = C.Text3)
-    val Chip = TextStyle(fontFamily = Inter, fontWeight = FontWeight.SemiBold, fontSize = 10.5.sp)
+    val Display: TextStyle
+        @Composable @ReadOnlyComposable get() = TextStyle(
+            fontFamily = displayFamily(), fontWeight = FontWeight.Bold, fontSize = 24.sp, color = C.Text)
+    val Title: TextStyle
+        @Composable @ReadOnlyComposable get() = TextStyle(
+            fontFamily = displayFamily(), fontWeight = FontWeight.Medium, fontSize = 16.sp, color = C.Text)
+    val Subtitle: TextStyle
+        @Composable @ReadOnlyComposable get() = TextStyle(
+            fontFamily = displayFamily(), fontWeight = FontWeight.Medium, fontSize = 14.sp, color = C.Text)
+    val Button: TextStyle
+        @Composable @ReadOnlyComposable get() = TextStyle(
+            fontFamily = displayFamily(), fontWeight = FontWeight.Medium, fontSize = 14.sp, color = C.Text)
+    val Label: TextStyle
+        @Composable @ReadOnlyComposable get() = TextStyle(
+            fontFamily = bodyFamily(), fontWeight = FontWeight.SemiBold, fontSize = 13.sp, color = C.Text)
+    val Body: TextStyle
+        @Composable @ReadOnlyComposable get() = TextStyle(
+            fontFamily = bodyFamily(), fontWeight = FontWeight.Normal, fontSize = 12.sp, color = C.Text2)
+    val Caption: TextStyle
+        @Composable @ReadOnlyComposable get() = TextStyle(
+            fontFamily = bodyFamily(), fontWeight = FontWeight.Normal, fontSize = 11.sp, color = C.Text3)
+    val Chip: TextStyle
+        @Composable @ReadOnlyComposable get() = TextStyle(
+            fontFamily = bodyFamily(), fontWeight = FontWeight.SemiBold, fontSize = 10.5.sp)
 }
 
 typealias T = CaramelType
+
+/**
+ * The font the user picked, or null for the built-in families.
+ *
+ * <p>The "Font family" setting persists a [org.chimeramc.client.util.LauncherFonts] key, but the
+ * Compose launcher reads its type from [CaramelType], which used to hard-code Poppins and Inter — so
+ * the picker wrote a value nothing on the Compose surface ever read, which is why "changing the font
+ * did nothing". [CaramelTheme] resolves the key to a bundled resource and provides it here; each role
+ * then wears it, falling back to the built-in family when no face is chosen.
+ */
+private val LocalCaramelFamily = staticCompositionLocalOf<FontFamily?> { null }
+
+/** The user's chosen face, or null when the built-in families are in use. */
+val caramelFamily: FontFamily?
+    @Composable @ReadOnlyComposable get() = LocalCaramelFamily.current
+
+@Composable @ReadOnlyComposable
+private fun displayFamily(): FontFamily = caramelFamily ?: Poppins
+
+@Composable @ReadOnlyComposable
+private fun bodyFamily(): FontFamily = caramelFamily ?: Inter
+
+/** One family carrying the four weights the roles use, all from a single bundled variable font. */
+private fun familyFor(fontRes: Int): FontFamily = FontFamily(
+    Font(fontRes, FontWeight.Normal),
+    Font(fontRes, FontWeight.Medium),
+    Font(fontRes, FontWeight.SemiBold),
+    Font(fontRes, FontWeight.Bold),
+)
 
 /**
  * Installs the Caramel palette into Material so `Text`, `Icon` and the Material defaults resolve to
@@ -102,8 +148,16 @@ typealias T = CaramelType
 @Composable
 fun CaramelTheme(prefs: CaramelUiPrefs = rememberCaramelUiPrefs(), content: @Composable () -> Unit) {
     val density = LocalDensity.current
+    val context = LocalContext.current
+    // The user's chosen face, resolved from the catalogue once per key. Null keeps the built-in
+    // Poppins/Inter pairing, so the default look is unchanged.
+    val family = remember(context, prefs.fontFamilyKey) {
+        val res = org.chimeramc.client.util.LauncherFonts.loadableFontRes(context, prefs.fontFamilyKey)
+        if (res != 0) familyFor(res) else null
+    }
     CompositionLocalProvider(
         LocalCaramelPrefs provides prefs,
+        LocalCaramelFamily provides family,
         LocalDensity provides Density(density.density, prefs.fontScale),
     ) {
         androidx.compose.material3.MaterialTheme(
@@ -157,6 +211,13 @@ class CaramelUiPrefs(
      * are already translucent, so this is how much of the backdrop shows through them.
      */
     val uiTransparency: Float = 0.85f,
+    /**
+     * The chosen font key from [org.chimeramc.client.util.LauncherFonts], or empty for the built-in
+     * families. When set, [CaramelTheme] replaces the display/title and body families with the
+     * bundled face, so a font picked in Settings reaches the Compose launcher instead of only the
+     * View-based screens.
+     */
+    val fontFamilyKey: String = "",
 )
 
 private val LocalCaramelPrefs = staticCompositionLocalOf {
@@ -202,6 +263,7 @@ fun rememberCaramelUiPrefs(): CaramelUiPrefs {
                 glassStrength = 0.35f + pm.blurIntensity / 100f,
                 animationSpeed = pm.animationSpeed.coerceIn(0.5f, 3f),
                 uiTransparency = (pm.uiTransparency / 100f).coerceIn(0f, 1f),
+                fontFamilyKey = pm.fontFamily,
             )
         } catch (t: Throwable) {
             CaramelUiPrefs(fontScale = 1f, cardRadiusDp = 20f, motionScale = 1f, glassStrength = 1f, animationSpeed = 1f, uiTransparency = 0.85f)

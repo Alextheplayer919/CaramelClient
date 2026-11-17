@@ -438,6 +438,17 @@ public final class MsftAuthManager {
     public static MsftAccountStore.MsftAccount saveAccountAndActivate(Context context, BedrockAuthManager authManager) throws Exception {
         MsftAccountStore.MsftAccount account = saveAccountOrThrow(context, authManager);
         MsftAccountStore.setActive(context, account.id);
+        // A completed sign-in is the one-line consent for the account skin lookup: the player chose
+        // to use their own Microsoft identity, so the launcher may show that identity's skin. Without
+        // this the lookup stayed default-off and the preview could never resolve the real skin — the
+        // "3D skin is not my actual Minecraft skin" report. The Cosmetics panel can still turn it off.
+        try {
+            org.chimeramc.client.core.cosmetics.AccountSkinService.setEnabled(context, true);
+            org.chimeramc.client.core.cosmetics.AccountSkinService.refreshIfStale(context);
+        } catch (Throwable t) {
+            AppLog.warnOnce("CaramelClient", "MsftAuthManager:skinLookupOnSignIn",
+                    "Could not enable the account skin lookup after sign-in", t);
+        }
         MsftAccountStore.MsftAccount active = MsftAccountStore.find(context, account.id);
         return active != null ? active : account;
     }

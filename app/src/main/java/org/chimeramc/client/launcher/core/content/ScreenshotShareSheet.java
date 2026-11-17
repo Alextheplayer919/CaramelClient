@@ -3,7 +3,6 @@ package org.chimeramc.client.launcher.core.content;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
-import android.widget.Toast;
 
 import androidx.core.content.FileProvider;
 
@@ -39,7 +38,7 @@ public final class ScreenshotShareSheet {
     public static boolean share(Context context, File file) {
         if (context == null || !ScreenshotSharing.isShareable(file)) {
             if (context != null) {
-                Toast.makeText(context, R.string.screenshot_share_failed, Toast.LENGTH_SHORT).show();
+                org.chimeramc.client.ui.compose.caramel.CaramelNoticeBus.post(context, R.string.screenshot_share_failed);
             }
             return false;
         }
@@ -49,11 +48,11 @@ public final class ScreenshotShareSheet {
             uri = FileProvider.getUriForFile(context,
                     context.getPackageName() + ".fileprovider", file);
         } catch (Throwable t) {
-            Toast.makeText(context, R.string.screenshot_share_failed, Toast.LENGTH_SHORT).show();
+            org.chimeramc.client.ui.compose.caramel.CaramelNoticeBus.post(context, R.string.screenshot_share_failed);
             return false;
         }
         if (uri == null) {
-            Toast.makeText(context, R.string.screenshot_share_failed, Toast.LENGTH_SHORT).show();
+            org.chimeramc.client.ui.compose.caramel.CaramelNoticeBus.post(context, R.string.screenshot_share_failed);
             return false;
         }
 
@@ -73,7 +72,7 @@ public final class ScreenshotShareSheet {
             context.startActivity(chooser);
             return true;
         } catch (Throwable t) {
-            Toast.makeText(context, R.string.screenshot_share_no_app, Toast.LENGTH_SHORT).show();
+            org.chimeramc.client.ui.compose.caramel.CaramelNoticeBus.post(context, R.string.screenshot_share_no_app);
             return false;
         }
     }

@@ -26,6 +26,7 @@ import androidx.compose.material.icons.rounded.Folder
 import androidx.compose.material.icons.rounded.Group
 import androidx.compose.material.icons.rounded.KeyboardArrowDown
 import androidx.compose.material.icons.rounded.KeyboardArrowUp
+import androidx.compose.material.icons.rounded.OpenInNew
 import androidx.compose.material.icons.rounded.PhotoCamera
 import androidx.compose.material.icons.rounded.RocketLaunch
 import androidx.compose.material.icons.rounded.Settings
@@ -205,12 +206,15 @@ private fun NewsCard(state: CaramelLauncherState, post: CaramelNewsInfo, art: Li
                 Text(post.title, style = T.Subtitle.copy(fontSize = 13.5.sp_), maxLines = 2)
                 Text(post.meta, style = T.Body, maxLines = 2)
                 if (post.actionLabel.isNotEmpty() && post.actionUrl.isNotEmpty()) {
-                    // The card's own action, so the announcement is one tap from Home too.
+                    // The card's own action, so the announcement is one tap from Home too. Same
+                    // tone and icon as the News modal's button, so the one announcement wears one
+                    // style wherever it appears.
                     val label = post.actionLabel
                     PrimaryButton(
                         label,
                         { state.webTitle = post.title; state.webUrl = post.actionUrl },
-                        tone = Tone.Yellow,
+                        tone = Tone.Blue,
+                        icon = Icons.Rounded.OpenInNew,
                         height = 32,
                     )
                 }

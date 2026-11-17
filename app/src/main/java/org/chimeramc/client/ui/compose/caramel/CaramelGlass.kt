@@ -122,9 +122,16 @@ fun CaramelBackdrop(modifier: Modifier = Modifier) {
     }
 }
 
-/** The duration a decorative transition should take, honouring the user's Animation Speed. */
+/**
+ * The duration a decorative transition should take.
+ *
+ * <p>Honours two settings, in order: "Reduce motion" collapses every transition to a single frame
+ * so a panel or toast appears rather than animates (the switch used to be stored and never read, so
+ * it had no effect in the Compose launcher), and "Animation Speed" then scales whatever remains.
+ */
 @Composable
 fun caramelMotionMs(baseMs: Int): Int {
+    if (caramelPrefs.motionScale <= 0f) return 1
     val speed = caramelPrefs.animationSpeed.coerceIn(0.5f, 3f)
     return (baseMs / speed).toInt().coerceAtLeast(1)
 }

@@ -36,8 +36,7 @@ final class ReplayTrimDialog {
     static void show(Activity activity, ReplayStyle style, ReplayClip clip, OnTrim callback) {
         long duration = clip.durationMs();
         if (duration < ReplayTrim.MIN_LENGTH_MS) {
-            android.widget.Toast.makeText(activity, R.string.replay_trim_too_short,
-                    android.widget.Toast.LENGTH_SHORT).show();
+            org.chimeramc.client.ui.compose.caramel.CaramelNoticeBus.post(activity, R.string.replay_trim_too_short);
             return;
         }
 

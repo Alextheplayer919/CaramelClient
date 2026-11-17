@@ -35,6 +35,16 @@ public class CapePhysicsTest {
     }
 
     @Test
+    public void theRestingCapeLeansAClearOfTheBack() {
+        // At rest the hem is still a few degrees off the back, so the cape is not glued flat to it.
+        assertTrue("the resting lean must be a few degrees, not zero",
+                CapeSimulator.REST_SWING_DEG > 0f && CapeSimulator.REST_SWING_DEG <= 15f);
+        assertTrue("at rest the hem must sit behind the hinge, clear of the back",
+                CapeSimulator.hemZForTest(CapeSimulator.REST_SWING_DEG)
+                        < CapeSimulator.hemZForTest(0f));
+    }
+
+    @Test
     public void theCapeIsASlabWithThickness() {
         // One pixel of thickness, from the 16x10x1 texture.
         assertEquals("a Minecraft cape is one pixel thick", 1f / 16f,

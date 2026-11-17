@@ -63,6 +63,31 @@ public class PreviewPetSceneTest {
     }
 
     @Test
+    public void thePetStandsAtThePlayersDepthNotInFrontOfIt() {
+        // The body plan starts a pet nine blocks toward the camera, which under perspective magnified
+        // the pet and pushed the character back. The default depth shift must pull the pet's depth
+        // centre back toward the player's (z = 0) by exactly the shift, for every species.
+        for (CosmeticCatalog.Pet pet : CosmeticCatalog.pets()) {
+            float centreAtOrigin = centreZ(originScene(pet));
+            float centreShifted = centreZ(sceneFor(pet, null, CosmeticCatalog.PetLocomotion.WALK));
+            assertTrue("pet '" + pet.id + "' was not pulled back to the player's depth",
+                    Math.abs(centreAtOrigin - centreShifted + PreviewPetScene.OFFSET_Z) < 0.01f);
+        }
+    }
+
+    private static PreviewScene originScene(CosmeticCatalog.Pet pet) {
+        PreviewScene scene = new PreviewScene();
+        PreviewPetScene.addPetAt(scene, pet, null, CosmeticCatalog.PetLocomotion.WALK,
+                PreviewPetScene.OFFSET_X, 0f);
+        return scene;
+    }
+
+    private static float centreZ(PreviewScene scene) {
+        float[] bounds = scene.bounds();
+        return (bounds[2] + bounds[5]) / 2f;
+    }
+
+    @Test
     public void aPoseRotationMovesTheAnimatedBoneButNotTheBody() {
         CosmeticCatalog.Pet cat = CosmeticCatalog.pets().get(0);
         PetPose rest = new PetPose();

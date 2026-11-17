@@ -41,8 +41,10 @@ import androidx.compose.material.icons.rounded.Folder
 import androidx.compose.material.icons.rounded.Group
 import androidx.compose.material.icons.rounded.Info
 import androidx.compose.material.icons.rounded.MoreHoriz
+import androidx.compose.material.icons.rounded.OpenInNew
 import androidx.compose.material.icons.rounded.Person
 import androidx.compose.material.icons.rounded.Public
+import androidx.compose.material.icons.rounded.Refresh
 import androidx.compose.material.icons.rounded.RocketLaunch
 import androidx.compose.material.icons.rounded.Search
 import androidx.compose.material.icons.rounded.Settings
@@ -72,9 +74,11 @@ import org.chimeramc.client.R
 import org.chimeramc.client.ui.compose.caramel.C
 import org.chimeramc.client.ui.compose.caramel.CaramelAvatarPicture
 import org.chimeramc.client.ui.compose.caramel.CaramelFriendRow
+import org.chimeramc.client.ui.compose.caramel.CaramelUserChip
 import org.chimeramc.client.ui.compose.caramel.CaramelFoundUser
 import org.chimeramc.client.ui.compose.caramel.CaramelLauncherState
 import org.chimeramc.client.ui.compose.caramel.CaramelModal
+import org.chimeramc.client.ui.compose.caramel.CaramelNotice
 import org.chimeramc.client.ui.compose.caramel.CaramelSettingsPanel
 import org.chimeramc.client.ui.compose.caramel.CaramelSettingsProvider
 import org.chimeramc.client.ui.compose.caramel.CaramelProfileDropdown
@@ -114,7 +118,7 @@ fun CaramelAppMenu(state: CaramelLauncherState, actions: CaramelLauncherHost.Act
         GlassPanel(Modifier.width(262.dp), RoundedCornerShape(18.dp), popup = true, elevation = 36.dp) {
             Column(Modifier.padding(10.dp), verticalArrangement = Arrangement.spacedBy(4.dp)) {
                 CaramelMenuItem(stringResource(R.string.caramel_menu_settings), Icons.Rounded.Settings, true) {
-                    state.appMenu = false; actions.openSettings()
+                    state.appMenu = false; state.tab = CaramelTab.Settings
                 }
                 CaramelMenuItem(stringResource(R.string.caramel_menu_instance_settings), Icons.Rounded.Tune) {
                     state.appMenu = false; state.instanceSettings = true
@@ -305,7 +309,8 @@ fun CaramelNewsModal(state: CaramelLauncherState, actions: CaramelLauncherHost.A
                                         PrimaryButton(
                                             post.actionLabel,
                                             { state.webTitle = post.title; state.webUrl = post.actionUrl },
-                                            tone = Tone.Yellow,
+                                            tone = Tone.Blue,
+                                            icon = Icons.Rounded.OpenInNew,
                                             height = 34,
                                         )
                                     }
@@ -402,6 +407,7 @@ fun CaramelFriendsModal(state: CaramelLauncherState, actions: CaramelLauncherHos
                 stringResource(R.string.caramel_friends_sub),
                 { state.friendsAll = false },
             ) {
+                GlassButton(null, { actions.refreshFriends() }, icon = Icons.Rounded.Refresh, height = 34)
                 PrimaryButton(
                     stringResource(R.string.caramel_add_friend),
                     { state.friendsAll = false; state.addFriend = true },
@@ -467,7 +473,7 @@ fun CaramelFriendsModal(state: CaramelLauncherState, actions: CaramelLauncherHos
  */
 @Composable
 fun CaramelAddAccountModal(state: CaramelLauncherState, actions: CaramelLauncherHost.Actions) {
-    CaramelModal(state.addAccount, { state.addAccount = false }, Modifier.size(460.dp, 560.dp)) {
+    CaramelModal(state.addAccount, { state.addAccount = false }, Modifier.size(460.dp, 640.dp)) {
         Column(Modifier.fillMaxSize()) {
             CaramelModalHeader(
                 stringResource(R.string.caramel_add_account_title),
@@ -512,12 +518,6 @@ fun CaramelAddAccountModal(state: CaramelLauncherState, actions: CaramelLauncher
                     if (state.deviceCode.isNotEmpty()) {
                         Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
                             GlassButton(
-                                stringResource(R.string.ms_device_code_open_browser),
-                                actions::openDeviceCodePage,
-                                icon = Icons.Rounded.Public,
-                                height = 34,
-                            )
-                            GlassButton(
                                 stringResource(R.string.ms_device_code_copy),
                                 actions::copyDeviceCode,
                                 icon = Icons.Rounded.ContentCopy,
@@ -547,6 +547,28 @@ fun CaramelAddAccountModal(state: CaramelLauncherState, actions: CaramelLauncher
                     style = T.Body.copy(fontSize = 12.5.sp_, textAlign = TextAlign.Center),
                     modifier = Modifier.fillMaxWidth(),
                 )
+                // The page Microsoft issued for this code, hosted in the app so the user never
+                // leaves the launcher. A short "open in browser" escape hatch stays under it for the
+                // sign-in steps an embedded WebView cannot finish.
+                if (state.signInWebOpen && state.deviceCodeUrl.isNotEmpty()) {
+                    Text(
+                        stringResource(R.string.caramel_sign_in_page_title),
+                        style = T.Label,
+                        modifier = Modifier.align(Alignment.CenterHorizontally),
+                    )
+                    CaramelSignInWebView(
+                        state.deviceCodeUrl,
+                        Modifier.fillMaxWidth().height(320.dp)
+                            .clip(RoundedCornerShape(16.dp))
+                            .border(1.dp, Color.White.copy(0.16f), RoundedCornerShape(16.dp)),
+                    )
+                    GlassButton(
+                        stringResource(R.string.ms_device_code_open_browser),
+                        actions::openDeviceCodePage,
+                        icon = Icons.Rounded.Public,
+                        height = 34,
+                    )
+                }
             }
             CaramelRule()
             Row(Modifier.fillMaxWidth().padding(24.dp, 18.dp), verticalAlignment = Alignment.CenterVertically) {
@@ -702,16 +724,7 @@ private fun FoundAccountRow(user: CaramelFoundUser, isCaramel: Boolean) {
 /** The CaramelClient mark beside a confirmed Caramel user's name. */
 @Composable
 private fun CaramelUserBadge() {
-    val painter = painterResource(R.drawable.ic_caramel_badge)
-    Row(
-        Modifier.height(20.dp).clip(RoundedCornerShape(50)).background(C.Caramel.copy(0.16f))
-            .border(1.dp, C.Caramel.copy(0.5f), RoundedCornerShape(50)).padding(horizontal = 8.dp),
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.spacedBy(4.dp),
-    ) {
-        Image(painter, contentDescription = stringResource(R.string.caramel_user_badge), modifier = Modifier.size(13.dp))
-        Text(stringResource(R.string.caramel_user_badge), style = T.Chip.copy(color = C.Caramel))
-    }
+    CaramelUserChip()
 }
 
 /** A one-line result banner with a leading icon, used for lookup and request outcomes. */
@@ -729,43 +742,11 @@ private fun ResultBanner(text: String, tint: Color, icon: ImageVector) {
 }
 
 /**
- * The launcher's settings modal.
- *
- * <p>It used to hold its own `remember { mutableStateOf(...) }` copies of every control, so moving a
- * slider changed a number on screen and wrote nothing anywhere — the settings did nothing. The real
- * panel is [CaramelSettingsPanel], driven by the activity's [CaramelSettingsProvider], so every
- * control here writes to the same store the full-screen settings screen does.
+ * Superseded by [CaramelSettingsTabScreen]: settings is a sidebar tab now, so the gear selects a
+ * real destination instead of opening a popup over the active tab. The panel is the same
+ * [CaramelSettingsPanel] over the activity's [CaramelSettingsProvider], so nothing about the controls
+ * changed — only where they are hosted.
  */
-@Composable
-fun CaramelLauncherSettingsModal(state: CaramelLauncherState, settings: CaramelSettingsProvider?) {
-    if (settings == null) {
-        // No store was handed over (a host that mounted the launcher without one): say so rather
-        // than drawing controls that cannot work.
-        Column(Modifier.fillMaxSize().padding(28.dp), verticalArrangement = Arrangement.spacedBy(16.dp)) {
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                Text(stringResource(R.string.caramel_launcher_settings_title), style = T.Display, modifier = Modifier.weight(1f))
-                GlassButton(null, { state.launcherSettings = false }, icon = Icons.Rounded.Close, height = 32)
-            }
-            EmptyState(
-                stringResource(R.string.caramel_settings_unavailable_title),
-                stringResource(R.string.caramel_settings_unavailable_body),
-                Modifier.fillMaxWidth().weight(1f),
-            )
-        }
-        return
-    }
-    val settingsState = settings.settingsState()
-    Column(Modifier.fillMaxSize().padding(28.dp), verticalArrangement = Arrangement.spacedBy(16.dp)) {
-        Row(verticalAlignment = Alignment.CenterVertically) {
-            Column(Modifier.weight(1f)) {
-                Text(stringResource(R.string.caramel_launcher_settings_title), style = T.Display)
-                Text(stringResource(R.string.caramel_settings_sub), style = T.Body)
-            }
-            GlassButton(null, { state.launcherSettings = false }, icon = Icons.Rounded.Close, height = 32)
-        }
-        CaramelSettingsPanel(settingsState, settings.settingsActions(), Modifier.weight(1f))
-    }
-}
 
 /** The instance settings modal: a section rail over the real instance's options. */
 @Composable
@@ -815,7 +796,15 @@ fun CaramelInstanceSettingsModal(state: CaramelLauncherState, actions: CaramelLa
                                 CaramelVersionDropdown(state.versions, state.version, onSelect = { state.version = it })
                             }
                             SettingRow(stringResource(R.string.caramel_loader)) {
-                                org.chimeramc.client.ui.compose.caramel.CaramelLoaderPicker(state.loader, { state.loader = it })
+                                val loaderUnavailable =
+                                    stringResource(R.string.caramel_loader_unavailable)
+                                org.chimeramc.client.ui.compose.caramel.CaramelLoaderPicker(
+                                    state.loader,
+                                    { state.loader = it },
+                                    onUnavailable = {
+                                        state.notice = CaramelNotice(loaderUnavailable, warning = true)
+                                    },
+                                )
                             }
                             SettingRow(stringResource(R.string.caramel_profile_mode), stringResource(R.string.caramel_profile_open_desc)) {
                                 CaramelProfileDropdown(state.profile, { state.profile = it }, width = 240)

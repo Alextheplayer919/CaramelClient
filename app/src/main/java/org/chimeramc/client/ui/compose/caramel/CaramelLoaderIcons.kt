@@ -1,6 +1,5 @@
 package org.chimeramc.client.ui.compose.caramel
 
-import android.widget.Toast
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -10,9 +9,10 @@ import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
@@ -101,12 +101,21 @@ fun LoaderGlyph(loader: CaramelLoader, modifier: Modifier = Modifier.size(28.dp)
  * <p>An unavailable loader (one that has not been built yet) is drawn greyed and inert, and says so
  * on a long press, so the choice is visible without pretending it can start a game. The shipped
  * SweetLoader is the only selectable one, which is the truth about this build.
+ *
+ * <p>The long-press explanation is raised through [onUnavailable], which the host routes to the
+ * launcher's own toast, rather than a raw system `Toast`: the square system bubble ignores the
+ * launcher's visual language and its reduce-motion setting, and the picker is drawn inside the
+ * launcher's Compose tree where the notice is already mounted.
  */
 @Composable
-fun LoaderTile(loader: CaramelLoader, selected: Boolean, onClick: () -> Unit, modifier: Modifier = Modifier) {
+fun LoaderTile(
+    loader: CaramelLoader,
+    selected: Boolean,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier,
+    onUnavailable: () -> Unit = {},
+) {
     val shape = RoundedCornerShape(CaramelDimens.RadiusControl)
-    val context = LocalContext.current
-    val unavailable = stringResource(R.string.caramel_loader_unavailable)
     val source = remember { MutableInteractionSource() }
     Box(
         modifier
@@ -120,7 +129,7 @@ fun LoaderTile(loader: CaramelLoader, selected: Boolean, onClick: () -> Unit, mo
             .clickable(source, null, enabled = loader.available, onClick = onClick)
             .pointerInput(loader) {
                 detectTapGestures(onLongPress = {
-                    if (!loader.available) Toast.makeText(context, unavailable, Toast.LENGTH_SHORT).show()
+                    if (!loader.available) onUnavailable()
                 })
             },
         Alignment.Center,
@@ -129,14 +138,17 @@ fun LoaderTile(loader: CaramelLoader, selected: Boolean, onClick: () -> Unit, mo
             LoaderGlyph(loader, Modifier.size(28.dp))
         }
         if (selected) {
+            // The tick sits on the glyph's centre, not the tile's top-right corner: it marks the
+            // chosen loader, and a corner badge read as a notification dot floating off the icon.
+            // It is drawn large enough to read at a glance (it covers most of the 44dp tile) with a
+            // ring in the tile colour so it still separates from the glyph behind it.
             Box(
                 Modifier
-                    .offset((-5).dp, (-5).dp)
-                    .size(14.dp)
+                    .size(30.dp)
                     .background(C.Green, CircleShape)
-                    .border(1.5.dp, C.Navy, CircleShape),
+                    .border(2.5.dp, C.Navy, CircleShape),
                 Alignment.Center,
-            ) { Icon(Icons.Rounded.Check, null, Modifier.size(9.dp), C.OnGreen) }
+            ) { Icon(Icons.Rounded.Check, null, Modifier.size(20.dp), C.OnGreen) }
         }
     }
 }
@@ -145,13 +157,30 @@ fun LoaderTile(loader: CaramelLoader, selected: Boolean, onClick: () -> Unit, mo
  * The loader choice: one tile per preloader, plus an honest note when some are not built.
  *
  * <p>Both the launch menu and the instance settings draw the same picker, so the note that explains
- * the greyed tiles cannot be shown in one place and forgotten in the other.
+ * the greyed tiles cannot be shown in one place and forgotten in the other. The picker declares its
+ * own width rather than sizing to its content: the note is a long sentence, and an unconstrained
+ * `Text` in a `Row` measures at the full available width, which starved the sibling label and made
+ * "Loaders" wrap one letter per line.
  */
 @Composable
-fun CaramelLoaderPicker(selected: CaramelLoader, onSelect: (CaramelLoader) -> Unit, modifier: Modifier = Modifier) {
-    Column(modifier, verticalArrangement = Arrangement.spacedBy(8.dp)) {
+fun CaramelLoaderPicker(
+    selected: CaramelLoader,
+    onSelect: (CaramelLoader) -> Unit,
+    modifier: Modifier = Modifier,
+    onUnavailable: (() -> Unit)? = null,
+) {
+    val context = LocalContext.current
+    val unavailableText = stringResource(R.string.caramel_loader_unavailable)
+    // The host supplies the launcher's own notice; the bare default keeps the picker usable from a
+    // preview or a test, where there is no launcher tree to route a notice into. It still goes
+    // through the notice bus, so a mounted launcher draws its own toast even if the host forgot to
+    // pass one, and only a truly detached picker falls back to the system bubble.
+    val report: () -> Unit = onUnavailable ?: {
+        CaramelNoticeBus.post(context, unavailableText, false)
+    }
+    Column(modifier.width(IntrinsicSize.Min), verticalArrangement = Arrangement.spacedBy(8.dp)) {
         Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
-            CaramelLoader.entries.forEach { LoaderTile(it, selected == it, { onSelect(it) }) }
+            CaramelLoader.entries.forEach { LoaderTile(it, selected == it, { onSelect(it) }, onUnavailable = report) }
         }
         if (CaramelLoader.entries.any { !it.available }) {
             Text(stringResource(R.string.caramel_loaders_note), style = T.Caption)

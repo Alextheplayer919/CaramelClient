@@ -23,6 +23,8 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Check
+import androidx.compose.material.icons.rounded.Lock
+import androidx.compose.material.icons.rounded.PersonOff
 import androidx.compose.material.icons.rounded.Star
 import androidx.compose.material.icons.rounded.StarBorder
 import androidx.compose.material.icons.rounded.SwapHoriz
@@ -35,6 +37,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
@@ -95,6 +98,7 @@ fun CaramelCosmeticsScreen(
     skinViewer: @Composable (Modifier) -> Unit = { EmptySkinSlot(it) },
 ) {
     var chip by remember { mutableStateOf(0) }
+    val signedIn = state.signedIn
     CaramelPage(stringResource(R.string.mod_menu_tab_cosmetics), stringResource(R.string.caramel_cosmetics_sub)) {
         Row(Modifier.fillMaxSize(), horizontalArrangement = Arrangement.spacedBy(20.dp)) {
             GlassPanel(Modifier.width(320.dp).fillMaxHeight(), RoundedCornerShape(24.dp)) {
@@ -103,12 +107,15 @@ fun CaramelCosmeticsScreen(
                     horizontalAlignment = Alignment.CenterHorizontally,
                     verticalArrangement = Arrangement.spacedBy(12.dp),
                 ) {
-                    Box(
-                        Modifier.fillMaxWidth().weight(1f).background(Color.White, RoundedCornerShape(22.dp)),
-                        Alignment.Center,
-                    ) { skinViewer(Modifier.fillMaxSize().padding(8.dp)) }
-                    GlassButton(stringResource(R.string.caramel_save_outfit), {}, Modifier.fillMaxWidth(), icon = Icons.Rounded.Check)
-                    GlassButton(stringResource(R.string.caramel_reset_view), onResetView, Modifier.fillMaxWidth(), icon = Icons.Rounded.SwapHoriz)
+                    SkinViewport(signedIn, skinViewer, Modifier.fillMaxWidth().weight(1f))
+                    GlassButton(
+                        stringResource(R.string.caramel_save_outfit), {}, Modifier.fillMaxWidth(),
+                        icon = Icons.Rounded.Check, enabled = signedIn,
+                    )
+                    GlassButton(
+                        stringResource(R.string.caramel_reset_view), onResetView, Modifier.fillMaxWidth(),
+                        icon = Icons.Rounded.SwapHoriz, enabled = signedIn,
+                    )
                 }
             }
             Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(16.dp)) {
@@ -117,21 +124,106 @@ fun CaramelCosmeticsScreen(
                     FilterChip(stringResource(R.string.caramel_filter_favorites), chip == 5, { chip = 5 })
                 }
                 val shown = remember(state.cosmetics, chip) { filterCosmetics(state.cosmetics, chip) }
-                if (state.cosmetics.isEmpty()) {
-                    EmptyState(stringResource(R.string.caramel_no_cosmetics_title), stringResource(R.string.caramel_no_cosmetics_body), Modifier.fillMaxWidth().weight(1f))
-                } else if (shown.isEmpty()) {
-                    EmptyState(stringResource(R.string.caramel_no_favourite_cosmetics_title), stringResource(R.string.caramel_no_favourite_cosmetics_body), Modifier.fillMaxWidth().weight(1f))
-                } else {
-                    LazyVerticalGrid(
-                        GridCells.Adaptive(190.dp),
-                        horizontalArrangement = Arrangement.spacedBy(12.dp),
-                        verticalArrangement = Arrangement.spacedBy(12.dp),
-                    ) {
-                        items(shown, key = { it.name }) { c ->
-                            CosmeticTile(c, { onToggleFavourite(c) }, { onEquip(c) })
+                if (!signedIn) {
+                    // A signed-out user has no account skin to wear, so the wardrobe is not usable.
+                    // The grid is dimmed rather than hidden, so the catalogue is still discoverable
+                    // and the reason is stated on top of it.
+                    Box(Modifier.fillMaxWidth().weight(1f)) {
+                        CosmeticGrid(shown, onToggleFavourite, onEquip, Modifier.fillMaxSize().alpha(0.35f))
+                        Box(
+                            Modifier.fillMaxSize()
+                                .background(Brush.verticalGradient(listOf(Color(0xCC060B1A), Color(0xE6060B1A)))),
+                            Alignment.Center,
+                        ) {
+                            Column(
+                                horizontalAlignment = Alignment.CenterHorizontally,
+                                verticalArrangement = Arrangement.spacedBy(8.dp),
+                                modifier = Modifier.width(280.dp),
+                            ) {
+                                Icon(Icons.Rounded.Lock, null, Modifier.size(30.dp), C.Text3)
+                                Text(
+                                    stringResource(R.string.caramel_cosmetics_signed_out_title),
+                                    style = T.Title, textAlign = TextAlign.Center,
+                                )
+                                Text(
+                                    stringResource(R.string.caramel_cosmetics_signed_out_body),
+                                    style = T.Body, textAlign = TextAlign.Center,
+                                )
+                            }
                         }
                     }
+                } else {
+                    CosmeticGrid(shown, onToggleFavourite, onEquip, Modifier.fillMaxWidth().weight(1f))
                 }
+            }
+        }
+    }
+}
+
+/** The tile grid, or the matching empty state when the filter selects nothing. */
+@Composable
+private fun CosmeticGrid(
+    shown: List<CaramelCosmeticInfo>,
+    onFav: (CaramelCosmeticInfo) -> Unit,
+    onEquip: (CaramelCosmeticInfo) -> Unit,
+    modifier: Modifier,
+) {
+    if (shown.isEmpty()) {
+        EmptyState(
+            stringResource(R.string.caramel_no_favourite_cosmetics_title),
+            stringResource(R.string.caramel_no_favourite_cosmetics_body),
+            modifier,
+        )
+        return
+    }
+    LazyVerticalGrid(
+        GridCells.Adaptive(190.dp),
+        modifier = modifier,
+        horizontalArrangement = Arrangement.spacedBy(12.dp),
+        verticalArrangement = Arrangement.spacedBy(12.dp),
+    ) {
+        items(shown, key = { it.name }) { c -> CosmeticTile(c, { onFav(c) }, { onEquip(c) }) }
+    }
+}
+
+/**
+ * The 3D skin viewport: a recessed, dark panel that hosts the renderer when an account is signed in.
+ *
+ * <p>The slot used to be a hard `Color.White` square, which read as a blank white box behind the
+ * character and, when the renderer had nothing to draw, as a plain white rectangle with no
+ * explanation. It is now a navy viewport that matches the launcher's glass, and a signed-out user
+ * sees the "not signed in" state instead of an empty box.
+ */
+@Composable
+private fun SkinViewport(
+    signedIn: Boolean,
+    skinViewer: @Composable (Modifier) -> Unit,
+    modifier: Modifier,
+) {
+    Box(
+        modifier
+            .clip(RoundedCornerShape(22.dp))
+            .background(Brush.verticalGradient(listOf(C.Navy, C.Abyss)))
+            .border(1.dp, Color.White.copy(0.10f), RoundedCornerShape(22.dp)),
+        Alignment.Center,
+    ) {
+        if (signedIn) {
+            skinViewer(Modifier.fillMaxSize().padding(8.dp))
+        } else {
+            Column(
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.spacedBy(10.dp),
+                modifier = Modifier.padding(20.dp),
+            ) {
+                Icon(Icons.Rounded.PersonOff, null, Modifier.size(40.dp), C.Text3)
+                Text(
+                    stringResource(R.string.not_signed_in),
+                    style = T.Title.copy(color = C.Text2), textAlign = TextAlign.Center,
+                )
+                Text(
+                    stringResource(R.string.caramel_skin_signed_out_hint),
+                    style = T.Body, textAlign = TextAlign.Center,
+                )
             }
         }
     }
@@ -142,7 +234,7 @@ internal fun EmptySkinSlot(modifier: Modifier) {
     Box(modifier, Alignment.Center) {
         Text(
             stringResource(R.string.caramel_skin_preview),
-            style = T.Title.copy(color = Color(0xFF1C2854), fontSize = 15.sp_, textAlign = TextAlign.Center),
+            style = T.Title.copy(color = C.Text3, fontSize = 15.sp_, textAlign = TextAlign.Center),
             modifier = Modifier.width(190.dp),
         )
     }

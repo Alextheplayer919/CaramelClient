@@ -1501,7 +1501,7 @@
     <string name="caramel_news_honey_title">HoneyClient 即将推出..</string>
     <string name="caramel_news_honey_body">一个新客户端即将到来。点击下方查看 HoneyClient 正在打造的内容。</string>
     <string name="caramel_news_honey_meta">公告</string>
-    <string name="caramel_news_honey_button">点击我了解更多信息！</string>
+    <string name="caramel_news_honey_button">了解更多</string>
     <string name="caramel_checking_updates">正在检查更新…</string>
     <string name="caramel_update_available_version">版本 %1$s 已可用。点击“下载更新”以安装。</string>
     <string name="caramel_update_check_failed">无法检查更新。请检查您的网络连接后重试。</string>
@@ -1536,4 +1536,8 @@
     <string name="caramel_loader_unavailable">此预加载器尚未制作。</string>
     <string name="caramel_loaders_note">目前只做好了 SweetLoader。RustyLoader 和 LightningLoader 尚未就绪。</string>
     <string name="splash_show_tagline">你能获得的最佳基岩版体验</string>
+    <string name="caramel_sign_in_page_title">Microsoft 登录页面</string>
+    <string name="caramel_cosmetics_signed_out_title">登录后即可使用装饰</string>
+    <string name="caramel_cosmetics_signed_out_body">你的披风、帽子和宠物将应用于已登录的账户。</string>
+    <string name="caramel_skin_signed_out_hint">登录以加载你的 Minecraft 皮肤。</string>
 </resources>

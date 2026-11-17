@@ -182,6 +182,35 @@ public class PetAnimationsTest {
         }
     }
 
+    /**
+     * A leg must swing forward and back about the hip's X axis, never about Z.
+     *
+     * <p>Rotating a leg about Z is a sideways splay: a walking parrot's legs scissored side to side
+     * while it faced forward, which is the "your x axis is off" report. The preview was corrected to
+     * X; the in-game animation strings were still on Z, so the same pet moved correctly in the menu
+     * and wrongly in the world. Every leg bone in every species' file must lead with the X component.
+     */
+    @Test
+    public void everyLegSwingUsesTheXAxis() {
+        for (CosmeticCatalog.PetSpecies species : CosmeticCatalog.PetSpecies.values()) {
+            JsonObject animations = JsonParser
+                    .parseString(PetAnimations.animationsJson(pet(species)))
+                    .getAsJsonObject()
+                    .getAsJsonObject("animations");
+            for (String id : animations.keySet()) {
+                JsonObject bones = animations.getAsJsonObject(id).getAsJsonObject("bones");
+                for (String bone : bones.keySet()) {
+                    if (!bone.startsWith("leg_")) continue;
+                    JsonArray rot = bones.getAsJsonObject(bone).getAsJsonArray("rotation");
+                    if (rot == null) continue;
+                    String z = rot.get(2).getAsString();
+                    assertEquals(species + " " + id + " " + bone
+                            + " must not splay sideways (Z must be 0)", "0", z.trim());
+                }
+            }
+        }
+    }
+
     private static CosmeticCatalog.Pet pet(CosmeticCatalog.PetSpecies species) {
         return new CosmeticCatalog.Pet(species.name().toLowerCase(), species.displayName,
                 species, species.baseColor, species.accentColor, 1f);

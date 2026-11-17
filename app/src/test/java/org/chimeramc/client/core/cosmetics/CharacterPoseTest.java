@@ -93,4 +93,38 @@ public class CharacterPoseTest {
         assertTrue("the right arm's yaw must swing it outward (more negative x). got x="
                 + p[0], p[0] < -6f);
     }
+
+    @Test
+    public void theBodyLeanAndTwistActuallyMoveTheTorso() {
+        // The lean and twist were defined but never applied, so the figure was a flat plane facing
+        // the camera. A point high on the torso must move under the hero pose's lean/twist, and the
+        // legs must not (they stay planted).
+        CharacterPose hero = CharacterPose.relaxedHero();
+        float[] torso = {0f, 26f, 0f};
+        float[] moved = {torso[0], torso[1], torso[2]};
+        hero.applyBody(moved);
+        assertTrue("the torso must move under the body lean/twist",
+                Math.abs(moved[0] - torso[0]) > 1e-3f || Math.abs(moved[2] - torso[2]) > 1e-3f);
+
+        // The hip pivot itself is the fixed point of the lean.
+        float[] hip = {0f, CharacterPose.BODY_PIVOT_Y, 0f};
+        hero.applyBody(hip);
+        assertEquals(0f, hip[0], 1e-3f);
+        assertEquals(CharacterPose.BODY_PIVOT_Y, hip[1], 1e-3f);
+        assertEquals(0f, hip[2], 1e-3f);
+
+        // Legs are not torso, so the body transform must leave them alone.
+        assertTrue("a leg must not ride the body lean", !CharacterPose.isTorso("leg_r"));
+        assertTrue("the chest must ride the body lean", CharacterPose.isTorso("body"));
+    }
+
+    @Test
+    public void theRestPoseLeansNothing() {
+        CharacterPose rest = CharacterPose.rest();
+        float[] p = {3f, 30f, -2f};
+        rest.applyBody(p);
+        assertEquals(3f, p[0], 1e-4f);
+        assertEquals(30f, p[1], 1e-4f);
+        assertEquals(-2f, p[2], 1e-4f);
+    }
 }

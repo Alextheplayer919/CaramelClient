@@ -1,35 +1,27 @@
 package org.chimeramc.client.util;
 
 import android.content.Context;
-import android.widget.Toast;
 
+/**
+ * Small view helpers shared across the launcher.
+ *
+ * <p>The toast methods route through {@link org.chimeramc.client.ui.compose.caramel.CaramelNoticeBus}
+ * so a message wears the launcher's own toast when one is mounted, and only falls back to the system
+ * bubble when nothing is. The bus marshals to the UI thread itself, so the explicit wrappers this
+ * class used to need are gone.
+ */
 public class UIHelper {
 
     public static void showToast(Context context, String message) {
-        runOnUiThread(context, () ->
-                Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
-        );
+        org.chimeramc.client.ui.compose.caramel.CaramelNoticeBus.post(context, message, false);
     }
 
     public static void showToast(Context context, int resId, Object... formatArgs) {
-        runOnUiThread(context, () -> {
-            String message = context.getString(resId, formatArgs);
-            Toast.makeText(context, message, Toast.LENGTH_SHORT).show();
-        });
+        showToast(context, context.getString(resId, formatArgs));
     }
 
     public static void showLongToast(Context context, String message) {
-        runOnUiThread(context, () ->
-                Toast.makeText(context, message, Toast.LENGTH_LONG).show()
-        );
-    }
-
-    private static void runOnUiThread(Context context, Runnable action) {
-        if (context instanceof android.app.Activity) {
-            ((android.app.Activity) context).runOnUiThread(action);
-        } else {
-            org.chimeramc.client.util.MainThread.post(action);
-        }
+        org.chimeramc.client.ui.compose.caramel.CaramelNoticeBus.post(context, message, true);
     }
 
     public static void hideKeyboard(android.app.Activity activity) {

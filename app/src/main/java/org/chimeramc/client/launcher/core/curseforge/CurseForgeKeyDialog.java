@@ -10,7 +10,6 @@ import android.text.InputType;
 import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.LinearLayout;
-import android.widget.Toast;
 
 import org.chimeramc.client.R;
 
@@ -64,13 +63,11 @@ public final class CurseForgeKeyDialog {
                 .setOnClickListener(v -> {
                     String value = input.getText().toString().trim();
                     if (value.isEmpty()) {
-                        Toast.makeText(activity, R.string.curseforge_api_key_invalid,
-                                Toast.LENGTH_SHORT).show();
+                        org.chimeramc.client.ui.compose.caramel.CaramelNoticeBus.post(activity, R.string.curseforge_api_key_invalid);
                         return;
                     }
                     CurseForgeKeyStore.setApiKey(activity, value);
-                    Toast.makeText(activity, R.string.curseforge_api_key_saved,
-                            Toast.LENGTH_SHORT).show();
+                    org.chimeramc.client.ui.compose.caramel.CaramelNoticeBus.post(activity, R.string.curseforge_api_key_saved);
                     dialog.dismiss();
                     if (onSaved != null) onSaved.run();
                 }));

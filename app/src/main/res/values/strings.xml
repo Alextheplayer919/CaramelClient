@@ -2814,7 +2814,7 @@ CaramelClient must complete the migration before continuing.</string>
     <string name="caramel_news_honey_title">HoneyClient coming soon..</string>
     <string name="caramel_news_honey_body">A new client is on the way. Tap below to see what HoneyClient is building.</string>
     <string name="caramel_news_honey_meta">Announcement</string>
-    <string name="caramel_news_honey_button">Click me for more information!</string>
+    <string name="caramel_news_honey_button">Learn more</string>
     <string name="caramel_mods_sub">Browse, install and toggle mods for this instance</string>
     <string name="caramel_search_mods">Search mods</string>
     <string name="caramel_open_mods_folder">Open mods folder</string>
@@ -2861,6 +2861,9 @@ CaramelClient must complete the migration before continuing.</string>
     <string name="caramel_no_favourite_cosmetics_title">No favourites yet</string>
     <string name="caramel_no_favourite_cosmetics_body">Tap the star on a cosmetic to keep it here.</string>
     <string name="caramel_skin_preview">3D skin preview</string>
+    <string name="caramel_skin_signed_out_hint">Sign in to load your Minecraft skin.</string>
+    <string name="caramel_cosmetics_signed_out_title">Sign in to use cosmetics</string>
+    <string name="caramel_cosmetics_signed_out_body">Your capes, hats and pets wear on your signed-in account.</string>
     <string name="caramel_news_sub">Updates, events and community posts</string>
     <string name="caramel_featured">Featured</string>
     <string name="caramel_store_sub">Cosmetics, bundles and Caramel+</string>
@@ -2955,6 +2958,7 @@ CaramelClient must complete the migration before continuing.</string>
     <string name="caramel_or_device_code">or use a device code</string>
     <string name="caramel_device_code_hint">Open microsoft.com/link on any device and enter this code.</string>
     <string name="caramel_waiting_sign_in">Waiting for sign-in…</string>
+    <string name="caramel_sign_in_page_title">Microsoft sign-in page</string>
     <string name="caramel_sign_in_starting">Starting sign-in…</string>
     <string name="caramel_sign_in_idle">Not signed in yet</string>
     <string name="caramel_device_code_open_failed">No browser could be opened. Visit microsoft.com/link and enter the code shown.</string>

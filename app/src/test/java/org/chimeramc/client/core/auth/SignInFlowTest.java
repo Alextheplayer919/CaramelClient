@@ -50,10 +50,22 @@ public class SignInFlowTest {
     }
 
     @Test
-    public void theBrowserIsOpenedAtTheVerificationLink() throws IOException {
+    public void theSignInPageOpensInApp() throws IOException {
         String body = startSignInBody();
-        assertTrue("the browser must be opened, otherwise the user never sees where to enter the code",
-                body.contains("UrlOpener.open("));
+        assertTrue("the verification page must open in the launcher's own WebView, so the user does "
+                + "not leave the app to finish signing in", body.contains("setSignInWebOpen(true)"));
+    }
+
+    @Test
+    public void theBrowserFallbackIsStillWired() throws IOException {
+        String source = read(ROOT.resolve(
+                "app/src/main/java/org/chimeramc/client/launcher/ui/activities/MainActivity.java"));
+        int start = source.indexOf("public void openDeviceCodePage()");
+        assertTrue("the deliberate system-browser fallback must stay for sign-in steps a WebView "
+                + "cannot finish", start >= 0);
+        int end = source.indexOf("@Override", start);
+        String body = end < 0 ? source.substring(start) : source.substring(start, end);
+        assertTrue("the fallback must still open the browser", body.contains("UrlOpener.open("));
     }
 
     @Test
@@ -71,6 +83,21 @@ public class SignInFlowTest {
                 + "would only re-add a button that can never complete", build.contains("microsoft.identity"));
         String manifest = read(ROOT.resolve("app/src/main/AndroidManifest.xml"));
         assertFalse("the MSAL browser-tab activity is back", manifest.contains("BrowserTabActivity"));
+    }
+
+    @Test
+    public void aCompletedSignInTurnsOnTheAccountSkinLookup() throws IOException {
+        // The lookup is default-off, and the sign-in is the one-line consent. Without this the
+        // preview can never resolve the player's own skin, which is the "3D skin is not my actual
+        // Minecraft skin" report.
+        String auth = read(ROOT.resolve(
+                "app/src/main/java/org/chimeramc/client/launcher/core/auth/MsftAuthManager.java"));
+        int start = auth.indexOf("public static MsftAccountStore.MsftAccount saveAccountAndActivate(");
+        assertTrue("saveAccountAndActivate no longer exists", start >= 0);
+        int end = auth.indexOf("public static MsftAccountStore.MsftAccount saveAccountOrThrow(", start);
+        String body = auth.substring(start, end);
+        assertTrue("sign-in must enable the account skin lookup",
+                body.contains("AccountSkinService.setEnabled(context, true)"));
     }
 
     /** The body of {@code MainActivity.startSignIn()}, from its declaration to the next override. */

@@ -37,7 +37,7 @@ public class CaramelCosmeticThumbnailWiringTest {
         String renderer = read("app/src/main/java/org/chimeramc/client/ui/compose/caramel/launcher/"
                 + "CaramelCosmeticThumbnail.kt");
         assertTrue("a cape tile must paint the real cloth",
-                renderer.contains("CapeThumbnail.render("));
+                renderer.contains("CapeThumbnail.renderFitted("));
         assertTrue("an authored cape must sample its real texture",
                 renderer.contains("CapeAtlas.sample("));
         assertTrue("a hat/back tile must paint the real accessory",

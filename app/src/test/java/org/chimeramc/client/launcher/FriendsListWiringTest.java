@@ -45,6 +45,29 @@ public class FriendsListWiringTest {
                 activity.contains("friendsAccountId"));
     }
 
+    /**
+     * A friends read that failed must be retried, not treated as the final answer.
+     *
+     * <p>The first read after a sign-in often runs before the network or a renewed XSTS token is
+     * ready, so it fails and writes an error line. The account id alone marked that attempt as
+     * "loaded", so the list stayed on its error line for the rest of the session — the reported
+     * "friends never sync". A read only counts as loaded when it came back without an error, and a
+     * manual refresh must be able to force another read.
+     */
+    @Test
+    public void aFailedFriendsReadIsRetriedRatherThanStuck() {
+        String activity = read(
+                "app/src/main/java/org/chimeramc/client/launcher/ui/activities/MainActivity.java");
+        assertTrue("a read only counts as loaded when it succeeded",
+                activity.contains("friendsLoaded = error == null;"));
+        assertTrue("a token that was not ready must not mark the account loaded",
+                activity.contains("friendsLoaded = false;"));
+        assertTrue("the automatic path retries an unloaded account",
+                activity.contains("!friendsLoaded && !friendsLoading"));
+        assertTrue("the user can force another read from the Friends modal",
+                activity.contains("public void refreshFriends()"));
+    }
+
     @Test
     public void theFriendsScreensRenderRows() {
         String home = read(
@@ -56,5 +79,21 @@ public class FriendsListWiringTest {
                 modals.contains("items(visible) { friend -> CaramelFriendRow(friend) }"));
         assertFalse("the modal must not draw the empty-state body as a row",
                 modals.contains("stringResource(R.string.caramel_no_friends_body),\n                            style = T.Body,\n                            modifier = Modifier.padding(start = 8.dp, top = 6.dp)"));
+    }
+
+    @Test
+    public void aFriendWearsTheBadgeOnlyWhenConfirmedOnACaramelChannel() {
+        String activity = read(
+                "app/src/main/java/org/chimeramc/client/launcher/ui/activities/MainActivity.java");
+        assertTrue("a friend row's badge must come from the Caramel-user directory",
+                activity.contains("CaramelUserDirectory.isCaramelUser(f.xuid)"));
+        String labels = read(
+                "app/src/main/java/org/chimeramc/client/ui/compose/caramel/CaramelLabels.kt");
+        assertTrue("the friend row must draw the Caramel chip only for a confirmed account",
+                labels.contains("if (friend.caramel) CaramelUserChip()"));
+        String models = read(
+                "app/src/main/java/org/chimeramc/client/ui/compose/caramel/CaramelModels.kt");
+        assertTrue("CaramelFriendInfo must carry the caramel flag",
+                models.contains("val caramel: Boolean = false"));
     }
 }

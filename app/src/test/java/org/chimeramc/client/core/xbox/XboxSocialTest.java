@@ -1,6 +1,7 @@
 package org.chimeramc.client.core.xbox;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
@@ -54,7 +55,11 @@ public class XboxSocialTest {
         String url = XboxSocial.searchUrl("Steve 123");
         assertTrue(url.startsWith("https://profile.xboxlive.com/users/gt("));
         assertTrue(url.contains("steve+123"));
-        assertTrue(url.contains("settings=AppDisplayName,DisplayPic,Gamerscore,Gamertag,PublicGamerpic,XboxOneRep"));
+        assertTrue("the lookup must request only real profile settings; an unknown name makes the "
+                + "service reject the whole lookup",
+                url.contains("settings=AppDisplayName,AppDisplayPicRaw,DisplayPicRaw,"
+                        + "GameDisplayPicRaw,Gamerscore,Gamertag,PublicGamerpic,XboxOneRep"));
+        assertFalse("DisplayPic is not a profile setting the service knows", url.contains("DisplayPic,"));
         assertNull("a blank name has no URL", XboxSocial.searchUrl("   "));
         assertNull(XboxSocial.searchUrl(null));
     }

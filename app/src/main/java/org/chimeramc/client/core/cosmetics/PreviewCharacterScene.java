@@ -112,6 +112,9 @@ public final class PreviewCharacterScene {
         float[][] corners = new float[4][3];
         // A limb rotates about its joint, which is the top of the box (centre + half its height).
         float jointY = box.cy + box.h / 2f;
+        // The torso and everything hanging from it carries the whole-body lean and shoulder twist;
+        // the legs do not, so the feet stay planted.
+        boolean torso = CharacterPose.isTorso(box.id);
         for (int i = 0; i < 4; i++) {
             p[0] = c[i][0]; p[1] = c[i][1]; p[2] = c[i][2];
             if (head) {
@@ -119,6 +122,7 @@ public final class PreviewCharacterScene {
             } else if (pose != null) {
                 pose.apply(box.id, jointY, p);
             }
+            if (torso) pose.applyBody(p);
             corners[i][0] = p[0]; corners[i][1] = p[1]; corners[i][2] = p[2];
         }
         float u0 = uv.u / (float) atlasSize, v0 = uv.v / (float) atlasSize;
@@ -134,6 +138,7 @@ public final class PreviewCharacterScene {
             // shading is wrong (a swung-out arm would still be lit as if it hung straight down).
             pose.applyVector(box.id, n);
         }
+        if (torso) pose.applyBodyVector(n);
         f.nx = n[0]; f.ny = n[1]; f.nz = n[2];
         return f;
     }

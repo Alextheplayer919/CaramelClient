@@ -62,7 +62,7 @@ public final class LowLatencyNetworkManager {
             "play.lbsg.net",
             "mco.cubecraft.net",
             "play.inpvp.net",
-            "play.nethergames.org"
+            "play.galaxite.net"
     );
 
     /**

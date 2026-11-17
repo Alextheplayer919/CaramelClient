@@ -107,6 +107,20 @@ public class CaramelSettingsWiringTest {
     }
 
     @Test
+    public void reduceMotionIsHonouredByTheComposeTransitions() throws IOException {
+        // The switch was stored and never read, so "Reduce motion" did nothing on the Compose
+        // launcher. It must collapse a transition's duration and snap the toggle thumb.
+        String glass = read("app/src/main/java/org/chimeramc/client/ui/compose/caramel/CaramelGlass.kt");
+        assertTrue("the duration helper must read the reduce-motion scale",
+                glass.contains("caramelPrefs.motionScale"));
+        String controls = read("app/src/main/java/org/chimeramc/client/ui/compose/caramel/CaramelControls.kt");
+        assertTrue("the toggle must snap when reduce motion is on",
+                controls.contains("snap()"));
+        assertTrue("the toggle must read the reduce-motion scale",
+                controls.contains("caramelPrefs.motionScale"));
+    }
+
+    @Test
     public void thePanelIsNotDrivenByCompositionLocalCopies() throws IOException {
         String panel = read(PANEL);
         assertFalse("a control whose only effect is a local copy is the bug",

@@ -57,9 +57,17 @@ public final class XboxSocial {
         }
     }
 
-    /** The profile settings the lookup asks for, matching the Xbox app's own request. */
+    /**
+     * The profile settings the lookup asks for, matching the Xbox app's own request.
+     *
+     * <p>Only documented setting names are requested. An unknown one makes the profile service
+     * reject the whole lookup with HTTP 400, and the caller reads a 400 as "no such player" — so a
+     * single bad name silently turned every search into "player not found". {@code DisplayPic} was
+     * exactly that: the service knows {@code DisplayPicRaw}, not {@code DisplayPic}.
+     */
     private static final String SETTINGS =
-            "AppDisplayName,DisplayPic,Gamerscore,Gamertag,PublicGamerpic,XboxOneRep";
+            "AppDisplayName,AppDisplayPicRaw,DisplayPicRaw,GameDisplayPicRaw,Gamerscore,Gamertag,"
+                    + "PublicGamerpic,XboxOneRep";
 
     /**
      * The profile-service URL that resolves one gamertag.

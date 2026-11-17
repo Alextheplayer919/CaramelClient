@@ -9,6 +9,7 @@ import android.graphics.PorterDuffColorFilter;
 import android.view.MotionEvent;
 import android.view.View;
 
+import org.chimeramc.client.core.cosmetics.CharacterPose;
 import org.chimeramc.client.core.cosmetics.CapeSimulator;
 import org.chimeramc.client.core.cosmetics.GameSkinSource;
 import org.chimeramc.client.core.cosmetics.CosmeticCatalog;
@@ -26,6 +27,7 @@ import org.chimeramc.client.core.cosmetics.PreviewAccessoryScene;
 import org.chimeramc.client.core.cosmetics.PreviewAuthoredScene;
 import org.chimeramc.client.core.cosmetics.PreviewCapeScene;
 import org.chimeramc.client.core.cosmetics.PreviewCharacterScene;
+import org.chimeramc.client.core.cosmetics.PreviewMotion;
 import org.chimeramc.client.core.cosmetics.PreviewPetScene;
 import org.chimeramc.client.core.cosmetics.PreviewQuality;
 import org.chimeramc.client.core.cosmetics.PreviewRaster;
@@ -91,6 +93,9 @@ public class CapePreviewView extends View {
     private float headLookMs;
 
     private static final float DEFAULT_PITCH = 18f;
+
+    /** The camera's resting orbit height, in model pixels; the idle float oscillates around it. */
+    private static final float CAMERA_ORBIT_Y = 18f;
 
     private final Paint pixelPaint = new Paint();
 
@@ -237,6 +242,8 @@ public class CapePreviewView extends View {
     private final android.graphics.Rect destRect = new android.graphics.Rect();
 
     private long animStartMs;
+    /** The uptime of the last drawn frame, for the ~30fps idle throttle. */
+    private long lastDrawMs;
     private boolean animating;
     private boolean attached;
     /** True once at least one frame has been rendered, so a caller can hide its placeholder. */
@@ -253,13 +260,21 @@ public class CapePreviewView extends View {
                 @Override
                 public void doFrame(long frameTimeNanos) {
                     if (!animating) return;
-                    float dt = lastFrameNanos == 0L ? 0f
-                            : (frameTimeNanos - lastFrameNanos) / 1_000_000_000f;
-                    lastFrameNanos = frameTimeNanos;
-                    // Clamp so a stall cannot fast-forward the cloth.
-                    dt = Math.min(dt, 0.1f);
-                    advance(dt);
-                    invalidate();
+                    // An interactive frame (a drag, or a flick still coasting) is drawn immediately;
+                    // the idle turntable is throttled to ~30fps, which halves the per-second software
+                    // rasterisation without a visible change to a turn this slow.
+                    long nowMs = frameTimeNanos / 1_000_000L;
+                    boolean interactive = userRotating || Math.abs(spinVelocity) > 1f;
+                    if (interactive || PreviewRenderCache.idleFrameDue(lastDrawMs, nowMs)) {
+                        float dt = lastFrameNanos == 0L ? 0f
+                                : (frameTimeNanos - lastFrameNanos) / 1_000_000_000f;
+                        lastFrameNanos = frameTimeNanos;
+                        lastDrawMs = nowMs;
+                        // Clamp so a stall cannot fast-forward the cloth.
+                        dt = Math.min(dt, 0.1f);
+                        advance(dt);
+                        invalidate();
+                    }
                     android.view.Choreographer.getInstance().postFrameCallback(this);
                 }
             };
@@ -488,14 +503,6 @@ public class CapePreviewView extends View {
     }
 
     /**
-     * Keeps the idle motion running even with no cosmetic equipped.
-     *
-     * <p>By default the preview only animates while there is a cape or pet to move, which is right
-     * for the Cosmetics editor (nothing equipped means nothing to animate). The Launch-tab hero
-     * wants the character to turn and glance regardless, so it opts in here rather than changing
-     * the editor's behaviour.
-     */
-    /**
      * Runs {@code callback} once, after the next frame is rendered. Used by the Closet to
      * swap its "preparing preview" placeholder for the real render without a fixed delay. If the
      * preview has already drawn a frame the callback runs on the next post.
@@ -608,12 +615,15 @@ public class CapePreviewView extends View {
         if (!DynamicAnim.areAnimationsEnabled()) return;
         markSceneDirty();
         if (!userRotating) {
-            // A flick keeps spinning for a moment, then settles back to the slow idle turn.
+            float idleSeconds = (android.os.SystemClock.uptimeMillis() - animStartMs) / 1000f;
+            // A flick keeps spinning for a moment, then settles back to the slow idle turn. The idle
+            // speed eases in and out with a slow wobble so the turn reads as cinematic rather than a
+            // motor holding one constant rate.
             if (Math.abs(spinVelocity) > 1f) {
                 yawDeg += spinVelocity * dt;
                 spinVelocity *= Math.pow(0.12f, dt);
             } else {
-                yawDeg += IDLE_SPIN_DEG_PER_SEC * dt;
+                yawDeg += IDLE_SPIN_DEG_PER_SEC * PreviewMotion.yawSpeedScale(idleSeconds) * dt;
             }
             if (yawDeg > 360f) yawDeg -= 360f;
         }
@@ -659,14 +669,6 @@ public class CapePreviewView extends View {
     private final float[] headPointScratch = new float[3];
     private final float[] headNormalScratch = new float[3];
 
-    /**
-     * Rotates a model-space point by the current head look about the neck pivot, writing into
-     * {@code out}.
-     *
-     * <p>Applied to the head box's corners and to the worn accessory's mesh corners with the same
-     * angles and the same pivot, so the hat and the head move as one — the preview's equivalent of
-     * the pack's {@code acc} bone being driven by the head-look queries.
-     */
 
     // ---- Touch: drag to spin, flick to set it turning -----------------------------------
 
@@ -716,8 +718,9 @@ public class CapePreviewView extends View {
             // Phase D: the whole scene — character, pet, cape, accessories, authored meshes — is
             // rasterised by the pure software renderer, so it needs no Canvas layers and the depth
             // buffer resolves every piece against every other.
-            int internalW = Math.min(w * rasterSupersample, RASTER_MAX_EDGE);
-            int internalH = Math.min(h * rasterSupersample, RASTER_MAX_EDGE);
+            int[] internal = PreviewQuality.internalSize(w, h, rasterSupersample, RASTER_MAX_EDGE);
+            int internalW = internal[0];
+            int internalH = internal[1];
             Bitmap target = ensureFrame(internalW, internalH);
             if (target == null) {
                 // No offscreen target could be allocated: draw nothing rather than a broken half-frame.
@@ -730,12 +733,21 @@ public class CapePreviewView extends View {
             if (PreviewRenderCache.shouldRasterise(renderedRevision, sceneRevision)) {
                 // Background: transparent, so the glass panel behind the preview shows through.
                 raster.prepare(internalW, internalH, 0x00000000);
+                // A cinematic idle adds a gentle pitch sway and a small vertical float on top of the
+                // resting view; a user drag (or a coasting flick) takes the camera exactly, so the
+                // user's own angle is never fought by the idle motion.
+                float idleSeconds = (android.os.SystemClock.uptimeMillis() - animStartMs) / 1000f;
+                boolean idle = !userRotating && Math.abs(spinVelocity) <= 1f;
+                float camPitch = idle ? PreviewMotion.idlePitchDeg(pitchDeg, idleSeconds) : pitchDeg;
+                float camOrbitY = idle ? PreviewMotion.idleFloatPixels(CAMERA_ORBIT_Y, idleSeconds)
+                        : CAMERA_ORBIT_Y;
                 if (camera == null) {
-                    camera = new SkinModel.Camera(yawDeg, pitchDeg, SkinModel.CAMERA_DISTANCE, 0f, 18f, 0f);
+                    camera = new SkinModel.Camera(yawDeg, camPitch, SkinModel.CAMERA_DISTANCE,
+                            0f, camOrbitY, 0f);
                 } else {
                     // Re-target rather than rebuild: the constructor recomputes six trig values and
                     // this runs every frame while the preview is animating.
-                    camera.set(yawDeg, pitchDeg, SkinModel.CAMERA_DISTANCE, 0f, 18f, 0f);
+                    camera.set(yawDeg, camPitch, SkinModel.CAMERA_DISTANCE, 0f, camOrbitY, 0f);
                 }
                 renderScene(camera, internalW, internalH);
                 target.setPixels(raster.pixels(), 0, internalW, 0, 0, internalW, internalH);
@@ -903,7 +915,11 @@ public class CapePreviewView extends View {
             return;
         }
         capeScene = new PreviewScene();
-        PreviewCapeScene.addCape(capeScene, cape, capeSim, capeAtlas, capeAtlasW, capeAtlasH);
+        // Pass elapsed time so an animated cape's light band advances across the cloth as the
+        // preview animates, matching the in-game sweep.
+        float seconds = (android.os.SystemClock.uptimeMillis() - animStartMs) / 1000f;
+        PreviewCapeScene.addCape(capeScene, cape, capeSim, capeAtlas, capeAtlasW, capeAtlasH,
+                seconds);
     }
 
     /**
@@ -916,6 +932,7 @@ public class CapePreviewView extends View {
             return;
         }
         accessoryScene = new PreviewScene();
+        CharacterPose hero = CharacterPose.relaxedHero();
         if (accessoryMesh != null) {
             Bitmap atlasBitmap = ensureAccessoryAtlas();
             int[] atlas = atlasPixels(atlasBitmap);
@@ -924,12 +941,12 @@ public class CapePreviewView extends View {
                 int ah = atlasBitmap.getHeight();
                 PreviewAuthoredScene.addAccessory(accessoryScene, accessoryMesh, atlas, aw, ah,
                         accessoryGeoTexW, accessoryGeoTexH,
-                        headPitchDeg, headYawDeg, accessory.kind.followsHead());
+                        headPitchDeg, headYawDeg, accessory.kind.followsHead(), hero);
             }
         } else {
-            PreviewAccessoryScene.addAccessoryBehind(accessoryScene, accessory);
+            PreviewAccessoryScene.addAccessoryBehind(accessoryScene, accessory, hero);
             PreviewAccessoryScene.addAccessoryFront(accessoryScene, accessory,
-                    headPitchDeg, headYawDeg);
+                    headPitchDeg, headYawDeg, hero);
         }
     }
 
@@ -960,40 +977,12 @@ public class CapePreviewView extends View {
 
     // ---- Pet -----------------------------------------------------------------------------
 
-    /**
-     * Draws the equipped pet beside the character.
-     *
-     * <p>The pet's mesh comes from {@link PetModel}, the same vanilla-grounded body plan the in-game
-     * geometry uses, so the preview and the game cannot drift. The pose comes from {@link PetPose},
-     * which now animates per-bone: legs swing for a walk or run, a bird flaps and bobs, a serpent
-     * undulates, a swimmer paddles. When the player is running, crouching, flying or swimming, the
-     * crawling bugs switch to their contextual behaviour (riding the head, looking around, clinging
-     * against the wind or the water) exactly as the in-game controller does.
-     */
 
-    /**
-     * Draws an authored Blockbench pet beside the player.
-     *
-     * <p>The mesh is centred on its own X/Z (authored pets are symmetric about the origin) and
-     * placed at the same ground line the procedural pet uses, so the two paths look like the same
-     * companion rather than two different toys. A soft contact shadow grounds it, and the gait lift
-     * matches the procedural path so a flying or swimming pet is visibly off the ground.
-     */
 
     /** Scratch for {@link #petBoneRotation(String)}, so the per-frame draw path allocates nothing. */
     private final float[] petBoneRotScratch = new float[3];
 
-    /**
-     * The rotation, in degrees, the current {@link PetPose} applies to a bone, written into
-     * {@link #petBoneRotScratch}, or null when the bone is not animated (so a cube on an unnamed
-     * bone keeps its authored pose and costs nothing).
-     *
-     * <p>The bone names are the ones {@link PetBoneRetarget} maps an authored model onto, so an
-     * authored pet animates with the same gait the procedural body plan uses. The caller must
-     * consume the result before the next call.
-     */
 
-    /** Rotates a model-space point about a pivot by the bone's X/Y/Z degrees (Z, then Y, then X). */
 
     /** The atlas for the current authored pet, decoded once and cached. */
     private Bitmap ensurePetAtlas() {
@@ -1010,33 +999,12 @@ public class CapePreviewView extends View {
         return petAtlas;
     }
 
-    /** A soft contact shadow under the pet, faded by how far it is off the ground. */
 
-    /**
-     * Paints every box of the pet's {@link PetModel} plan, grouped by bone so the pose can move the
-     * head, tail, wings and legs independently.
-     *
-     * <p>Each bone's transform is a rotation about its own pivot (the joint), which is what makes a
-     * leg swing from the hip and a tail wag from the rump rather than the whole animal tilting.
-     */
 
-    /** Rotates a point by the bone's X/Y/Z degrees (Z, then Y, then X), in model space. */
 
-    /** A single shaded pet box, projected with the same camera as the character. */
 
-    /**
-     * A single shaded pet box whose shading follows the bone's rotation.
-     *
-     * <p>Shading the face from its <em>rotated</em> normal is what makes an animated limb read as
-     * three-dimensional: a leg swinging through its arc brightens and darkens with the swing, the
-     * way a lit surface does, instead of staying at a constant shade while the geometry moves. The
-     * rotation is the same one the box's centre was rotated by, so the light and the geometry
-     * cannot disagree.
-     */
 
-    /** Shades a face using its normal rotated by the bone's own rotation. */
 
-    /** An opaque grey for a 0..255 shade value, used as a MULTIPLY filter's colour. */
 
     /**
      * Cached MULTIPLY shade filters, one per grey value.
@@ -1047,101 +1015,22 @@ public class CapePreviewView extends View {
      */
     private final PorterDuffColorFilter[] shadeFilters = new PorterDuffColorFilter[256];
 
-    /** The cached MULTIPLY filter for a grey value, or null at full brightness (no filter). */
 
-    /**
-     * Fills the quad described by {@code v}, which is in {@link SkinModel.Box#faceCorners} grid
-     * order: {@code [TL, TR, BL, BR]}.
-     *
-     * <p>Traversing the array in order would draw a bow-tie, so the perimeter is walked
-     * TL -> TR -> BR -> BL instead. That order is correct for both the flat accessory fills and the
-     * character's shading overlay; the textured pass uses {@code drawBitmapMesh}, which wants the
-     * grid order directly.
-     */
 
     /** Average camera depth of the projected cloth, set by {@link #projectCape}. */
     private float capeAverageDepth;
 
-    /**
-     * Projects the cloth mesh once for this frame and records the average depth.
-     *
-     * <p>Split out of the paint so the caller can decide whether the cape is in front of or behind
-     * the body before choosing a draw order. Without this the cape was always painted first and so
-     * vanished whenever the camera swung around to the player's back.
-     */
 
-    /**
-     * Paints the cloth mesh with the animated mark printed on it.
-     *
-     * <p>Requires {@link #projectCape} to have run for this frame; the draw order in {@code onDraw}
-     * guarantees it. Kept separate from the projection so the depth sort and the paint order can
-     * disagree about nothing.
-     */
 
-    /** Farthest-first insertion sort; small fixed quad count, allocation-free. */
 
-    /**
-     * The Caramel mark crawling across the cloth.
-     *
-     * The mark walks along the mesh's parameter space so it follows the cloth's curve instead of
-     * sliding over a flat quad, and it is clipped to the cloth so it reads as printed on the
-     * fabric. The phase comes from uptime, so the crawl speed does not depend on frame rate.
-     */
 
-    /**
-     * Accessories behind the character: anything worn on the back.
-     *
-     * <p>Wings are geometry anchored to the shoulder blades, so they are painted before the cape
-     * and the body. A back-worn piece drawn in the foreground pass covers the torso and looks
-     * pasted onto the chest instead of worn.
-     */
 
-    /** A box worn on the back, with a strap over each shoulder and a pocket flap. */
 
-    /**
-     * Accessories in front of the character: worn on or around the head, face and torso.
-     *
-     * <p>Drawn after the model so they sit over the head instead of being hidden inside it.
-     */
 
     // ---- Authored Blockbench mesh ---------------------------------------------------------
 
-    /**
-     * Draws the equipped accessory's authored {@code .geo.json} mesh, if it has one.
-     *
-     * <p>This is the payoff of the preview pipeline: instead of a procedural box stack the preview
-     * shows the exact authored model — every bone pivot, every cube, every mirrored face UV. The
-     * mesh was resolved to world-space corners in {@link #rebuildAccessoryMesh}; here it is only
-     * projected, depth-sorted and painted.
-     *
-     * <p>Colour comes from the accessory's palette when no atlas is available, and from the decoded
-     * atlas when it is, so a hat authored with a real texture shows that texture and a hat without
-     * one still shows its silhouette.
-     */
 
-    /**
-     * Draws an authored pet mesh at a model-space offset, animating it per bone.
-     *
-     * <p>An authored pet is retargeted onto the gait vocabulary ({@code head}, {@code tail},
-     * {@code wing_l}/{@code wing_r}, {@code leg_a}..{@code leg_c}) but its resolved corners carry
-     * only the authored pose, so without this the mesh would render stiff. Each cube is swung about
-     * its own bone pivot by the {@link PetPose} rotation for its bone, exactly as the procedural
-     * body plan is, so an authored pet walks, flaps and wags instead of standing still.
-     */
 
-    /**
-     * Draws an authored mesh at a model-space offset.
-     *
-     * <p>Shared by the accessory (offset zero) and the pet (offset to the player's side), so the two
-     * cannot drift on projection, depth sorting, lighting or UV mirroring. The offset is applied to
-     * each corner before projection, which is the same as translating the mesh in the world without
-     * rebuilding it.
-     *
-     * @param headLooked true for a worn head accessory: its corners are rotated by the same head-look
-     *                   angles and neck pivot the head box uses, so the hat tracks the head
-     * @param animatePet true for an authored pet: each cube is swung about its bone pivot by the
-     *                   current {@link PetPose} rotation for its bone, so the mesh animates
-     */
 
     /**
      * The part of a projected quad that is visible against the depth buffer, or null when it is
@@ -1158,7 +1047,6 @@ public class CapePreviewView extends View {
     private final Path visibleBandPath = new Path();
     private final Path fullQuadPathScratch = new Path();
 
-    /** Paints one authored-mesh face from the atlas, honouring the face's mirror flags. */
 
     /**
      * A copy of a cosmetic atlas with the alpha test baked in: a texel below
@@ -1201,16 +1089,7 @@ public class CapePreviewView extends View {
         return accessoryAtlas;
     }
 
-    /**
-     * A resolved box's centroid depth, the primary painter's key for its faces.
-     *
-     * <p>{@code boneRot} is the animated bone rotation applied to the box, or null for a static
-     * accessory. The centroid must be transformed the same way the corners are, or an animated pet's
-     * cube would sort by its resting position and a swinging leg could paint behind the body it has
-     * moved in front of.
-     */
 
-    /** A face's outward normal, rotated by the bone chain so the cull and the light agree. */
 
     /**
      * True while the accessory currently being drawn is a head-worn piece, so {@link #drawBox}

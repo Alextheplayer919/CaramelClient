@@ -47,7 +47,7 @@ enum class CaramelProfileMode(val title: String, val desc: String, val label: St
 }
 
 /** The six launcher tabs the pack's sidebar carries. */
-enum class CaramelTab { Home, Mods, Servers, Cosmetics, News, Store }
+enum class CaramelTab { Home, Mods, Servers, Cosmetics, News, Store, Settings }
 
 /**
  * A transient in-app notice — the launcher's toast.
@@ -56,7 +56,7 @@ enum class CaramelTab { Home, Mods, Servers, Cosmetics, News, Store }
  * picks the leading mark: a red "!" in a rounded square for something that did not work, a blue
  * check for something that did. The notice clears itself, so a caller only ever raises one.
  */
-data class CaramelNotice(
+data class CaramelNotice @JvmOverloads constructor(
     val text: String,
     val warning: Boolean = false,
 )
@@ -159,6 +159,12 @@ data class CaramelFriendInfo(
     val avatarUrl: String,
     val online: Boolean,
     val presence: String,
+    /**
+     * True when this account has been heard on a Caramel-only protocol, so the row may wear the
+     * Caramel badge. False for an ordinary Xbox account, which is the honest answer: the badge is a
+     * claim that the account runs CaramelClient, and only a Caramel channel is evidence of that.
+     */
+    val caramel: Boolean = false,
 )
 
 /**
@@ -264,6 +270,16 @@ class CaramelLauncherState {
     /** Why the last sign-in attempt failed, empty when it has not failed. */
     var signInError by mutableStateOf("")
 
+    /**
+     * True while the sign-in modal is showing the in-app Microsoft page.
+     *
+     * <p>The device-code flow used to hand the user to the system browser the moment Microsoft
+     * issued a code, so they left the launcher to finish signing in. The launcher already hosts its
+     * own WebView for news links; the sign-in page opens in that same in-app surface instead, and
+     * this flag is what makes the modal swap from the code panel to the page.
+     */
+    var signInWebOpen by mutableStateOf(false)
+
     /** The gamertag typed into the Add friend modal. */
     var friendQuery by mutableStateOf("")
 
@@ -338,6 +354,13 @@ class CaramelLauncherState {
 
     /** Whether this instance runs the MB shader loader (the mtbinloader2 compatibility fixer). */
     var instanceShaderCompat by mutableStateOf(false)
+
+    /**
+     * Whether this device can run the deferred (Vibrant Visuals) pipeline. When false, the
+     * Performance tab does not offer the Vibrant Visuals option, so a mode the GPU cannot render is
+     * never advertised as if it were available.
+     */
+    var deferredRenderSupported by mutableStateOf(false)
 
     /** Whether this instance keeps its own game data rather than the shared root. */
     var instanceIsolation by mutableStateOf(false)

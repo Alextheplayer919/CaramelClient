@@ -151,9 +151,9 @@ public final class CosmeticFrame {
             bones.add(new BoneRotation("tail", 0f, petPose.tailWag * 16f, 0f));
             bones.add(new BoneRotation("wing_l", 0f, 0f, petPose.wingFlap * 55f));
             bones.add(new BoneRotation("wing_r", 0f, 0f, -petPose.wingFlap * 55f));
-            bones.add(new BoneRotation("leg_a", 0f, 0f, petPose.legSwing * 30f));
-            bones.add(new BoneRotation("leg_b", 0f, 0f, -petPose.legSwing * 30f));
-            bones.add(new BoneRotation("leg_c", 0f, 0f, petPose.legSwing * 30f));
+            bones.add(new BoneRotation("leg_a", petPose.legSwing * 30f, 0f, 0f));
+            bones.add(new BoneRotation("leg_b", -petPose.legSwing * 30f, 0f, 0f));
+            bones.add(new BoneRotation("leg_c", petPose.legSwing * 30f, 0f, 0f));
             offX = 20f; // beside the player, matching the preview
             offY = petPose.bodyBob - petPose.crouchDrop;
             offZ = 0f;

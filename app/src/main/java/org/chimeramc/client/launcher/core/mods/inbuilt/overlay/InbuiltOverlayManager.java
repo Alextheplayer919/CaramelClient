@@ -1041,9 +1041,7 @@ public class InbuiltOverlayManager {
             // and say why, so the state on screen matches reality.
             if (!manager.hasVoiceConsent()) {
                 manager.setInbuiltModEnabled(ModIds.VOICE_CHAT, false);
-                android.widget.Toast.makeText(activity,
-                        org.chimeramc.client.R.string.voice_consent_required,
-                        android.widget.Toast.LENGTH_LONG).show();
+                org.chimeramc.client.ui.compose.caramel.CaramelNoticeBus.postWarning(activity, org.chimeramc.client.R.string.voice_consent_required);
                 return;
             }
             if (manager.isVoiceMicEnabled()

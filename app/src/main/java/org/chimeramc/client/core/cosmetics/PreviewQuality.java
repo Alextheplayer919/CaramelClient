@@ -44,4 +44,32 @@ public final class PreviewQuality {
         if (nativeCode < 0) return HARDWARE_SUPERSAMPLE;
         return supersampleFor(GpuFamily.fromNativeCode(nativeCode));
     }
+
+    /**
+     * The offscreen raster size for a view, supersampled but capped on its <em>longest</em> edge so
+     * the aspect ratio survives.
+     *
+     * <p>Clamping width and height independently (the earlier code) squashed whichever axis was over
+     * the cap while leaving the other alone, so a wide or tall view rendered at the wrong shape and
+     * the blit back to the view stretched the character — the "3D skin looks stretched" report. This
+     * scales both axes by one factor, so the cap never changes the shape.
+     *
+     * @param viewW the view's width in pixels
+     * @param viewH the view's height in pixels
+     * @param supersample the internal supersample factor, from {@link #supersampleForNativeCode}
+     * @param maxEdge the cap on the longest edge, so a large view cannot blow the memory budget
+     * @return {@code {width, height}}, each at least 1, in the view's own aspect ratio
+     */
+    public static int[] internalSize(int viewW, int viewH, int supersample, int maxEdge) {
+        int factor = Math.max(1, supersample);
+        float w = Math.max(1, viewW) * (float) factor;
+        float h = Math.max(1, viewH) * (float) factor;
+        float longest = Math.max(w, h);
+        if (maxEdge > 0 && longest > maxEdge) {
+            float scale = maxEdge / longest;
+            w *= scale;
+            h *= scale;
+        }
+        return new int[]{Math.max(1, Math.round(w)), Math.max(1, Math.round(h))};
+    }
 }

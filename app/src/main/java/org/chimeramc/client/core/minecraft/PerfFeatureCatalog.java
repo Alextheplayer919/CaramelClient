@@ -56,10 +56,24 @@ public final class PerfFeatureCatalog {
         public final int decimals;
         /** The value a reset writes back. */
         public final String defaultValue;
+        /**
+         * CHOICE: for each option in {@link #values}, whether it needs the deferred (Vibrant
+         * Visuals) pipeline to run at all. A true entry is dropped from the offered options on a
+         * device that cannot run it, rather than shown as a mode the game would silently ignore.
+         * Null (or a short array) means every option is always offered.
+         */
+        public final boolean[] deferredOptions;
 
         Feature(String id, String key, String group, String name, String description, Kind kind,
                 String[] values, String[] labels, float min, float max, float step, int decimals,
                 String defaultValue) {
+            this(id, key, group, name, description, kind, values, labels, min, max, step, decimals,
+                    defaultValue, null);
+        }
+
+        Feature(String id, String key, String group, String name, String description, Kind kind,
+                String[] values, String[] labels, float min, float max, float step, int decimals,
+                String defaultValue, boolean[] deferredOptions) {
             this.id = id;
             this.key = key;
             this.group = group;
@@ -73,6 +87,12 @@ public final class PerfFeatureCatalog {
             this.step = step;
             this.decimals = decimals;
             this.defaultValue = defaultValue;
+            this.deferredOptions = deferredOptions;
+        }
+
+        /** Whether option {@code index} of a CHOICE needs the deferred pipeline. */
+        public boolean optionNeedsDeferred(int index) {
+            return deferredOptions != null && index < deferredOptions.length && deferredOptions[index];
         }
 
         /** The value written when the switch is turned on (TOGGLE only). */
@@ -154,6 +174,28 @@ public final class PerfFeatureCatalog {
         return format(raw, feature.decimals);
     }
 
+    /**
+     * The CHOICE options this device can actually offer, as indices into {@link Feature#values}.
+     *
+     * <p>A device that cannot run the deferred pipeline never sees the "Vibrant Visuals" option, so
+     * a mode the GPU cannot render is not advertised. Non-choice features, and choices with no
+     * deferred-only option, return every index.
+     *
+     * @param deferredSupported whether {@link DeferredRenderSupport#supported} said yes
+     */
+    public static int[] offeredChoiceIndices(Feature feature, boolean deferredSupported) {
+        if (feature == null || feature.kind != Kind.CHOICE || feature.values == null) {
+            return new int[0];
+        }
+        java.util.List<Integer> kept = new ArrayList<>();
+        for (int i = 0; i < feature.values.length; i++) {
+            if (!feature.optionNeedsDeferred(i) || deferredSupported) kept.add(i);
+        }
+        int[] out = new int[kept.size()];
+        for (int i = 0; i < kept.size(); i++) out[i] = kept.get(i);
+        return out;
+    }
+
     /** The 0..1 slider position for a stored RANGE value; 0 when the value is missing or invalid. */
     public static float rangeFraction(Feature feature, String value) {
         if (feature == null || feature.kind != Kind.RANGE || value == null) return 0f;
@@ -232,7 +274,8 @@ public final class PerfFeatureCatalog {
         add(out, "graphics_mode", "graphics_mode", distance, "Graphics mode",
                 "Simple drops most effects, Fancy keeps them, Vibrant Visuals adds the deferred pipeline.",
                 Kind.CHOICE, new String[]{"0", "1", "2"},
-                new String[]{"Simple", "Fancy", "Vibrant Visuals"}, 0f, 0f, 0f, 0, "1");
+                new String[]{"Simple", "Fancy", "Vibrant Visuals"}, 0f, 0f, 0f, 0, "1",
+                new boolean[]{false, false, true});
         add(out, "quality_preset", "graphics_quality_preset_mode", distance, "Quality preset",
                 "The game's own two-way preset: favour performance or favour visuals.",
                 Kind.CHOICE, new String[]{"0", "1"},
@@ -385,6 +428,14 @@ public final class PerfFeatureCatalog {
     private static void add(List<Feature> out, String id, String key, String group, String name,
                             String description, Kind kind, String[] values, String[] labels,
                             float min, float max, float step, int decimals, String defaultValue) {
+        add(out, id, key, group, name, description, kind, values, labels, min, max, step, decimals,
+                defaultValue, null);
+    }
+
+    private static void add(List<Feature> out, String id, String key, String group, String name,
+                            String description, Kind kind, String[] values, String[] labels,
+                            float min, float max, float step, int decimals, String defaultValue,
+                            boolean[] deferredOptions) {
         // A toggle is always the off/on pair, so a call site cannot forget it and leave a switch
         // that writes nothing.
         String[] resolvedValues = values;
@@ -392,6 +443,6 @@ public final class PerfFeatureCatalog {
             resolvedValues = new String[]{"0", "1"};
         }
         out.add(new Feature(id, key, group, name, description, kind, resolvedValues, labels, min,
-                max, step, decimals, defaultValue));
+                max, step, decimals, defaultValue, deferredOptions));
     }
 }
