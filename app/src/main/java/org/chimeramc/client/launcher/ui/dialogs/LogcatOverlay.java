@@ -920,7 +920,7 @@ public class LogcatOverlay extends FrameLayout {
         if (cm != null) {
             cm.setPrimaryClip(android.content.ClipData.newPlainText("logcat", sb.toString()));
         }
-        Toast.makeText(getContext(), R.string.logcat_copied, Toast.LENGTH_SHORT).show();
+        org.chimeramc.client.ui.compose.caramel.CaramelNoticeBus.post(getContext(), R.string.logcat_copied);
     }
 
     private void copyFullLogToClipboard() {
@@ -950,20 +950,20 @@ public class LogcatOverlay extends FrameLayout {
             fullText = sb.toString();
         }
         if (fullText == null || fullText.isEmpty()) {
-            Toast.makeText(getContext(), R.string.logcat_copied, Toast.LENGTH_SHORT).show();
+            org.chimeramc.client.ui.compose.caramel.CaramelNoticeBus.post(getContext(), R.string.logcat_copied);
             return;
         }
         android.content.ClipboardManager cm = (android.content.ClipboardManager) getContext().getSystemService(Context.CLIPBOARD_SERVICE);
         if (cm != null) {
             cm.setPrimaryClip(android.content.ClipData.newPlainText("logcat", fullText));
         }
-        Toast.makeText(getContext(), R.string.logcat_copied, Toast.LENGTH_SHORT).show();
+        org.chimeramc.client.ui.compose.caramel.CaramelNoticeBus.post(getContext(), R.string.logcat_copied);
     }
 
     private void shareLogFile() {
         String content = org.chimeramc.client.core.minecraft.LaunchLog.readAll(getContext().getApplicationContext());
         if (content == null || content.isEmpty()) {
-            Toast.makeText(getContext(), R.string.logcat_no_log_to_share, Toast.LENGTH_SHORT).show();
+            org.chimeramc.client.ui.compose.caramel.CaramelNoticeBus.post(getContext(), R.string.logcat_no_log_to_share);
             return;
         }
         android.content.Intent shareIntent = new android.content.Intent(android.content.Intent.ACTION_SEND);

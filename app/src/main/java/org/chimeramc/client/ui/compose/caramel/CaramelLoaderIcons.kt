@@ -1,6 +1,5 @@
 package org.chimeramc.client.ui.compose.caramel
 
-import android.widget.Toast
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -173,9 +172,11 @@ fun CaramelLoaderPicker(
     val context = LocalContext.current
     val unavailableText = stringResource(R.string.caramel_loader_unavailable)
     // The host supplies the launcher's own notice; the bare default keeps the picker usable from a
-    // preview or a test, where there is no launcher tree to route a notice into.
+    // preview or a test, where there is no launcher tree to route a notice into. It still goes
+    // through the notice bus, so a mounted launcher draws its own toast even if the host forgot to
+    // pass one, and only a truly detached picker falls back to the system bubble.
     val report: () -> Unit = onUnavailable ?: {
-        Toast.makeText(context, unavailableText, Toast.LENGTH_SHORT).show()
+        CaramelNoticeBus.post(context, unavailableText, false)
     }
     Column(modifier.width(IntrinsicSize.Min), verticalArrangement = Arrangement.spacedBy(8.dp)) {
         Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {

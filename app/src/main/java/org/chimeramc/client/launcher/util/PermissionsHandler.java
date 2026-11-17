@@ -8,7 +8,6 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Environment;
 import android.provider.Settings;
-import android.widget.Toast;
 
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.core.app.ActivityCompat;
@@ -210,7 +209,7 @@ public class PermissionsHandler {
                 if (callback != null)
                     callback.onPermissionDenied(type, false);
                 if (type == PermissionType.UNKNOWN_SOURCES) {
-                    Toast.makeText(activity, activity.getString(R.string.allow_unknown_sources), Toast.LENGTH_LONG).show();
+                    org.chimeramc.client.ui.compose.caramel.CaramelNoticeBus.postWarning(activity, activity.getString(R.string.allow_unknown_sources));
                 }
             });
         }

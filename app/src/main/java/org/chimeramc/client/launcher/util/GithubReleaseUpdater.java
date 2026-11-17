@@ -7,7 +7,6 @@ import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Build;
 import android.util.Log;
-import android.widget.Toast;
 
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.core.content.FileProvider;
@@ -196,8 +195,7 @@ public class GithubReleaseUpdater {
                                     listener.onResult(Outcome.UPDATE_AVAILABLE, version, link, null));
                         }
                     } else {
-                        activity.runOnUiThread(() ->
-                                Toast.makeText(activity, activity.getString(R.string.already_latest_version, localVersion), Toast.LENGTH_SHORT).show());
+                        org.chimeramc.client.ui.compose.caramel.CaramelNoticeBus.post(activity, activity.getString(R.string.already_latest_version, localVersion));
                         if (listener != null) {
                             String version = latestVersion;
                             activity.runOnUiThread(() ->
@@ -309,18 +307,16 @@ public class GithubReleaseUpdater {
     private void ignoreThisVersion(String version) {
         SharedPreferences prefs = activity.getSharedPreferences("no_update_version", Context.MODE_PRIVATE);
         prefs.edit().putString(PREF_IGNORED_VERSION, version).apply();
-        activity.runOnUiThread(() -> Toast.makeText(activity, activity.getString(R.string.version_ignored), Toast.LENGTH_SHORT).show());
+        org.chimeramc.client.ui.compose.caramel.CaramelNoticeBus.post(activity, activity.getString(R.string.version_ignored));
     }
 
     private void downloadApk(String url) {
-        activity.runOnUiThread(() -> Toast.makeText(activity, activity.getString(R.string.downloading_update), Toast.LENGTH_SHORT).show());
+        org.chimeramc.client.ui.compose.caramel.CaramelNoticeBus.post(activity, activity.getString(R.string.downloading_update));
         Request request = new Request.Builder().url(url).build();
         client.newCall(request).enqueue(new Callback() {
             @Override
             public void onFailure(Call call, IOException e) {
-                activity.runOnUiThread(() -> Toast.makeText(activity,
-                        activity.getString(R.string.update_failed, reasonFor(activity, e)),
-                        Toast.LENGTH_LONG).show());
+                org.chimeramc.client.ui.compose.caramel.CaramelNoticeBus.postWarning(activity, activity.getString(R.string.update_failed, reasonFor(activity, e)));
             }
 
             @Override
@@ -344,17 +340,14 @@ public class GithubReleaseUpdater {
                         long now = System.currentTimeMillis();
                         if (now - lastToastTime > 500 && total > 0) {
                             int percent = (int) (downloaded * 100 / total);
-                            activity.runOnUiThread(() ->
-                                    Toast.makeText(activity, activity.getString(R.string.update_progress, percent), Toast.LENGTH_SHORT).show());
+                            org.chimeramc.client.ui.compose.caramel.CaramelNoticeBus.post(activity, activity.getString(R.string.update_progress, percent));
                             lastToastTime = now;
                         }
                     }
                     fos.flush();
                     installApk(apkFile);
                 } catch (Exception e) {
-                    activity.runOnUiThread(() -> Toast.makeText(activity,
-                            activity.getString(R.string.update_failed, reasonFor(activity, e)),
-                            Toast.LENGTH_LONG).show());
+                    org.chimeramc.client.ui.compose.caramel.CaramelNoticeBus.postWarning(activity, activity.getString(R.string.update_failed, reasonFor(activity, e)));
                 } finally {
                     try {
                         if (is != null) is.close();
@@ -396,16 +389,14 @@ public class GithubReleaseUpdater {
                                 intent.setDataAndType(apkUri, "application/vnd.android.package-archive");
                                 activity.startActivity(intent);
                             } catch (Exception e) {
-                                Toast.makeText(activity, activity.getString(R.string.install_failed, reasonFor(activity, e)), Toast.LENGTH_LONG).show();
+                                org.chimeramc.client.ui.compose.caramel.CaramelNoticeBus.postWarning(activity, activity.getString(R.string.install_failed, reasonFor(activity, e)));
                             }
                         });
                     }
 
                     @Override
                     public void onPermissionDenied(PermissionsHandler.PermissionType type, boolean permanentlyDenied) {
-                        activity.runOnUiThread(() ->
-                                Toast.makeText(activity, activity.getString(R.string.unknown_sources_permission_message), Toast.LENGTH_LONG).show()
-                        );
+                        org.chimeramc.client.ui.compose.caramel.CaramelNoticeBus.postWarning(activity, activity.getString(R.string.unknown_sources_permission_message));
                     }
                 }
         );

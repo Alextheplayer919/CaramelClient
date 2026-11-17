@@ -3,7 +3,6 @@ package org.chimeramc.client.launcher.util;
 import android.app.Activity;
 import android.content.Intent;
 import android.net.Uri;
-import android.widget.Toast;
 
 import androidx.activity.result.ActivityResultCaller;
 import androidx.activity.result.ActivityResultLauncher;
@@ -274,7 +273,7 @@ public final class LauncherSettingsController implements CaramelSettingsActions,
     @Override
     public void pickBackgroundImage() {
         if (backgroundImageLauncher == null) {
-            Toast.makeText(activity, R.string.bg_image_picker_unavailable, Toast.LENGTH_SHORT).show();
+            org.chimeramc.client.ui.compose.caramel.CaramelNoticeBus.post(activity, R.string.bg_image_picker_unavailable);
             return;
         }
         backgroundImageLauncher.launch("image/*");
@@ -329,7 +328,7 @@ public final class LauncherSettingsController implements CaramelSettingsActions,
     public void setSharedStorageLayout(boolean enabled) {
         LauncherStorage.setUseNewSharedStorage(activity, enabled);
         state.setSharedStorageLayout(LauncherStorage.isUsingNewSharedStorage(activity));
-        Toast.makeText(activity, R.string.shared_storage_layout_changed, Toast.LENGTH_LONG).show();
+        org.chimeramc.client.ui.compose.caramel.CaramelNoticeBus.postWarning(activity, R.string.shared_storage_layout_changed);
     }
 
     @Override
@@ -357,7 +356,7 @@ public final class LauncherSettingsController implements CaramelSettingsActions,
     @Override
     public void pickWorldBackupDestination() {
         if (worldBackupDestinationLauncher == null) {
-            Toast.makeText(activity, R.string.file_picker_unavailable, Toast.LENGTH_SHORT).show();
+            org.chimeramc.client.ui.compose.caramel.CaramelNoticeBus.post(activity, R.string.file_picker_unavailable);
             return;
         }
         worldBackupDestinationLauncher.launch(null);
@@ -366,7 +365,7 @@ public final class LauncherSettingsController implements CaramelSettingsActions,
     @Override
     public void runWorldBackupNow() {
         WorldBackupScheduler.runNow(activity);
-        Toast.makeText(activity, R.string.settings_world_backup_back_up_now, Toast.LENGTH_SHORT).show();
+        org.chimeramc.client.ui.compose.caramel.CaramelNoticeBus.post(activity, R.string.settings_world_backup_back_up_now);
     }
 
     @Override
@@ -376,10 +375,13 @@ public final class LauncherSettingsController implements CaramelSettingsActions,
         SweetLoaderSignatureRulesManager.refreshNow(activity, result -> {
             state.setRuntimeDataBusy(false);
             refreshRuntimeDataStatus();
-            Toast.makeText(activity,
-                    result.success ? R.string.sweetloader_sigs_update_success
-                            : R.string.sweetloader_sigs_update_failed,
-                    Toast.LENGTH_LONG).show();
+            if (result.success) {
+                org.chimeramc.client.ui.compose.caramel.CaramelNoticeBus.post(
+                        activity, R.string.sweetloader_sigs_update_success);
+            } else {
+                org.chimeramc.client.ui.compose.caramel.CaramelNoticeBus.postWarning(
+                        activity, R.string.sweetloader_sigs_update_failed);
+            }
         });
     }
 
@@ -391,18 +393,21 @@ public final class LauncherSettingsController implements CaramelSettingsActions,
     @Override
     public void cleanHistoricalDirectory() {
         LauncherStorage.LegacyCleanupResult result = LauncherStorage.cleanupLegacyRoot(activity);
-        Toast.makeText(activity, result.success
-                        ? activity.getString(R.string.migration_cleanup_success, result.deletedFiles,
-                                org.chimeramc.client.core.setup.CompatibilityCheck.formatBytes(result.deletedBytes))
-                        : activity.getString(R.string.migration_cleanup_failed, result.errorMessage),
-                Toast.LENGTH_LONG).show();
+        if (result.success) {
+            org.chimeramc.client.ui.compose.caramel.CaramelNoticeBus.post(activity,
+                    activity.getString(R.string.migration_cleanup_success, result.deletedFiles,
+                            org.chimeramc.client.core.setup.CompatibilityCheck.formatBytes(result.deletedBytes)));
+        } else {
+            org.chimeramc.client.ui.compose.caramel.CaramelNoticeBus.postWarning(activity,
+                    activity.getString(R.string.migration_cleanup_failed, result.errorMessage));
+        }
         refreshMigration();
     }
 
     @Override
     public void exportSettingsBackup() {
         if (settingsExportLauncher == null) {
-            Toast.makeText(activity, R.string.file_picker_unavailable, Toast.LENGTH_SHORT).show();
+            org.chimeramc.client.ui.compose.caramel.CaramelNoticeBus.post(activity, R.string.file_picker_unavailable);
             return;
         }
         settingsExportLauncher.launch("caramel-client-settings.json");
@@ -411,7 +416,7 @@ public final class LauncherSettingsController implements CaramelSettingsActions,
     @Override
     public void importSettingsBackup() {
         if (settingsImportLauncher == null) {
-            Toast.makeText(activity, R.string.file_picker_unavailable, Toast.LENGTH_SHORT).show();
+            org.chimeramc.client.ui.compose.caramel.CaramelNoticeBus.post(activity, R.string.file_picker_unavailable);
             return;
         }
         settingsImportLauncher.launch(new String[]{"application/json"});
@@ -495,12 +500,10 @@ public final class LauncherSettingsController implements CaramelSettingsActions,
             String json = LauncherSettingsBackup.export(activity, true, true);
             out.write(json.getBytes(java.nio.charset.StandardCharsets.UTF_8));
             out.flush();
-            Toast.makeText(activity, R.string.settings_backup_exported, Toast.LENGTH_LONG).show();
+            org.chimeramc.client.ui.compose.caramel.CaramelNoticeBus.post(activity, R.string.settings_backup_exported);
         } catch (Exception e) {
             AppLog.warnOnce(TAG, "LauncherSettingsController:export", "Settings export failed", e);
-            Toast.makeText(activity,
-                    activity.getString(R.string.settings_backup_failed, e.getMessage()),
-                    Toast.LENGTH_LONG).show();
+            org.chimeramc.client.ui.compose.caramel.CaramelNoticeBus.postWarning(activity, activity.getString(R.string.settings_backup_failed, e.getMessage()));
         }
     }
 
@@ -515,16 +518,17 @@ public final class LauncherSettingsController implements CaramelSettingsActions,
             while ((read = in.read(chunk)) != -1) buffer.write(chunk, 0, read);
             LauncherSettingsBackup.ImportResult result =
                     LauncherSettingsBackup.importFrom(activity, buffer.toString("UTF-8"));
-            Toast.makeText(activity, result.success
-                            ? activity.getString(R.string.settings_backup_imported, result.profileCount)
-                            : activity.getString(R.string.settings_backup_failed, result.message),
-                    Toast.LENGTH_LONG).show();
+            if (result.success) {
+                org.chimeramc.client.ui.compose.caramel.CaramelNoticeBus.post(activity,
+                        activity.getString(R.string.settings_backup_imported, result.profileCount));
+            } else {
+                org.chimeramc.client.ui.compose.caramel.CaramelNoticeBus.postWarning(activity,
+                        activity.getString(R.string.settings_backup_failed, result.message));
+            }
             refresh();
         } catch (Exception e) {
             AppLog.warnOnce(TAG, "LauncherSettingsController:import", "Settings import failed", e);
-            Toast.makeText(activity,
-                    activity.getString(R.string.settings_backup_failed, e.getMessage()),
-                    Toast.LENGTH_LONG).show();
+            org.chimeramc.client.ui.compose.caramel.CaramelNoticeBus.postWarning(activity, activity.getString(R.string.settings_backup_failed, e.getMessage()));
         }
     }
 
@@ -605,6 +609,6 @@ public final class LauncherSettingsController implements CaramelSettingsActions,
         personalization.resetAllCustomizations();
         SettingsRegistry.resetToDefaults(FeatureSettings.getInstance());
         refresh();
-        Toast.makeText(activity, R.string.caramel_settings_reset_done, Toast.LENGTH_SHORT).show();
+        org.chimeramc.client.ui.compose.caramel.CaramelNoticeBus.post(activity, R.string.caramel_settings_reset_done);
     }
 }

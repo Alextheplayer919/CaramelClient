@@ -1,6 +1,7 @@
 package org.chimeramc.client.ui.compose.caramel
 
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.FastOutLinearInEasing
 import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.spring
 import androidx.compose.animation.core.tween
@@ -78,7 +79,9 @@ fun CaramelToast(state: CaramelLauncherState, modifier: Modifier = Modifier, mil
         AnimatedVisibility(
             current != null,
             enter = slideInHorizontally(animationSpec = slide) { it } + fadeIn(fade),
-            exit = slideOutHorizontally(animationSpec = tween(caramelMotionMs(200))) { it } + fadeOut(fade),
+            exit = slideOutHorizontally(
+                animationSpec = tween(caramelMotionMs(200), easing = FastOutLinearInEasing),
+            ) { it } + fadeOut(fade),
         ) {
             val n = current
             if (n != null) {

@@ -5,7 +5,6 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
 import android.provider.OpenableColumns;
-import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -80,7 +79,7 @@ public class ApkImportManager {
                 importFailedListener.onImportFailed(
                         activity.getString(R.string.import_error_open_package), versionName);
             } else {
-                Toast.makeText(activity, R.string.import_error_open_package, Toast.LENGTH_LONG).show();
+                org.chimeramc.client.ui.compose.caramel.CaramelNoticeBus.postWarning(activity, R.string.import_error_open_package);
             }
             return;
         }
@@ -97,11 +96,7 @@ public class ApkImportManager {
                     if (released) return;
                     dismissProgress();
                     if (activity.isFinishing() || activity.isDestroyed()) return;
-                    Toast.makeText(
-                            activity,
-                            activity.getString(R.string.install_done, installedVersionName),
-                            Toast.LENGTH_LONG
-                    ).show();
+                    org.chimeramc.client.ui.compose.caramel.CaramelNoticeBus.post(activity, activity.getString(R.string.install_done, installedVersionName));
                     VersionManager.get(activity).loadAllVersions();
                     if (importCompleteListener != null) {
                         importCompleteListener.onImportComplete();
@@ -118,7 +113,7 @@ public class ApkImportManager {
                     // With a listener the caller owns the failure UI (it can offer a retry),
                     // so a toast here would only duplicate the message.
                     if (importFailedListener == null) {
-                        Toast.makeText(activity, errorMsg, Toast.LENGTH_LONG).show();
+                        org.chimeramc.client.ui.compose.caramel.CaramelNoticeBus.postWarning(activity, errorMsg);
                     } else {
                         importFailedListener.onImportFailed(errorMsg, versionName);
                     }
@@ -172,11 +167,7 @@ public class ApkImportManager {
                                     if (released) return;
                                     dismissProgress();
                                     if (activity.isFinishing() || activity.isDestroyed()) return;
-                                    Toast.makeText(
-                                            activity,
-                                            activity.getString(R.string.install_done, versionName),
-                                            Toast.LENGTH_LONG
-                                    ).show();
+                                    org.chimeramc.client.ui.compose.caramel.CaramelNoticeBus.post(activity, activity.getString(R.string.install_done, versionName));
                                     VersionManager.get(activity).loadAllVersions();
                                     if (importCompleteListener != null) {
                                         importCompleteListener.onImportComplete();
@@ -193,7 +184,7 @@ public class ApkImportManager {
                                     // The named cause from the installer is shown as-is; the
                                     // previous "Install error: <raw>" toast could read
                                     // "Install error: null" and told the user nothing.
-                                    Toast.makeText(activity, errorMsg, Toast.LENGTH_LONG).show();
+                                    org.chimeramc.client.ui.compose.caramel.CaramelNoticeBus.postWarning(activity, errorMsg);
                                 });
                             }
                         });

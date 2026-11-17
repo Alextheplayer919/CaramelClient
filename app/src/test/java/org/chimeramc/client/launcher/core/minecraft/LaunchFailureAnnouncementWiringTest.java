@@ -55,7 +55,8 @@ public class LaunchFailureAnnouncementWiringTest {
         int end = activity.indexOf("\n            }", at);
         String body = activity.substring(at, end);
         assertTrue("a failed launch must name its cause on the launcher toast",
-                body.contains("toast(") && body.contains("LaunchErrorDiagnosis.classify(e)"));
+                (body.contains("toast(") || body.contains("toastWarning("))
+                        && body.contains("LaunchErrorDiagnosis.classify(e)"));
     }
 
     @Test

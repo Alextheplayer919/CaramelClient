@@ -222,7 +222,7 @@ public class MainActivity extends BaseActivity implements CaramelLauncherHost.Ac
                 org.chimeramc.client.launcher.core.minecraft.LastLaunchFailure.consumePending(this);
         if (report == null) return;
         org.chimeramc.client.launcher.core.minecraft.LaunchErrorDiagnosis.Cause cause = report.cause();
-        toast(getString(org.chimeramc.client.launcher.core.minecraft
+        toastWarning(getString(org.chimeramc.client.launcher.core.minecraft
                 .LaunchErrorDiagnosis.messageRes(cause)));
     }
 
@@ -584,8 +584,42 @@ public class MainActivity extends BaseActivity implements CaramelLauncherHost.Ac
      * correct: there is nothing to draw it over yet.
      */
     private void toast(String message) {
+        toast(message, false);
+    }
+
+    /** A notice that reports a failure, drawn with the toast's warning rail and glyph. */
+    private void toastWarning(String message) {
+        toast(message, true);
+    }
+
+    private void toast(String message, boolean warning) {
         if (message == null || message.isEmpty()) return;
-        mutateState(s -> s.setNotice(new org.chimeramc.client.ui.compose.caramel.CaramelNotice(message)));
+        mutateState(s -> s.setNotice(
+                new org.chimeramc.client.ui.compose.caramel.CaramelNotice(message, warning)));
+    }
+
+    /**
+     * The launcher's receiver for notices raised by screens outside the Compose tree.
+     *
+     * <p>In-game overlays, the logcat dialog and the screenshot share sheet cannot reach the Compose
+     * toast directly and drew a raw system {@link android.widget.Toast} instead, so the same app
+     * showed two notice styles. They now post to {@link CaramelNoticeBus}, and this sink lands the
+     * message on the one Caramel toast. It is marshalled to the UI thread because a poster may be on
+     * a game or network thread.
+     */
+    private final org.chimeramc.client.ui.compose.caramel.CaramelNoticeBus.Sink noticeSink =
+            (text, warning) -> runOnUiThread(() -> toast(text, warning));
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        org.chimeramc.client.ui.compose.caramel.CaramelNoticeBus.attach(noticeSink);
+    }
+
+    @Override
+    protected void onStop() {
+        org.chimeramc.client.ui.compose.caramel.CaramelNoticeBus.detach(noticeSink);
+        super.onStop();
     }
 
     /** Applies a change to the Compose state on the UI thread and recomposes. */
@@ -622,7 +656,7 @@ public class MainActivity extends BaseActivity implements CaramelLauncherHost.Ac
                 // surface every other message uses, so the user is told why nothing happened.
                 org.chimeramc.client.launcher.core.minecraft.LaunchErrorDiagnosis.Cause cause =
                         org.chimeramc.client.launcher.core.minecraft.LaunchErrorDiagnosis.classify(e);
-                toast(getString(org.chimeramc.client.launcher.core.minecraft
+                toastWarning(getString(org.chimeramc.client.launcher.core.minecraft
                         .LaunchErrorDiagnosis.messageRes(cause)));
             }
         });

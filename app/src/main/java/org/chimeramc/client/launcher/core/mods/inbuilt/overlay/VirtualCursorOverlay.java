@@ -1,7 +1,6 @@
 package org.chimeramc.client.core.mods.inbuilt.overlay;
 
 import android.app.Activity;
-import android.widget.Toast;
 
 import org.chimeramc.client.R;
 import org.chimeramc.client.core.mods.inbuilt.model.ModIds;
@@ -43,9 +42,9 @@ public class VirtualCursorOverlay extends BaseOverlayButton {
         VirtualCursorMod.setActive(!currentState, activity);
         
         if (!currentState) {
-            Toast.makeText(activity, activity.getString(R.string.virtual_cursor_enabled), Toast.LENGTH_SHORT).show();
+            org.chimeramc.client.ui.compose.caramel.CaramelNoticeBus.post(activity, activity.getString(R.string.virtual_cursor_enabled));
         } else {
-            Toast.makeText(activity, activity.getString(R.string.virtual_cursor_disabled), Toast.LENGTH_SHORT).show();
+            org.chimeramc.client.ui.compose.caramel.CaramelNoticeBus.post(activity, activity.getString(R.string.virtual_cursor_disabled));
         }
     }
 
@@ -53,7 +52,7 @@ public class VirtualCursorOverlay extends BaseOverlayButton {
     public void hide() {
         if (VirtualCursorMod.isActive()) {
             VirtualCursorMod.setActive(false, activity);
-            Toast.makeText(activity, activity.getString(R.string.virtual_cursor_disabled), Toast.LENGTH_SHORT).show();
+            org.chimeramc.client.ui.compose.caramel.CaramelNoticeBus.post(activity, activity.getString(R.string.virtual_cursor_disabled));
         }
         super.hide();
     }

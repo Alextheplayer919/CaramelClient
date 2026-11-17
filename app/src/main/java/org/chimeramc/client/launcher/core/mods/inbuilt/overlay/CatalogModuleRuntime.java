@@ -1,7 +1,6 @@
 package org.chimeramc.client.core.mods.inbuilt.overlay;
 
 import android.app.Activity;
-import android.os.Handler;
 import android.os.Looper;
 import android.os.SystemClock;
 import android.view.KeyEvent;
@@ -16,7 +15,6 @@ import org.chimeramc.client.core.mods.inbuilt.catalog.LocalPlayerReadouts;
 import org.chimeramc.client.core.mods.inbuilt.catalog.PeerTargets;
 import org.chimeramc.client.core.mods.inbuilt.manager.InbuiltModManager;
 import org.chimeramc.client.preloader.PreloaderInput;
-import org.chimeramc.client.util.MainThread;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -50,7 +48,6 @@ public final class CatalogModuleRuntime {
     private final Map<String, CatalogReadoutOverlay> readouts = new HashMap<>();
     private final CatalogSessionCounters counters = new CatalogSessionCounters();
     private final KeyStateTracker keyState = new KeyStateTracker();
-    private final Handler handler = MainThread.handler();
 
     private String lastCreditedKill;
     private boolean lastHealthAvailable;
@@ -537,7 +534,6 @@ public final class CatalogModuleRuntime {
     }
 
     private void toast(int stringRes) {
-        handler.post(() -> android.widget.Toast
-                .makeText(activity, stringRes, android.widget.Toast.LENGTH_SHORT).show());
+        org.chimeramc.client.ui.compose.caramel.CaramelNoticeBus.post(activity, stringRes);
     }
 }

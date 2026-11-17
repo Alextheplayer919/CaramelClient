@@ -5,7 +5,6 @@ import org.chimeramc.client.util.AppLog;
 import android.app.Activity;
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.widget.Toast;
 
 import org.chimeramc.client.R;
 import org.chimeramc.client.core.content.OptionsEditor;
@@ -85,6 +84,6 @@ final class CatalogOptionsWriter {
     }
 
     private static void toast(Context context, int stringRes) {
-        Toast.makeText(context, stringRes, Toast.LENGTH_SHORT).show();
+        org.chimeramc.client.ui.compose.caramel.CaramelNoticeBus.post(context, stringRes);
     }
 }

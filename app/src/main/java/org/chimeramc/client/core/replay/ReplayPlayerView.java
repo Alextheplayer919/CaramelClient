@@ -22,7 +22,6 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.SeekBar;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import org.chimeramc.client.R;
 import org.chimeramc.client.ui.animation.DynamicAnim;
@@ -419,7 +418,7 @@ public final class ReplayPlayerView {
 
     private void startPlayer(File file) {
         if (file == null || !file.isFile()) {
-            Toast.makeText(activity, R.string.replay_playback_hint, Toast.LENGTH_SHORT).show();
+            org.chimeramc.client.ui.compose.caramel.CaramelNoticeBus.post(activity, R.string.replay_playback_hint);
             return;
         }
         try {
@@ -442,13 +441,12 @@ public final class ReplayPlayerView {
             player.setOnErrorListener((mp, what, extra) -> {
                 timeline.pause();
                 unlatchGate();
-                Toast.makeText(activity, R.string.replay_playback_hint, Toast.LENGTH_SHORT)
-                        .show();
+                org.chimeramc.client.ui.compose.caramel.CaramelNoticeBus.post(activity, R.string.replay_playback_hint);
                 return true;
             });
             player.prepareAsync();
         } catch (Throwable t) {
-            Toast.makeText(activity, R.string.replay_playback_hint, Toast.LENGTH_SHORT).show();
+            org.chimeramc.client.ui.compose.caramel.CaramelNoticeBus.post(activity, R.string.replay_playback_hint);
         }
     }
 

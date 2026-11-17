@@ -1,7 +1,6 @@
 package org.chimeramc.client.launcher.core.content;
 
 import android.app.Activity;
-import android.widget.Toast;
 
 import org.chimeramc.client.R;
 
@@ -31,21 +30,18 @@ public final class ScreenshotAction {
         if (activity == null) return;
         File dir = ScreenshotStore.screenshotsDir(activity);
         if (dir == null) {
-            Toast.makeText(activity, R.string.catalog_options_no_instance,
-                    Toast.LENGTH_SHORT).show();
+            org.chimeramc.client.ui.compose.caramel.CaramelNoticeBus.post(activity, R.string.catalog_options_no_instance);
             return;
         }
         ScreenshotCapture.capture(activity, dir, new ScreenshotCapture.Callback() {
             @Override
             public void onSaved(File file) {
-                Toast.makeText(activity, R.string.catalog_screenshot_saved,
-                        Toast.LENGTH_SHORT).show();
+                org.chimeramc.client.ui.compose.caramel.CaramelNoticeBus.post(activity, R.string.catalog_screenshot_saved);
             }
 
             @Override
             public void onFailed() {
-                Toast.makeText(activity, R.string.catalog_screenshot_failed,
-                        Toast.LENGTH_SHORT).show();
+                org.chimeramc.client.ui.compose.caramel.CaramelNoticeBus.post(activity, R.string.catalog_screenshot_failed);
             }
         });
     }
