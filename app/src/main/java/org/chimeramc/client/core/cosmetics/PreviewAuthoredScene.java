@@ -91,8 +91,9 @@ public final class PreviewAuthoredScene {
                 // A head-worn accessory is drawn from both sides: many hats and horns are open shells
                 // with no back face authored, so a single-sided cull left them see-through from the
                 // angles where only the inner surface faced the camera. A pet is a closed solid, so a
-                // back face is genuinely hidden and stays culled.
-                f.doubleSided = doubleSided;
+                // back face is genuinely hidden and stays culled — except a zero-thickness plane
+                // (a wing, fin or ear), which has no back face either and must be drawn both ways.
+                f.doubleSided = doubleSided || box.flat;
                 f.alphaTest = true;
                 f.blend = true;
                 f.shade = PreviewLighting.shadeGreyForNormal(n[0], n[1], n[2], 1f) / 255f;

@@ -66,6 +66,15 @@ public final class PreviewMeshModel {
         public final FaceUv[] faceUv = new FaceUv[6];
         /** Cumulative bone rotation (own first, then each ancestor), degrees, for shading. */
         public final List<float[]> rotations = new ArrayList<>();
+        /**
+         * True when the cube has (near) zero thickness on one axis, so it is a textured plane.
+         *
+         * <p>Authored pets use these for wings, fins and ears. A plane has no back face to author,
+         * so culling by the vertex normal made it vanish whenever the camera crossed its plane — a
+         * wing that disappeared halfway through the turntable read as the pet being cut off. The
+         * renderer draws a flat box from both sides instead.
+         */
+        public boolean flat;
 
         Box(String bone) {
             this.bone = bone;
@@ -156,6 +165,10 @@ public final class PreviewMeshModel {
         float z1 = cube.origin[2] + cube.size[2] + inflate;
 
         Box box = new Box(bone.name);
+        // A cube with a (near) zero side is a textured plane, not a solid; it must be drawn from
+        // both sides or it vanishes when the camera crosses it.
+        float thinAxis = Math.min(Math.min(Math.abs(x1 - x0), Math.abs(y1 - y0)), Math.abs(z1 - z0));
+        box.flat = thinAxis < 0.05f;
         for (Transform transform : chain) {
             box.rotations.add(transform.rotation);
         }

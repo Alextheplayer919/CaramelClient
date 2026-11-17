@@ -155,6 +155,39 @@ public class PetAssetCoverageTest {
         }
     }
 
+    @Test
+    public void aFlatAuthoredPlaneIsDrawnFromBothSides() {
+        // A wing, fin or ear is authored as a zero-thickness plane. It has no back face to author,
+        // so a single-sided cull made it vanish whenever the camera crossed its plane — the seraphim
+        // lost both wings for half the turntable and read as a cut-off pet. A flat cube's resolved
+        // faces must be double-sided; a solid cube's must stay culled.
+        File dir = assetDir();
+        int flatSeen = 0;
+        for (String id : AuthoredPetModels.IDS) {
+            BedrockGeometry geometry = parse(dir, id);
+            List<PreviewMeshModel.Box> mesh = PreviewMeshModel.build(geometry);
+            PreviewScene scene = new PreviewScene();
+            PngImage image = PngImage.decode(readBytes(new File(dir, id + ".png")));
+            assertNotNull(id + " texture did not decode", image);
+            PetPose pose = new PetPose();
+            pose.compute(CosmeticCatalog.PetSpecies.CAT, CosmeticCatalog.PetLocomotion.WALK, 0f);
+            PreviewAuthoredScene.addPet(scene, mesh, image.argb(), image.width, image.height,
+                    geometry.models.get(0).description.textureWidth,
+                    geometry.models.get(0).description.textureHeight, 0f, 0f, 0f, pose);
+            int flatBoxes = 0;
+            for (PreviewMeshModel.Box b : mesh) if (b.flat) flatBoxes++;
+            if (flatBoxes == 0) continue;
+            flatSeen += flatBoxes;
+            // Every face of a flat box must be double-sided.
+            int doubleSided = 0;
+            for (PreviewScene.Face f : scene.faces()) if (f.doubleSided) doubleSided++;
+            assertTrue(id + " has " + flatBoxes + " flat planes but no double-sided face",
+                    doubleSided > 0);
+        }
+        assertTrue("expected at least one authored pet to use a flat plane (a wing or fin)",
+                flatSeen > 0);
+    }
+
     // ---- Turntable goldens -------------------------------------------------------------------
 
     private static void compareOrWriteTurntable(String id, PreviewScene scene) {
