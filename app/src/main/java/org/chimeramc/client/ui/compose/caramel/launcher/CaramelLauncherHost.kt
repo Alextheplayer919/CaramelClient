@@ -57,6 +57,8 @@ object CaramelLauncherHost {
         fun searchFriend(query: String)
         fun sendFriendRequest()
         fun resetFriendSearch()
+        /** Re-reads the signed-in account's Xbox Live friends, so a failed first read can be retried. */
+        fun refreshFriends()
         fun renameInstance(name: String)
         fun repairInstance()
         fun deleteInstance()

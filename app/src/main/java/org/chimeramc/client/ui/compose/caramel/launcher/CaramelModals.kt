@@ -45,6 +45,7 @@ import androidx.compose.material.icons.rounded.MoreHoriz
 import androidx.compose.material.icons.rounded.OpenInNew
 import androidx.compose.material.icons.rounded.Person
 import androidx.compose.material.icons.rounded.Public
+import androidx.compose.material.icons.rounded.Refresh
 import androidx.compose.material.icons.rounded.RocketLaunch
 import androidx.compose.material.icons.rounded.Search
 import androidx.compose.material.icons.rounded.Settings
@@ -407,6 +408,7 @@ fun CaramelFriendsModal(state: CaramelLauncherState, actions: CaramelLauncherHos
                 stringResource(R.string.caramel_friends_sub),
                 { state.friendsAll = false },
             ) {
+                GlassButton(null, { actions.refreshFriends() }, icon = Icons.Rounded.Refresh, height = 34)
                 PrimaryButton(
                     stringResource(R.string.caramel_add_friend),
                     { state.friendsAll = false; state.addFriend = true },

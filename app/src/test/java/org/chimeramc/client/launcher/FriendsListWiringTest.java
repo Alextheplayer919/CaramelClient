@@ -45,6 +45,29 @@ public class FriendsListWiringTest {
                 activity.contains("friendsAccountId"));
     }
 
+    /**
+     * A friends read that failed must be retried, not treated as the final answer.
+     *
+     * <p>The first read after a sign-in often runs before the network or a renewed XSTS token is
+     * ready, so it fails and writes an error line. The account id alone marked that attempt as
+     * "loaded", so the list stayed on its error line for the rest of the session — the reported
+     * "friends never sync". A read only counts as loaded when it came back without an error, and a
+     * manual refresh must be able to force another read.
+     */
+    @Test
+    public void aFailedFriendsReadIsRetriedRatherThanStuck() {
+        String activity = read(
+                "app/src/main/java/org/chimeramc/client/launcher/ui/activities/MainActivity.java");
+        assertTrue("a read only counts as loaded when it succeeded",
+                activity.contains("friendsLoaded = error == null;"));
+        assertTrue("a token that was not ready must not mark the account loaded",
+                activity.contains("friendsLoaded = false;"));
+        assertTrue("the automatic path retries an unloaded account",
+                activity.contains("!friendsLoaded && !friendsLoading"));
+        assertTrue("the user can force another read from the Friends modal",
+                activity.contains("public void refreshFriends()"));
+    }
+
     @Test
     public void theFriendsScreensRenderRows() {
         String home = read(

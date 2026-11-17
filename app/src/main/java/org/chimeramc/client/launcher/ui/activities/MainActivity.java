@@ -109,6 +109,25 @@ public class MainActivity extends BaseActivity implements CaramelLauncherHost.Ac
     /** The account id whose friends are already loaded, so a rebuild does not refetch. */
     private String friendsAccountId = null;
 
+    /**
+     * Whether the last friends read for [friendsAccountId] finished without an error.
+     *
+     * <p>The account id alone is not enough to decide whether to refetch: the first read after a
+     * sign-in often runs before the device has a usable network or a freshly renewed XSTS token, so
+     * it fails and writes an error line. Without this flag the failed attempt still marked the
+     * account as "loaded", and the friends list stayed on its error line for the rest of the
+     * session — the "friends never sync" report. A read that failed (or never ran) is retried the
+     * next time the launcher comes to the foreground; a successful one is not repeated.
+     */
+    private boolean friendsLoaded = false;
+
+    /**
+     * True while a friends read is in flight, so the many {@code refreshState()} callers do not
+     * each start their own fetch. The retry-on-failure path below relies on this: without it, every
+     * rebuild would stack another PeopleHub call on the executor.
+     */
+    private boolean friendsLoading = false;
+
     /** The user's saved servers, kept so a re-measure can rebuild the rows without a re-scan. */
     private List<ServerItem> savedServers = new ArrayList<>();
 
@@ -277,15 +296,22 @@ public class MainActivity extends BaseActivity implements CaramelLauncherHost.Ac
             return;
         }
         if (friendsClient == null) friendsClient = new XboxFriendsClient();
+        friendsLoading = true;
         mutateState(s -> s.setFriendsStatus(getString(R.string.caramel_friends_loading)));
         String xuid = active.xuid;
         AppExecutors.run(AppExecutors.Kind.NETWORK, "caramel-friends", () -> {
             String[] xsts = MsftAuthManager.xboxLiveXsts(active);
             if (xsts == null) {
-                runOnUiThread(() -> mutateState(s -> {
-                    s.setFriends(new ArrayList<>());
-                    s.setFriendsStatus(getString(R.string.caramel_friends_unavailable));
-                }));
+                runOnUiThread(() -> {
+                    friendsLoading = false;
+                    // Left "not loaded" on purpose: the token was not ready, so the next resume
+                    // retries rather than leaving the account stuck on the unavailable line.
+                    friendsLoaded = false;
+                    mutateState(s -> {
+                        s.setFriends(new ArrayList<>());
+                        s.setFriendsStatus(getString(R.string.caramel_friends_unavailable));
+                    });
+                });
                 return;
             }
             friendsClient.fetch(xuid, xsts[0], xsts[1], (friends, error) -> runOnUiThread(() -> {
@@ -297,6 +323,10 @@ public class MainActivity extends BaseActivity implements CaramelLauncherHost.Ac
                                 CaramelUserDirectory.isCaramelUser(f.xuid)));
                     }
                 }
+                friendsLoading = false;
+                // A read that came back with a reason did not succeed, so it is retried on the next
+                // resume; only a clean read (even an empty one) marks the account as loaded.
+                friendsLoaded = error == null;
                 mutateState(s -> {
                     s.setFriends(rows);
                     s.setFriendsStatus(error == null ? "" : error);
@@ -349,10 +379,18 @@ public class MainActivity extends BaseActivity implements CaramelLauncherHost.Ac
         CaramelIdentity.set(active != null ? active.xuid : null,
                 active != null ? active.xboxGamertag : null);
         String accountId = active != null ? active.id : null;
-        if (accountId == null ? friendsAccountId != null : !accountId.equals(friendsAccountId)) {
+        boolean accountChanged = accountId == null
+                ? friendsAccountId != null
+                : !accountId.equals(friendsAccountId);
+        if (accountChanged) {
             friendsAccountId = accountId;
+            friendsLoaded = false;
             s.setFriends(new ArrayList<>());
             s.setFriendsStatus("");
+        }
+        // A failed read (or one that never ran because the token was not ready yet) is retried on
+        // the next foreground; a successful one is not, so a rebuild does not refetch every resume.
+        if (accountId != null && !friendsLoaded && !friendsLoading) {
             loadFriends();
         }
         // The count the title bar shows is the number of instances the launcher knows about, not a
@@ -1123,6 +1161,21 @@ public class MainActivity extends BaseActivity implements CaramelLauncherHost.Ac
             s.setFriendRequestSucceeded(false);
             s.setFriendRequestRunning(false);
         });
+    }
+
+    /**
+     * Re-reads the account's Xbox Live friends on demand.
+     *
+     * <p>The automatic read runs once per account and is not repeated after a success, so without a
+     * manual entry point a user whose first read failed (offline at sign-in, a token that was not
+     * ready) had no way to make the list appear until the account changed. This is what the Friends
+     * modal's refresh button calls: it forces one more read regardless of the loaded flag.
+     */
+    @Override
+    public void refreshFriends() {
+        if (friendsLoading) return;
+        friendsLoaded = false;
+        loadFriends();
     }
 
     @Override
