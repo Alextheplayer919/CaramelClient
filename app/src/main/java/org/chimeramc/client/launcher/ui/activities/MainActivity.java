@@ -153,6 +153,12 @@ public class MainActivity extends BaseActivity implements CaramelLauncherHost.Ac
                     long started = System.currentTimeMillis();
                     ServerPongInfo pong = RakNetPing.ping(host, port, 2500);
                     if (pong == null || pong.parseError) {
+                        // A single dropped datagram reads as "offline" for a server that is merely
+                        // busy, which is what made healthy servers look unreachable. One retry with
+                        // a longer window turns a lost packet into a second chance, not a verdict.
+                        pong = RakNetPing.ping(host, port, 4000);
+                    }
+                    if (pong == null || pong.parseError) {
                         serverStatuses.put(key, ServerListRows.Status.offline());
                         continue;
                     }
