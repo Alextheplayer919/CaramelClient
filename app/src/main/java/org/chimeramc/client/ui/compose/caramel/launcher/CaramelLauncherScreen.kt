@@ -52,6 +52,7 @@ fun CaramelLauncherScreen(
                     )
                     CaramelTab.News -> CaramelNewsScreen(state)
                     CaramelTab.Store -> CaramelStoreScreen(state)
+                    CaramelTab.Settings -> CaramelSettingsTabScreen(settings)
                 }
             }
         }
@@ -69,9 +70,6 @@ fun CaramelLauncherScreen(
         CaramelAddFriendModal(state, actions)
         CaramelModsFolderModal(state, actions)
         CaramelAddServerModal(state, actions)
-        CaramelModal(state.launcherSettings, { state.launcherSettings = false }, Modifier.size(880.dp, 660.dp)) {
-            CaramelLauncherSettingsModal(state, settings)
-        }
         CaramelInstanceSettingsModal(state, actions)
         CaramelWebModal(state)
         CaramelToast(state)

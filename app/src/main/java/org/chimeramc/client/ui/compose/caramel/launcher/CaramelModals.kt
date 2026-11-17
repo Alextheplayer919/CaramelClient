@@ -114,7 +114,7 @@ fun CaramelAppMenu(state: CaramelLauncherState, actions: CaramelLauncherHost.Act
         GlassPanel(Modifier.width(262.dp), RoundedCornerShape(18.dp), popup = true, elevation = 36.dp) {
             Column(Modifier.padding(10.dp), verticalArrangement = Arrangement.spacedBy(4.dp)) {
                 CaramelMenuItem(stringResource(R.string.caramel_menu_settings), Icons.Rounded.Settings, true) {
-                    state.appMenu = false; actions.openSettings()
+                    state.appMenu = false; state.tab = CaramelTab.Settings
                 }
                 CaramelMenuItem(stringResource(R.string.caramel_menu_instance_settings), Icons.Rounded.Tune) {
                     state.appMenu = false; state.instanceSettings = true
@@ -729,43 +729,11 @@ private fun ResultBanner(text: String, tint: Color, icon: ImageVector) {
 }
 
 /**
- * The launcher's settings modal.
- *
- * <p>It used to hold its own `remember { mutableStateOf(...) }` copies of every control, so moving a
- * slider changed a number on screen and wrote nothing anywhere — the settings did nothing. The real
- * panel is [CaramelSettingsPanel], driven by the activity's [CaramelSettingsProvider], so every
- * control here writes to the same store the full-screen settings screen does.
+ * Superseded by [CaramelSettingsTabScreen]: settings is a sidebar tab now, so the gear selects a
+ * real destination instead of opening a popup over the active tab. The panel is the same
+ * [CaramelSettingsPanel] over the activity's [CaramelSettingsProvider], so nothing about the controls
+ * changed — only where they are hosted.
  */
-@Composable
-fun CaramelLauncherSettingsModal(state: CaramelLauncherState, settings: CaramelSettingsProvider?) {
-    if (settings == null) {
-        // No store was handed over (a host that mounted the launcher without one): say so rather
-        // than drawing controls that cannot work.
-        Column(Modifier.fillMaxSize().padding(28.dp), verticalArrangement = Arrangement.spacedBy(16.dp)) {
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                Text(stringResource(R.string.caramel_launcher_settings_title), style = T.Display, modifier = Modifier.weight(1f))
-                GlassButton(null, { state.launcherSettings = false }, icon = Icons.Rounded.Close, height = 32)
-            }
-            EmptyState(
-                stringResource(R.string.caramel_settings_unavailable_title),
-                stringResource(R.string.caramel_settings_unavailable_body),
-                Modifier.fillMaxWidth().weight(1f),
-            )
-        }
-        return
-    }
-    val settingsState = settings.settingsState()
-    Column(Modifier.fillMaxSize().padding(28.dp), verticalArrangement = Arrangement.spacedBy(16.dp)) {
-        Row(verticalAlignment = Alignment.CenterVertically) {
-            Column(Modifier.weight(1f)) {
-                Text(stringResource(R.string.caramel_launcher_settings_title), style = T.Display)
-                Text(stringResource(R.string.caramel_settings_sub), style = T.Body)
-            }
-            GlassButton(null, { state.launcherSettings = false }, icon = Icons.Rounded.Close, height = 32)
-        }
-        CaramelSettingsPanel(settingsState, settings.settingsActions(), Modifier.weight(1f))
-    }
-}
 
 /** The instance settings modal: a section rail over the real instance's options. */
 @Composable

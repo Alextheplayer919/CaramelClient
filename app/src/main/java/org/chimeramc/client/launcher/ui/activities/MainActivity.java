@@ -2,7 +2,6 @@ package org.chimeramc.client.ui.activities;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.widget.Toast;
 
 import androidx.annotation.Nullable;
 import androidx.compose.runtime.MutableState;
@@ -503,12 +502,21 @@ public class MainActivity extends BaseActivity implements CaramelLauncherHost.Ac
     }
 
     private void toast(int resId) {
-        Toast.makeText(this, getString(resId), Toast.LENGTH_SHORT).show();
+        toast(getString(resId));
     }
 
+    /**
+     * Raises a notice on the launcher's own toast.
+     *
+     * <p>This used to be an {@link android.widget.Toast}, which draws a square system bubble outside
+     * the launcher's visual language and ignores the reduce-motion setting. Routing through
+     * {@link CaramelNotice} means every message wears the same surface, animates, and honours the
+     * user's preferences. A message raised before the launcher has mounted is dropped, which is
+     * correct: there is nothing to draw it over yet.
+     */
     private void toast(String message) {
         if (message == null || message.isEmpty()) return;
-        Toast.makeText(this, message, Toast.LENGTH_LONG).show();
+        mutateState(s -> s.setNotice(new org.chimeramc.client.ui.compose.caramel.CaramelNotice(message)));
     }
 
     /** Applies a change to the Compose state on the UI thread and recomposes. */
@@ -801,7 +809,11 @@ public class MainActivity extends BaseActivity implements CaramelLauncherHost.Ac
 
     @Override
     public void openSettings() {
-        startActivity(new Intent(this, SettingsActivity.class));
+        // Settings is a sidebar tab now, not a separate activity: selecting it keeps the launcher
+        // frame (backdrop, title bar, sidebar) around the panel, so it reads as a destination rather
+        // than a window that covers the app. The full-screen SettingsActivity remains for the
+        // manifest's own entry point but is no longer where the gear sends the user.
+        mutateState(s -> s.setTab(org.chimeramc.client.ui.compose.caramel.CaramelTab.Settings));
     }
 
     /** Rebuilds the settings panel from the stores after the settings screen changed them. */

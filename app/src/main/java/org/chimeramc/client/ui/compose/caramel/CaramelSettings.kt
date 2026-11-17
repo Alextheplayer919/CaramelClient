@@ -1,6 +1,8 @@
 package org.chimeramc.client.ui.compose.caramel
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -658,18 +660,25 @@ fun CaramelSettingsScreen(
     actions: CaramelSettingsActions,
     onClose: () -> Unit,
 ) {
-    Column(
-        Modifier.fillMaxSize().padding(28.dp),
-        verticalArrangement = Arrangement.spacedBy(16.dp),
-    ) {
-        Row(verticalAlignment = Alignment.CenterVertically) {
-            Column(Modifier.weight(1f)) {
-                Text(stringResource(R.string.settings_title), style = T.Display)
-                Text(stringResource(R.string.caramel_settings_sub), style = T.Body)
+    // The full-screen host has no launcher frame behind it, so it draws the same backdrop the
+    // launcher does. Without it the panel's light text sat on the window background, which is the
+    // near-white `@color/background` — the "white screen" the settings screen showed.
+    Box(Modifier.fillMaxSize().background(C.Abyss)) {
+        CaramelBackdrop()
+        CaramelBackgroundImage()
+        Column(
+            Modifier.fillMaxSize().padding(28.dp),
+            verticalArrangement = Arrangement.spacedBy(16.dp),
+        ) {
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Column(Modifier.weight(1f)) {
+                    Text(stringResource(R.string.settings_title), style = T.Display)
+                    Text(stringResource(R.string.caramel_settings_sub), style = T.Body)
+                }
+                GlassButton(null, onClose, icon = Icons.Rounded.Close, height = 34)
             }
-            GlassButton(null, onClose, icon = Icons.Rounded.Close, height = 34)
+            CaramelSettingsPanel(state, actions, Modifier.weight(1f))
         }
-        CaramelSettingsPanel(state, actions, Modifier.weight(1f))
     }
 }
 

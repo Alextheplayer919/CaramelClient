@@ -163,7 +163,7 @@ private fun CaramelSidebar(state: CaramelLauncherState) {
         ) {
             nav.forEach { (tab, icon) -> CaramelNavItem(icon, state.tab == tab) { state.tab = tab } }
             Spacer(Modifier.weight(1f))
-            CaramelNavItem(Icons.Rounded.Settings, state.launcherSettings) { state.launcherSettings = true }
+            CaramelNavItem(Icons.Rounded.Settings, state.tab == CaramelTab.Settings) { state.tab = CaramelTab.Settings }
         }
     }
 }

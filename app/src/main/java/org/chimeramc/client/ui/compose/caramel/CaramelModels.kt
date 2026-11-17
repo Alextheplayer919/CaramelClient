@@ -47,7 +47,7 @@ enum class CaramelProfileMode(val title: String, val desc: String, val label: St
 }
 
 /** The six launcher tabs the pack's sidebar carries. */
-enum class CaramelTab { Home, Mods, Servers, Cosmetics, News, Store }
+enum class CaramelTab { Home, Mods, Servers, Cosmetics, News, Store, Settings }
 
 /**
  * A transient in-app notice — the launcher's toast.
@@ -56,7 +56,7 @@ enum class CaramelTab { Home, Mods, Servers, Cosmetics, News, Store }
  * picks the leading mark: a red "!" in a rounded square for something that did not work, a blue
  * check for something that did. The notice clears itself, so a caller only ever raises one.
  */
-data class CaramelNotice(
+data class CaramelNotice @JvmOverloads constructor(
     val text: String,
     val warning: Boolean = false,
 )

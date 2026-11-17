@@ -90,6 +90,41 @@ public final class LauncherFonts {
         return 0;
     }
 
+    /**
+     * The bundled font resource for {@code key}, or 0 when the key is unknown.
+     *
+     * <p>Compose's {@code FontFamily} needs the resource id rather than the loaded {@link Typeface}
+     * the View side uses, so the same catalogue serves both surfaces. A stale key returns 0 and the
+     * caller keeps its built-in family instead of crashing.
+     */
+    public static int fontResFor(String key) {
+        if (key == null) return 0;
+        for (Entry entry : ENTRIES) {
+            if (entry.key.equals(key)) return entry.fontRes;
+        }
+        return 0;
+    }
+
+    /**
+     * The bundled font resource for {@code key} only when it can actually be loaded, else 0.
+     *
+     * <p>Compose's {@code Font(res)} fails at draw time rather than at construction, so a face the
+     * platform cannot decode would take the whole screen down instead of falling back. This asks the
+     * same loader the View side uses and reports 0 on any failure, so the caller keeps its built-in
+     * family.
+     */
+    public static int loadableFontRes(Context context, String key) {
+        int res = fontResFor(key);
+        if (res == 0 || context == null) return 0;
+        try {
+            return androidx.core.content.res.ResourcesCompat.getFont(context, res) != null ? res : 0;
+        } catch (Exception e) {
+            AppLog.warnOnce("CaramelClient", "LauncherFonts:loadableFontRes",
+                    "The chosen font could not be loaded; keeping the built-in family", e);
+            return 0;
+        }
+    }
+
     public static String keyAt(int index) {
         if (index < 0 || index >= ENTRIES.size()) return DEFAULT_KEY;
         return ENTRIES.get(index).key;
