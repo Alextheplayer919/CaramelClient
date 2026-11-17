@@ -141,7 +141,8 @@ so empty screens draw empty states (honesty rule). See the 2026-11-14 daily log 
   :app:testDebugUnitTest` (**3761 tests, 0 failures, 1 skipped**; targeted via
   `--tests "org.chimeramc.client.<pkg>.*"`). `:app:assembleDebug` is the only thing that compiles the
   NDK C++ (`Signature.cpp` is not host-compiled).
-- `bash sweetloader/tests/cosmetics/run_tests.sh` (host C++), `cargo test --workspace` (needs cargo),
+- The cosmetics host C++ runner is at **`app/src/main/cpp/sweetloader/tests/cosmetics/run_tests.sh`**
+  (not the repo root). `cargo test --workspace` (needs cargo),
   `scripts/check_ui_hygiene.py`, `scripts/gen_launcher_icons.py --check`,
   `scripts/verify_berryapi_abi.py`, `scripts/check_submodules.sh`,
   `scripts/validate_release_content.py`, `actionlint .github/workflows/android.yml`.
