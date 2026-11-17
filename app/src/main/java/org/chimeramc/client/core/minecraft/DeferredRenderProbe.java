@@ -6,6 +6,8 @@ import android.content.pm.ConfigurationInfo;
 import android.content.pm.PackageManager;
 import android.util.Log;
 
+import java.lang.reflect.Method;
+
 /**
  * Reads the device facts {@link DeferredRenderSupport} needs, on Android.
  *
@@ -29,7 +31,7 @@ public final class DeferredRenderProbe {
     public static DeferredRenderSupport.Facts facts(Context context) {
         DeferredRenderSupport.Facts facts = new DeferredRenderSupport.Facts();
         if (context == null) return facts;
-        facts.hasVulkan = hasVulkan(context);
+        facts.vulkanVersion = vulkanVersion(context);
         facts.glEsVersion = glEsVersion(context);
         facts.softwareRenderer = isSoftwareRenderer();
         return facts;
@@ -61,13 +63,39 @@ public final class DeferredRenderProbe {
         return DeferredRenderSupport.supported(facts(context));
     }
 
-    private static boolean hasVulkan(Context context) {
+    /**
+     * The Vulkan API version the platform reports, or 0 when there is no Vulkan driver.
+     *
+     * <p>{@code android.hardware.vulkan.version} is a {@code PackageManager} feature whose version
+     * is the driver's {@code VK_MAKE_VERSION} (major in bits 22-31, minor in bits 12-21). The bare
+     * presence of the feature is not enough — a 1.0 driver advertises the feature but cannot run the
+     * deferred pipeline — so the API version is what the gate reads. The exact version comes from
+     * the framework's {@code getSystemFeatureVersion} when it is reachable; otherwise the public
+     * {@code hasSystemFeature(feature, version)} overload answers "at least 1.1" directly.
+     */
+    private static int vulkanVersion(Context context) {
         try {
             PackageManager pm = context.getPackageManager();
-            return pm != null && pm.hasSystemFeature(FEATURE_VULKAN_VERSION);
+            if (pm == null || !pm.hasSystemFeature(FEATURE_VULKAN_VERSION)) return 0;
+            int exact = systemFeatureVersion(pm, FEATURE_VULKAN_VERSION);
+            if (exact > 0) return exact;
+            int oneOne = (1 << 22) | (1 << 12);
+            return pm.hasSystemFeature(FEATURE_VULKAN_VERSION, oneOne) ? oneOne : (1 << 22);
         } catch (Throwable t) {
-            Log.w(TAG, "Vulkan feature could not be read; treating as absent", t);
-            return false;
+            Log.w(TAG, "Vulkan version could not be read; treating as absent", t);
+            return 0;
+        }
+    }
+
+    /** The feature's reported version via the hidden framework API, or 0 when it is not reachable. */
+    private static int systemFeatureVersion(PackageManager pm, String feature) {
+        try {
+            Method method = PackageManager.class.getMethod("getSystemFeatureVersion", String.class);
+            Object value = method.invoke(pm, feature);
+            return value instanceof Integer ? (Integer) value : 0;
+        } catch (Throwable t) {
+            Log.w(TAG, "Exact Vulkan version unavailable; using the minimum-version query", t);
+            return 0;
         }
     }
 

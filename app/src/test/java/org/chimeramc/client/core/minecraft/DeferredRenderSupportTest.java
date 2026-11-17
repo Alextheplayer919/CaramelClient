@@ -18,43 +18,55 @@ import org.junit.Test;
  */
 public class DeferredRenderSupportTest {
 
-    private static DeferredRenderSupport.Facts facts(boolean vulkan, int major, int minor,
+    private static DeferredRenderSupport.Facts facts(int vulkanMajor, int vulkanMinor,
+                                                     int glesMajor, int glesMinor,
                                                      boolean software) {
         DeferredRenderSupport.Facts f = new DeferredRenderSupport.Facts();
-        f.hasVulkan = vulkan;
-        f.glEsVersion = (major << 16) | minor;
+        f.vulkanVersion = (vulkanMajor << 22) | (vulkanMinor << 12);
+        f.glEsVersion = (glesMajor << 16) | glesMinor;
         f.softwareRenderer = software;
         return f;
     }
 
     @Test
-    public void aVulkanDeviceSupportsTheDeferredPipeline() {
-        assertTrue(DeferredRenderSupport.supported(facts(true, 3, 0, false)));
+    public void aModernVulkanDeviceSupportsTheDeferredPipeline() {
+        assertTrue(DeferredRenderSupport.supported(facts(1, 3, 3, 0, false)));
+        assertTrue("Vulkan 2.0 also carries it",
+                DeferredRenderSupport.supported(facts(2, 0, 0, 0, false)));
+    }
+
+    @Test
+    public void aVulkan10DriverIsNotEnough() {
+        // A 1.0 driver advertises the Vulkan feature but cannot run the deferred pipeline; this is
+        // the case that showed the option on a device that could not render it.
+        assertFalse("Vulkan 1.0 must not offer Vibrant Visuals",
+                DeferredRenderSupport.supported(facts(1, 0, 3, 1, false)));
     }
 
     @Test
     public void aVulkanLessDeviceNeedsModernGles() {
         assertTrue("GLES 3.2 is enough without Vulkan",
-                DeferredRenderSupport.supported(facts(false, 3, 2, false)));
+                DeferredRenderSupport.supported(facts(0, 0, 3, 2, false)));
         assertTrue("GLES 3.3 also carries it",
-                DeferredRenderSupport.supported(facts(false, 3, 3, false)));
+                DeferredRenderSupport.supported(facts(0, 0, 3, 3, false)));
         assertTrue("GLES 4.0 carries it",
-                DeferredRenderSupport.supported(facts(false, 4, 0, false)));
+                DeferredRenderSupport.supported(facts(0, 0, 4, 0, false)));
         assertFalse("GLES 3.1 is not enough",
-                DeferredRenderSupport.supported(facts(false, 3, 1, false)));
+                DeferredRenderSupport.supported(facts(0, 0, 3, 1, false)));
         assertFalse("GLES 2.0 is not enough",
-                DeferredRenderSupport.supported(facts(false, 2, 0, false)));
+                DeferredRenderSupport.supported(facts(0, 0, 2, 0, false)));
     }
 
     @Test
     public void aSoftwareRasteriserNeverSupportsIt() {
-        assertFalse(DeferredRenderSupport.supported(facts(true, 3, 2, true)));
+        assertFalse(DeferredRenderSupport.supported(facts(1, 3, 3, 2, true)));
     }
 
     @Test
     public void anUnreadDeviceReadsAsUnsupported() {
         assertFalse(DeferredRenderSupport.supported(null));
-        assertFalse("nothing read is not a capability", DeferredRenderSupport.supported(facts(false, 0, 0, false)));
+        assertFalse("nothing read is not a capability",
+                DeferredRenderSupport.supported(facts(0, 0, 0, 0, false)));
     }
 
     @Test
@@ -62,6 +74,9 @@ public class DeferredRenderSupportTest {
         int encoded = (3 << 16) | 2;
         assertEquals(3, DeferredRenderSupport.glEsMajor(encoded));
         assertEquals(2, DeferredRenderSupport.glEsMinor(encoded));
+        int vk = (1 << 22) | (1 << 12);
+        assertEquals(1, DeferredRenderSupport.vulkanMajor(vk));
+        assertEquals(1, DeferredRenderSupport.vulkanMinor(vk));
     }
 
     @Test

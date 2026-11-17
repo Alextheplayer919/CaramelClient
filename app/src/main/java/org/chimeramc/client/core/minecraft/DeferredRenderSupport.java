@@ -30,12 +30,38 @@ public final class DeferredRenderSupport {
      * unsupported rather than as a capability that was never confirmed.
      */
     public static final class Facts {
-        /** True when the platform reports a Vulkan driver ({@code android.hardware.vulkan.version}). */
-        public boolean hasVulkan;
+        /**
+         * The Vulkan API version the platform reports, encoded {@code VK_MAKE_VERSION}
+         * ({@code major<<22 | minor<<12 | patch}); 0 when there is no Vulkan driver.
+         */
+        public int vulkanVersion;
         /** The GLES version the platform reports, encoded as {@code major<<16 | minor}. */
         public int glEsVersion;
         /** True when the only renderer is a software rasteriser (SwiftShader, llvmpipe). */
         public boolean softwareRenderer;
+    }
+
+    /** The Vulkan major version a driver must report to carry the deferred pipeline. */
+    private static final int MIN_VULKAN_MAJOR = 1;
+    /** The Vulkan minor version a driver must report to carry the deferred pipeline. */
+    private static final int MIN_VULKAN_MINOR = 1;
+
+    /** Reads the major half of a {@code VK_MAKE_VERSION} value. */
+    public static int vulkanMajor(int encoded) {
+        return (encoded >> 22) & 0x3FF;
+    }
+
+    /** Reads the minor half of a {@code VK_MAKE_VERSION} value. */
+    public static int vulkanMinor(int encoded) {
+        return (encoded >> 12) & 0x3FF;
+    }
+
+    /** True when the reported Vulkan API version is at least 1.1. */
+    public static boolean vulkanSupportsDeferred(int encoded) {
+        int major = vulkanMajor(encoded);
+        int minor = vulkanMinor(encoded);
+        return major > MIN_VULKAN_MAJOR
+                || (major == MIN_VULKAN_MAJOR && minor >= MIN_VULKAN_MINOR);
     }
 
     /** Reads the major half of an encoded GLES version ({@code major<<16 | minor}). */
@@ -52,7 +78,10 @@ public final class DeferredRenderSupport {
     public static boolean supported(Facts facts) {
         if (facts == null) return false;
         if (facts.softwareRenderer) return false;
-        if (facts.hasVulkan) return true;
+        // A Vulkan driver carries the deferred pipeline only from API 1.1; a 1.0 driver is a weak
+        // driver that would advertise the mode and then fail to run it, which is exactly the
+        // "it showed on a device that cannot render it" report.
+        if (vulkanSupportsDeferred(facts.vulkanVersion)) return true;
         int major = glEsMajor(facts.glEsVersion);
         int minor = glEsMinor(facts.glEsVersion);
         return major > MIN_GLES_MAJOR
