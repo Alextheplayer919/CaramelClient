@@ -85,6 +85,21 @@ public class SignInFlowTest {
         assertFalse("the MSAL browser-tab activity is back", manifest.contains("BrowserTabActivity"));
     }
 
+    @Test
+    public void aCompletedSignInTurnsOnTheAccountSkinLookup() throws IOException {
+        // The lookup is default-off, and the sign-in is the one-line consent. Without this the
+        // preview can never resolve the player's own skin, which is the "3D skin is not my actual
+        // Minecraft skin" report.
+        String auth = read(ROOT.resolve(
+                "app/src/main/java/org/chimeramc/client/launcher/core/auth/MsftAuthManager.java"));
+        int start = auth.indexOf("public static MsftAccountStore.MsftAccount saveAccountAndActivate(");
+        assertTrue("saveAccountAndActivate no longer exists", start >= 0);
+        int end = auth.indexOf("public static MsftAccountStore.MsftAccount saveAccountOrThrow(", start);
+        String body = auth.substring(start, end);
+        assertTrue("sign-in must enable the account skin lookup",
+                body.contains("AccountSkinService.setEnabled(context, true)"));
+    }
+
     /** The body of {@code MainActivity.startSignIn()}, from its declaration to the next override. */
     private static String startSignInBody() throws IOException {
         String source = read(ROOT.resolve(
