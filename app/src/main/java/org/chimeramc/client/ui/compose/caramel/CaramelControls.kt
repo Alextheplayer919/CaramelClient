@@ -2,6 +2,7 @@ package org.chimeramc.client.ui.compose.caramel
 
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.animateDpAsState
+import androidx.compose.animation.core.snap
 import androidx.compose.animation.core.spring
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
@@ -170,7 +171,13 @@ fun GlassButton(
 /** The pack's `CaramelToggle`: a gradient track with a sliding thumb. */
 @Composable
 fun CaramelToggle(checked: Boolean, onChange: (Boolean) -> Unit, modifier: Modifier = Modifier) {
-    val x by animateDpAsState(if (checked) 21.dp else 3.dp, spring(stiffness = 600f))
+    // Reduce motion snaps the thumb rather than sliding it, so the switch still flips but nothing
+    // animates — the setting used to be stored and never read.
+    val reduceMotion = caramelPrefs.motionScale <= 0f
+    val x by animateDpAsState(
+        if (checked) 21.dp else 3.dp,
+        if (reduceMotion) snap() else spring(stiffness = 600f),
+    )
     val shape = RoundedCornerShape(50)
     Box(
         modifier
