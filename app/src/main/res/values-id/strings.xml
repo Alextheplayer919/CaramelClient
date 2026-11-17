@@ -1504,7 +1504,7 @@ Migrasi harus selesai sebelum CaramelClient dapat melanjutkan.</string>
     <string name="caramel_news_honey_title">HoneyClient segera hadir..</string>
     <string name="caramel_news_honey_body">Klien baru sedang dalam perjalanan. Ketuk di bawah untuk melihat apa yang sedang dibuat HoneyClient.</string>
     <string name="caramel_news_honey_meta">Pengumuman</string>
-    <string name="caramel_news_honey_button">Klik saya untuk informasi lebih lanjut!</string>
+    <string name="caramel_news_honey_button">Pelajari lebih lanjut</string>
     <string name="caramel_checking_updates">Memeriksa pembaruan…</string>
     <string name="caramel_update_available_version">Versi %1$s tersedia. Ketuk Unduh Pembaruan untuk memasangnya.</string>
     <string name="caramel_update_check_failed">Tidak dapat memeriksa pembaruan. Periksa koneksi Anda dan coba lagi.</string>

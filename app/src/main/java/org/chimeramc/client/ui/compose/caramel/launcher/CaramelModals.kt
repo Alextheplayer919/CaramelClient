@@ -41,6 +41,7 @@ import androidx.compose.material.icons.rounded.Folder
 import androidx.compose.material.icons.rounded.Group
 import androidx.compose.material.icons.rounded.Info
 import androidx.compose.material.icons.rounded.MoreHoriz
+import androidx.compose.material.icons.rounded.OpenInNew
 import androidx.compose.material.icons.rounded.Person
 import androidx.compose.material.icons.rounded.Public
 import androidx.compose.material.icons.rounded.RocketLaunch
@@ -305,7 +306,8 @@ fun CaramelNewsModal(state: CaramelLauncherState, actions: CaramelLauncherHost.A
                                         PrimaryButton(
                                             post.actionLabel,
                                             { state.webTitle = post.title; state.webUrl = post.actionUrl },
-                                            tone = Tone.Yellow,
+                                            tone = Tone.Blue,
+                                            icon = Icons.Rounded.OpenInNew,
                                             height = 34,
                                         )
                                     }

@@ -1477,7 +1477,7 @@ CaramelClient を続行するには移行を完了する必要があります。
     <string name="caramel_news_honey_title">HoneyClient 近日公開..</string>
     <string name="caramel_news_honey_body">新しいクライアントが登場します。HoneyClient が何を作っているかは下をタップしてください。</string>
     <string name="caramel_news_honey_meta">お知らせ</string>
-    <string name="caramel_news_honey_button">詳しくはこちらをクリック！</string>
+    <string name="caramel_news_honey_button">詳細を見る</string>
     <string name="caramel_checking_updates">アップデートを確認しています…</string>
     <string name="caramel_update_available_version">バージョン %1$s が利用可能です。インストールするには「アップデートをダウンロード」をタップします。</string>
     <string name="caramel_update_check_failed">アップデートを確認できませんでした。接続を確認して再試行してください。</string>

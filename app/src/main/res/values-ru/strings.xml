@@ -1519,7 +1519,7 @@
     <string name="caramel_news_honey_title">HoneyClient скоро..</string>
     <string name="caramel_news_honey_body">Новый клиент уже в пути. Нажмите ниже, чтобы увидеть, что создаёт HoneyClient.</string>
     <string name="caramel_news_honey_meta">Объявление</string>
-    <string name="caramel_news_honey_button">Нажмите для подробностей!</string>
+    <string name="caramel_news_honey_button">Подробнее</string>
     <string name="caramel_checking_updates">Проверка обновлений…</string>
     <string name="caramel_update_available_version">Доступна версия %1$s. Нажмите «Скачать обновление», чтобы установить её.</string>
     <string name="caramel_update_check_failed">Не удалось проверить обновления. Проверьте подключение и повторите попытку.</string>

@@ -1480,7 +1480,7 @@ La migration doit être terminée avant de continuer avec CaramelClient.</string
     <string name="caramel_news_honey_title">HoneyClient bientôt disponible..</string>
     <string name="caramel_news_honey_body">Un nouveau client arrive. Appuyez ci-dessous pour voir ce que prépare HoneyClient.</string>
     <string name="caramel_news_honey_meta">Annonce</string>
-    <string name="caramel_news_honey_button">Cliquez pour plus d\'informations !</string>
+    <string name="caramel_news_honey_button">En savoir plus</string>
     <string name="caramel_checking_updates">Recherche de mises à jour…</string>
     <string name="caramel_update_available_version">La version %1$s est disponible. Appuyez sur Télécharger la mise à jour pour l\'installer.</string>
     <string name="caramel_update_check_failed">Impossible de rechercher des mises à jour. Vérifiez votre connexion et réessayez.</string>

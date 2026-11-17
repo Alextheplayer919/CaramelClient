@@ -42,17 +42,20 @@ public class CaramelHoneyNewsTest {
     public void thePostSaysWhatTheUserAskedItToSay() throws IOException {
         String strings = read("app/src/main/res/values/strings.xml");
         assertTrue(stringContains(strings, "caramel_news_honey_title", "HoneyClient coming soon.."));
-        assertTrue(stringContains(strings, "caramel_news_honey_button",
-                "Click me for more information!"));
+        // The label used to read "Click me for more information!", which read as machine-written
+        // filler. A short, conventional action label is what a shipped launcher would use.
+        assertTrue(stringContains(strings, "caramel_news_honey_button", "Learn more"));
     }
 
     @Test
-    public void theActionButtonIsYellowAndOpensTheInAppBrowser() throws IOException {
+    public void theActionButtonIsProfessionalAndOpensTheInAppBrowser() throws IOException {
         String modals = read("app/src/main/java/org/chimeramc/client/ui/compose/caramel/launcher/CaramelModals.kt");
         int at = modals.indexOf("post.actionLabel");
         assertTrue("the news modal has no action button", at >= 0);
         String region = modals.substring(at, Math.min(modals.length(), at + 500));
-        assertTrue("the button must be the yellow tone", region.contains("tone = Tone.Yellow"));
+        assertFalse("the button must not use the loud yellow promo tone",
+                region.contains("tone = Tone.Yellow"));
+        assertTrue("the button must carry an action icon", region.contains("icon = Icons.Rounded.OpenInNew"));
         assertTrue("the button must set the in-app browser's URL", region.contains("state.webUrl = post.actionUrl"));
 
         String controls = read("app/src/main/java/org/chimeramc/client/ui/compose/caramel/CaramelControls.kt");
@@ -61,6 +64,10 @@ public class CaramelHoneyNewsTest {
         String home = read("app/src/main/java/org/chimeramc/client/ui/compose/caramel/launcher/CaramelHome.kt");
         assertTrue("the Home news card must offer the action too",
                 home.contains("state.webUrl = post.actionUrl"));
+        assertFalse("the Home card must not use the loud yellow promo tone",
+                home.contains("tone = Tone.Yellow"));
+        assertTrue("the Home card must wear the same action icon as the modal",
+                home.contains("icon = Icons.Rounded.OpenInNew"));
     }
 
     @Test

@@ -1508,7 +1508,7 @@ CaramelClient जारी रखने से पहले माइग्र�
     <string name="caramel_news_honey_title">HoneyClient जल्द आ रहा है..</string>
     <string name="caramel_news_honey_body">एक नया क्लाइंट आ रहा है। HoneyClient क्या बना रहा है, यह देखने के लिए नीचे टैप करें।</string>
     <string name="caramel_news_honey_meta">घोषणा</string>
-    <string name="caramel_news_honey_button">अधिक जानकारी के लिए मुझे क्लिक करें!</string>
+    <string name="caramel_news_honey_button">और जानें</string>
     <string name="caramel_checking_updates">अपडेट की जाँच की जा रही है…</string>
     <string name="caramel_update_available_version">संस्करण %1$s उपलब्ध है। इसे इंस्टॉल करने के लिए अपडेट डाउनलोड करें पर टैप करें।</string>
     <string name="caramel_update_check_failed">अपडेट की जाँच नहीं हो सकी। अपना कनेक्शन जाँचें और फिर से प्रयास करें।</string>

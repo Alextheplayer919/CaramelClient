@@ -1507,7 +1507,7 @@ CaramelClient\'ın devam edebilmesi için taşımanın tamamlanması gerekiyor.<
     <string name="caramel_news_honey_title">HoneyClient yakında..</string>
     <string name="caramel_news_honey_body">Yeni bir istemci yolda. HoneyClient\'ın neler yaptığını görmek için aşağıya dokunun.</string>
     <string name="caramel_news_honey_meta">Duyuru</string>
-    <string name="caramel_news_honey_button">Daha fazla bilgi için tıklayın!</string>
+    <string name="caramel_news_honey_button">Daha fazla bilgi</string>
     <string name="caramel_checking_updates">Güncellemeler denetleniyor…</string>
     <string name="caramel_update_available_version">%1$s sürümü mevcut. Yüklemek için Güncellemeyi indir öğesine dokunun.</string>
     <string name="caramel_update_check_failed">Güncellemeler denetlenemedi. Bağlantınızı kontrol edip yeniden deneyin.</string>
