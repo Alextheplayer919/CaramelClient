@@ -102,12 +102,21 @@ fun LoaderGlyph(loader: CaramelLoader, modifier: Modifier = Modifier.size(28.dp)
  * <p>An unavailable loader (one that has not been built yet) is drawn greyed and inert, and says so
  * on a long press, so the choice is visible without pretending it can start a game. The shipped
  * SweetLoader is the only selectable one, which is the truth about this build.
+ *
+ * <p>The long-press explanation is raised through [onUnavailable], which the host routes to the
+ * launcher's own toast, rather than a raw system `Toast`: the square system bubble ignores the
+ * launcher's visual language and its reduce-motion setting, and the picker is drawn inside the
+ * launcher's Compose tree where the notice is already mounted.
  */
 @Composable
-fun LoaderTile(loader: CaramelLoader, selected: Boolean, onClick: () -> Unit, modifier: Modifier = Modifier) {
+fun LoaderTile(
+    loader: CaramelLoader,
+    selected: Boolean,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier,
+    onUnavailable: () -> Unit = {},
+) {
     val shape = RoundedCornerShape(CaramelDimens.RadiusControl)
-    val context = LocalContext.current
-    val unavailable = stringResource(R.string.caramel_loader_unavailable)
     val source = remember { MutableInteractionSource() }
     Box(
         modifier
@@ -121,7 +130,7 @@ fun LoaderTile(loader: CaramelLoader, selected: Boolean, onClick: () -> Unit, mo
             .clickable(source, null, enabled = loader.available, onClick = onClick)
             .pointerInput(loader) {
                 detectTapGestures(onLongPress = {
-                    if (!loader.available) Toast.makeText(context, unavailable, Toast.LENGTH_SHORT).show()
+                    if (!loader.available) onUnavailable()
                 })
             },
         Alignment.Center,
@@ -155,10 +164,22 @@ fun LoaderTile(loader: CaramelLoader, selected: Boolean, onClick: () -> Unit, mo
  * "Loaders" wrap one letter per line.
  */
 @Composable
-fun CaramelLoaderPicker(selected: CaramelLoader, onSelect: (CaramelLoader) -> Unit, modifier: Modifier = Modifier) {
+fun CaramelLoaderPicker(
+    selected: CaramelLoader,
+    onSelect: (CaramelLoader) -> Unit,
+    modifier: Modifier = Modifier,
+    onUnavailable: (() -> Unit)? = null,
+) {
+    val context = LocalContext.current
+    val unavailableText = stringResource(R.string.caramel_loader_unavailable)
+    // The host supplies the launcher's own notice; the bare default keeps the picker usable from a
+    // preview or a test, where there is no launcher tree to route a notice into.
+    val report: () -> Unit = onUnavailable ?: {
+        Toast.makeText(context, unavailableText, Toast.LENGTH_SHORT).show()
+    }
     Column(modifier.width(IntrinsicSize.Min), verticalArrangement = Arrangement.spacedBy(8.dp)) {
         Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
-            CaramelLoader.entries.forEach { LoaderTile(it, selected == it, { onSelect(it) }) }
+            CaramelLoader.entries.forEach { LoaderTile(it, selected == it, { onSelect(it) }, onUnavailable = report) }
         }
         if (CaramelLoader.entries.any { !it.available }) {
             Text(stringResource(R.string.caramel_loaders_note), style = T.Caption)
