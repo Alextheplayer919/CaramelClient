@@ -185,6 +185,26 @@ public class MainActivity extends BaseActivity implements CaramelLauncherHost.Ac
         initContent();
         loadReleaseNotes();
         refreshState();
+        announcePendingLaunchFailure();
+    }
+
+    /**
+     * Reports a launch that died inside the game activity, once.
+     *
+     * <p>{@code MinecraftActivity} runs the game in its own process and tears the launcher down to
+     * restart it, so a failure there cannot show a dialog at the time — it writes a report
+     * ({@code LastLaunchFailure}, {@code announced=false}) for the relaunched launcher to show. The
+     * writer existed but nothing ever read it back, so a crash inside the game left the user with the
+     * app reappearing and no explanation. This is the missing reader: it names the classified cause
+     * on the launcher's own toast and clears the report so it is announced exactly once.
+     */
+    private void announcePendingLaunchFailure() {
+        org.chimeramc.client.launcher.core.minecraft.LastLaunchFailure.Report report =
+                org.chimeramc.client.launcher.core.minecraft.LastLaunchFailure.consumePending(this);
+        if (report == null) return;
+        org.chimeramc.client.launcher.core.minecraft.LaunchErrorDiagnosis.Cause cause = report.cause();
+        toast(getString(org.chimeramc.client.launcher.core.minecraft
+                .LaunchErrorDiagnosis.messageRes(cause)));
     }
 
     /** Selects the tab named by [EXTRA_INITIAL_TAB], when it names a real one. */
@@ -558,6 +578,14 @@ public class MainActivity extends BaseActivity implements CaramelLauncherHost.Ac
             public void onLaunchFailed(Throwable e) {
                 mutateState(s -> s.setLaunching(false));
                 AppLog.warnOnce(TAG, "launch", "The game did not start", e);
+                // The failure happened before the game activity existed, so there is no launch log
+                // for the user to read and the Play button simply went back to its idle state with
+                // no explanation. Name the classified cause on the launcher's own toast, the same
+                // surface every other message uses, so the user is told why nothing happened.
+                org.chimeramc.client.launcher.core.minecraft.LaunchErrorDiagnosis.Cause cause =
+                        org.chimeramc.client.launcher.core.minecraft.LaunchErrorDiagnosis.classify(e);
+                toast(getString(org.chimeramc.client.launcher.core.minecraft
+                        .LaunchErrorDiagnosis.messageRes(cause)));
             }
         });
     }
