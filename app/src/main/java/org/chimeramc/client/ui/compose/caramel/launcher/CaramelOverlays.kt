@@ -28,7 +28,6 @@ import androidx.compose.ui.unit.dp
 import org.chimeramc.client.R
 import androidx.compose.ui.window.Popup
 import androidx.compose.ui.window.PopupProperties
-import androidx.compose.ui.platform.LocalContext
 import org.chimeramc.client.ui.compose.caramel.CaramelLauncherState
 import org.chimeramc.client.ui.compose.caramel.CaramelLoader
 import org.chimeramc.client.ui.compose.caramel.CaramelModInfo
@@ -54,7 +53,6 @@ import org.chimeramc.client.ui.compose.caramel.sp_
 @Composable
 fun CaramelLaunchMenuOverlay(state: CaramelLauncherState, onLaunch: () -> Unit) {
     if (!state.launchMenu) return
-    val context = LocalContext.current
     // A tap outside a menu must not throw it away — the same rule the modals follow, and the one the
     // user asked for: a menu closes from its own X, or from the system back gesture. The scrim still
     // swallows the tap so it cannot reach the screen behind.
@@ -77,14 +75,13 @@ fun CaramelLaunchMenuOverlay(state: CaramelLauncherState, onLaunch: () -> Unit) 
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Text(stringResource(R.string.caramel_loaders), style = T.Title.copy(fontSize = 15.sp_), modifier = Modifier.weight(1f))
                     Box(Modifier.width(240.dp)) {
+                        val loaderUnavailable =
+                            stringResource(R.string.caramel_loader_unavailable)
                         CaramelLoaderPicker(
                             state.loader,
                             { state.loader = it },
                             onUnavailable = {
-                                state.notice = CaramelNotice(
-                                    context.getString(R.string.caramel_loader_unavailable),
-                                    warning = true,
-                                )
+                                state.notice = CaramelNotice(loaderUnavailable, warning = true)
                             },
                         )
                     }

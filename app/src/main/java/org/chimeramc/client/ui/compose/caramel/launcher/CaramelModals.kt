@@ -2,7 +2,6 @@ package org.chimeramc.client.ui.compose.caramel.launcher
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
@@ -797,15 +796,13 @@ fun CaramelInstanceSettingsModal(state: CaramelLauncherState, actions: CaramelLa
                                 CaramelVersionDropdown(state.versions, state.version, onSelect = { state.version = it })
                             }
                             SettingRow(stringResource(R.string.caramel_loader)) {
-                                val context = LocalContext.current
+                                val loaderUnavailable =
+                                    stringResource(R.string.caramel_loader_unavailable)
                                 org.chimeramc.client.ui.compose.caramel.CaramelLoaderPicker(
                                     state.loader,
                                     { state.loader = it },
                                     onUnavailable = {
-                                        state.notice = CaramelNotice(
-                                            context.getString(R.string.caramel_loader_unavailable),
-                                            warning = true,
-                                        )
+                                        state.notice = CaramelNotice(loaderUnavailable, warning = true)
                                     },
                                 )
                             }
