@@ -914,7 +914,11 @@ public class CapePreviewView extends View {
             return;
         }
         capeScene = new PreviewScene();
-        PreviewCapeScene.addCape(capeScene, cape, capeSim, capeAtlas, capeAtlasW, capeAtlasH);
+        // Pass elapsed time so an animated cape's light band advances across the cloth as the
+        // preview animates, matching the in-game sweep.
+        float seconds = (android.os.SystemClock.uptimeMillis() - animStartMs) / 1000f;
+        PreviewCapeScene.addCape(capeScene, cape, capeSim, capeAtlas, capeAtlasW, capeAtlasH,
+                seconds);
     }
 
     /**

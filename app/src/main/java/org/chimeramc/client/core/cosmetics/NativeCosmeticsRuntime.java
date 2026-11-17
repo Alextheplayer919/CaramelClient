@@ -130,6 +130,11 @@ public final class NativeCosmeticsRuntime {
     private static float lastYaw;
     /** True once the cape texture substitution has been registered for the current equipped cape. */
     private static boolean capeTextureApplied;
+    /** When the animated cape sweep was last re-published, so it advances at a sane rate. */
+    private static long lastCapeAnimMs;
+
+    /** Minimum gap between animated-cape re-uploads; ~6 Hz reads as continuous motion. */
+    private static final long CAPE_ANIM_INTERVAL_MS = 160L;
 
     /** The gait the in-game pet animates with; set from the Mod Menu / instance settings. */
     public static void setFrameGait(CosmeticCatalog.PetLocomotion gait) {
@@ -220,6 +225,16 @@ public final class NativeCosmeticsRuntime {
             // unless a capture exists and the substitution is absent.
             if (cape != null && !capeTextureApplied) {
                 capeTextureApplied = NativeCosmeticsBridge.publishCapeTexture(context, cape);
+            }
+            // An animated cape's light band is baked into the sheet, so it must be re-uploaded as the
+            // sweep advances or the cape sits still. Throttled to ~6 Hz: the band crosses the cloth
+            // in seconds, so a few uploads a second reads as continuous motion, while the extra
+            // per-frame bitmap work a 60 Hz repaint would cost is avoided.
+            if (cape != null && cape.animated && capeTextureApplied
+                    && nowMs - lastCapeAnimMs >= CAPE_ANIM_INTERVAL_MS) {
+                lastCapeAnimMs = nowMs;
+                double seconds = nowMs / 1000.0;
+                NativeCosmeticsBridge.publishCapeTexture(context, cape, seconds);
             }
 
             CosmeticFrame frame = CosmeticFrame.build(cape, accessory, pet, pose,

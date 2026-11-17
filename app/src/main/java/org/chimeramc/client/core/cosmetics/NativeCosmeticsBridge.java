@@ -642,6 +642,18 @@ public final class NativeCosmeticsBridge {
      * a cape at the loader seam.
      */
     public static boolean publishCapeTexture(Context context, CosmeticCatalog.Cape cape) {
+        return publishCapeTexture(context, cape, 0.0);
+    }
+
+    /**
+     * Registers the local player's cape pixels at a moment in the animated sweep.
+     *
+     * <p>An animated cape's light band is baked into the sheet, so the caller re-publishes it as the
+     * sweep advances ({@code seconds}); a non-animated cape ignores {@code seconds} and is
+     * byte-identical to the plain publish.
+     */
+    public static boolean publishCapeTexture(Context context, CosmeticCatalog.Cape cape,
+                                             double seconds) {
         if (cape == null) {
             PreloaderInput.clearCapeSubstitution();
             return true;
@@ -652,7 +664,7 @@ public final class NativeCosmeticsBridge {
         }
         if (png == null) {
             png = CapeTexturePainter.paint(cape.color, cape.trimColor, cape.accentColor,
-                    cape.pattern, cape.branded);
+                    cape.pattern, cape.branded, cape.animated, seconds);
         }
         Bitmap image = decode(png);
         if (image == null) return false;

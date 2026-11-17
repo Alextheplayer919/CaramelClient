@@ -37,10 +37,16 @@ public final class CapeThumbnail {
      */
     public static void render(CosmeticCatalog.Cape cape, int width, int height, int[] out,
                               int empty) {
+        render(cape, width, height, out, empty, 0.0);
+    }
+
+    /** As {@link #render}, with elapsed time so an animated cape's sweep advances in the tile. */
+    public static void render(CosmeticCatalog.Cape cape, int width, int height, int[] out,
+                              int empty, double seconds) {
         if (out == null || width <= 0 || height <= 0 || out.length < width * height) return;
         java.util.Arrays.fill(out, 0, width * height, empty);
         if (cape == null) return;
-        drawCloth(cape, width, width, height, 0, 0, out);
+        drawCloth(cape, width, width, height, 0, 0, out, seconds);
     }
 
     /**
@@ -53,6 +59,12 @@ public final class CapeThumbnail {
      */
     public static void renderFitted(CosmeticCatalog.Cape cape, int width, int height, int[] out,
                                     int empty) {
+        renderFitted(cape, width, height, out, empty, 0.0);
+    }
+
+    /** As {@link #renderFitted}, with elapsed time so an animated cape's sweep advances in the tile. */
+    public static void renderFitted(CosmeticCatalog.Cape cape, int width, int height, int[] out,
+                                    int empty, double seconds) {
         if (out == null || width <= 0 || height <= 0 || out.length < width * height) return;
         java.util.Arrays.fill(out, 0, width * height, empty);
         if (cape == null) return;
@@ -65,7 +77,7 @@ public final class CapeThumbnail {
         }
         int x0 = (width - clothW) / 2;
         int y0 = (height - clothH) / 2;
-        drawCloth(cape, width, clothW, clothH, x0, y0, out);
+        drawCloth(cape, width, clothW, clothH, x0, y0, out, seconds);
     }
 
     /**
@@ -74,18 +86,16 @@ public final class CapeThumbnail {
      * @param stride the buffer's row stride in pixels
      */
     private static void drawCloth(CosmeticCatalog.Cape cape, int stride, int clothW, int clothH,
-                                  int x0, int y0, int[] out) {
+                                  int x0, int y0, int[] out, double seconds) {
         for (int y = 0; y < clothH; y++) {
             float v = (y + 0.5f) / clothH;
             // A vertical shade: the hem is a touch darker, so the sheet reads as hanging.
             float verticalShade = 1.0f - 0.16f * v;
             for (int x = 0; x < clothW; x++) {
                 float u = (x + 0.5f) / clothW;
-                int color = CapePatterns.colorAt(cape.pattern, u, v, cape.color, cape.accentColor);
-                if (cape.pattern == CosmeticCatalog.CapePattern.OPTIFINE
-                        && CapePatterns.optifineMonogramAt(u, v)) {
-                    color = cape.accentColor;
-                }
+                // CapeWeave is the one place the weave and the animated sweep are resolved, so the
+                // tile shows the same moving cape the character wears.
+                int color = CapeWeave.colorAt(cape, u, v, seconds);
                 // A soft side shade so the sheet has a lit and a shadow edge rather than being flat.
                 float sideShade = 0.94f + 0.06f * (1f - Math.abs(u - 0.5f) * 2f);
                 out[(y0 + y) * stride + x0 + x] = scale(color, verticalShade * sideShade);

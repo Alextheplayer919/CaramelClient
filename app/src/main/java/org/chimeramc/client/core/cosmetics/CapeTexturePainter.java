@@ -51,7 +51,8 @@ public final class CapeTexturePainter {
      * @param branded   whether the Caramel mark is drawn on the cloth
      */
     public static byte[] paint(int baseColor, int trimColor, boolean branded) {
-        return paint(baseColor, trimColor, trimColor, CosmeticCatalog.CapePattern.SOLID, branded);
+        return paint(baseColor, trimColor, trimColor, CosmeticCatalog.CapePattern.SOLID, branded,
+                false, 0.0);
     }
 
     /**
@@ -65,12 +66,43 @@ public final class CapeTexturePainter {
      */
     public static byte[] paint(int baseColor, int trimColor, int accentColor,
                                CosmeticCatalog.CapePattern pattern, boolean branded) {
+        return paint(baseColor, trimColor, accentColor, pattern, branded, false, 0.0);
+    }
+
+    /**
+     * Renders a cape texture, applying the animated sweep when {@code animated}.
+     *
+     * <p>An animated cape (the flagship) carries a light band that travels down the cloth; the band
+     * is baked into the sheet at {@code seconds}, so the in-game texture swaps as the sweep moves.
+     * A non-animated cape ignores {@code seconds} and is byte-identical to the plain paint.
+     */
+    public static byte[] paint(int baseColor, int trimColor, int accentColor,
+                               CosmeticCatalog.CapePattern pattern, boolean branded,
+                               boolean animated, double seconds) {
         int[] pixels = new int[TEXTURE_WIDTH * TEXTURE_HEIGHT];
 
         paintCapeRegion(pixels, baseColor, trimColor, accentColor, pattern, branded);
+        if (animated) paintAnimatedSweep(pixels, seconds);
         paintElytraRegion(pixels, baseColor, trimColor);
 
         return PngWriter.encode(TEXTURE_WIDTH, TEXTURE_HEIGHT, pixels);
+    }
+
+    /**
+     * Applies the animated light band over the visible cloth panel.
+     *
+     * <p>Applied after the weave so it brightens whatever the pattern drew, and only over the panel
+     * the player sees — the inner panel and the edge strips stay at their resting shade.
+     */
+    private static void paintAnimatedSweep(int[] pixels, double seconds) {
+        for (int row = 0; row < CLOTH_HEIGHT; row++) {
+            float v = row / (float) (CLOTH_HEIGHT - 1);
+            for (int col = 0; col < CLOTH_WIDTH; col++) {
+                float u = col / (float) (CLOTH_WIDTH - 1);
+                int i = (CLOTH_Y + row) * TEXTURE_WIDTH + (CLOTH_X + col);
+                pixels[i] = CapeMotion.apply(pixels[i], u, v, seconds);
+            }
+        }
     }
 
     /**

@@ -48,6 +48,16 @@ public final class PreviewCapeScene {
      */
     public static void addCape(PreviewScene scene, CosmeticCatalog.Cape cape, CapeSimulator cloth,
                                int[] atlas, int atlasW, int atlasH) {
+        addCape(scene, cape, cloth, atlas, atlasW, atlasH, 0.0);
+    }
+
+    /**
+     * Adds the cloth quads to {@code scene}, applying the animated sweep when the cape carries one.
+     *
+     * @param seconds elapsed time, so an animated cape's light band advances across the cloth
+     */
+    public static void addCape(PreviewScene scene, CosmeticCatalog.Cape cape, CapeSimulator cloth,
+                               int[] atlas, int atlasW, int atlasH, double seconds) {
         if (scene == null || cape == null || cloth == null) return;
         boolean authored = atlas != null && atlas.length >= atlasW * atlasH
                 && atlasW > 0 && atlasH > 0;
@@ -81,9 +91,9 @@ public final class PreviewCapeScene {
                 int clothColor;
                 if (authored) {
                     clothColor = CapeAtlas.sample(atlas, atlasW, atlasH, u, wv);
-                    if ((clothColor >>> 24) == 0) clothColor = weaveColor(cape, u, wv);
+                    if ((clothColor >>> 24) == 0) clothColor = CapeWeave.colorAt(cape, u, wv, seconds);
                 } else {
-                    clothColor = weaveColor(cape, u, wv);
+                    clothColor = CapeWeave.colorAt(cape, u, wv, seconds);
                 }
                 cellColor[r][c] = clothColor;
             }
@@ -122,7 +132,7 @@ public final class PreviewCapeScene {
 
         // The rim: the four perimeter bands joining the front sheet to the back sheet, so the slab's
         // edge is a visible 1-pixel thickness rather than a zero-width seam.
-        int rimColor = weaveColor(cape, 0.5f, 0.5f);
+        int rimColor = CapeWeave.colorAt(cape, 0.5f, 0.5f, seconds);
         for (int c = 0; c + 1 < cols; c++) {
             addQuad(scene, p[c], p[c + 1], back[c + 1], back[c],
                     PreviewLighting.shadeColorForNormal(rimColor, 0f, 1f, 0f),
@@ -170,15 +180,6 @@ public final class PreviewCapeScene {
         return new float[]{x / len, y / len, z / len};
     }
 
-    /** The procedural weave colour at a normalised cloth point, including the Optifine monogram. */
-    private static int weaveColor(CosmeticCatalog.Cape cape, float u, float v) {
-        int clothColor = CapePatterns.colorAt(cape.pattern, u, v, cape.color, cape.accentColor);
-        if (cape.pattern == CosmeticCatalog.CapePattern.OPTIFINE
-                && CapePatterns.optifineMonogramAt(u, v)) {
-            clothColor = cape.accentColor;
-        }
-        return clothColor;
-    }
 
     private static float[] sub(float[] a, float[] b) {
         return new float[]{a[0] - b[0], a[1] - b[1], a[2] - b[2]};
