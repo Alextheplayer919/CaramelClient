@@ -10,9 +10,10 @@ import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
@@ -129,14 +130,15 @@ fun LoaderTile(loader: CaramelLoader, selected: Boolean, onClick: () -> Unit, mo
             LoaderGlyph(loader, Modifier.size(28.dp))
         }
         if (selected) {
+            // The tick sits on the glyph's centre, not the tile's top-right corner: it marks the
+            // chosen loader, and a corner badge read as a notification dot floating off the icon.
             Box(
                 Modifier
-                    .offset((-5).dp, (-5).dp)
-                    .size(14.dp)
+                    .size(20.dp)
                     .background(C.Green, CircleShape)
-                    .border(1.5.dp, C.Navy, CircleShape),
+                    .border(2.dp, C.Navy, CircleShape),
                 Alignment.Center,
-            ) { Icon(Icons.Rounded.Check, null, Modifier.size(9.dp), C.OnGreen) }
+            ) { Icon(Icons.Rounded.Check, null, Modifier.size(13.dp), C.OnGreen) }
         }
     }
 }
@@ -145,11 +147,14 @@ fun LoaderTile(loader: CaramelLoader, selected: Boolean, onClick: () -> Unit, mo
  * The loader choice: one tile per preloader, plus an honest note when some are not built.
  *
  * <p>Both the launch menu and the instance settings draw the same picker, so the note that explains
- * the greyed tiles cannot be shown in one place and forgotten in the other.
+ * the greyed tiles cannot be shown in one place and forgotten in the other. The picker declares its
+ * own width rather than sizing to its content: the note is a long sentence, and an unconstrained
+ * `Text` in a `Row` measures at the full available width, which starved the sibling label and made
+ * "Loaders" wrap one letter per line.
  */
 @Composable
 fun CaramelLoaderPicker(selected: CaramelLoader, onSelect: (CaramelLoader) -> Unit, modifier: Modifier = Modifier) {
-    Column(modifier, verticalArrangement = Arrangement.spacedBy(8.dp)) {
+    Column(modifier.width(IntrinsicSize.Min), verticalArrangement = Arrangement.spacedBy(8.dp)) {
         Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
             CaramelLoader.entries.forEach { LoaderTile(it, selected == it, { onSelect(it) }) }
         }

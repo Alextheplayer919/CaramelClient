@@ -66,11 +66,14 @@ fun CaramelLaunchMenuOverlay(state: CaramelLauncherState, onLaunch: () -> Unit) 
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Text(stringResource(R.string.caramel_version), style = T.Title.copy(fontSize = 15.sp_), modifier = Modifier.weight(1f))
                     CaramelVersionDropdown(state.versions, state.version, onSelect = { state.version = it })
+                    Spacer(Modifier.width(8.dp))
                     GlassButton(null, { state.launchMenu = false }, icon = Icons.Rounded.Close, height = 32)
                 }
+                // The loader row gives the picker a fixed column so the three tiles and the note
+                // cannot push the "Loaders" label into a one-letter-per-line column.
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Text(stringResource(R.string.caramel_loaders), style = T.Title.copy(fontSize = 15.sp_), modifier = Modifier.weight(1f))
-                    CaramelLoaderPicker(state.loader, { state.loader = it })
+                    Box(Modifier.width(240.dp)) { CaramelLoaderPicker(state.loader, { state.loader = it }) }
                 }
                 CaramelProfileDropdown(state.profile, { state.profile = it }, width = 328)
                 Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
