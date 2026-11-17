@@ -349,6 +349,13 @@ class CaramelLauncherState {
     /** Whether this instance runs the MB shader loader (the mtbinloader2 compatibility fixer). */
     var instanceShaderCompat by mutableStateOf(false)
 
+    /**
+     * Whether this device can run the deferred (Vibrant Visuals) pipeline. When false, the
+     * Performance tab does not offer the Vibrant Visuals option, so a mode the GPU cannot render is
+     * never advertised as if it were available.
+     */
+    var deferredRenderSupported by mutableStateOf(false)
+
     /** Whether this instance keeps its own game data rather than the shared root. */
     var instanceIsolation by mutableStateOf(false)
 

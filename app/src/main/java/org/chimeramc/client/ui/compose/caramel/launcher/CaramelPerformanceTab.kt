@@ -63,14 +63,23 @@ fun CaramelPerformanceTab(
                             feature.name,
                             feature.description,
                         ) {
-                            val labels = feature.values.map { feature.labelFor(it) }
+                            // Only the options this device can run are offered: a GPU without the
+                            // deferred pipeline never sees "Vibrant Visuals" in the list.
+                            val offered = PerfFeatureCatalog.offeredChoiceIndices(
+                                feature, state.deferredRenderSupported)
+                            val labels = offered.map { feature.labelFor(feature.values[it]) }
+                            // If the stored value is one this device cannot run (e.g. a
+                            // Vibrant Visuals value written on another device), show the first
+                            // option it can run rather than a label that is no longer in the list.
+                            val storedOffered = offered.any { feature.values[it] == stored }
                             CaramelSimpleDropdown(
-                                value = feature.labelFor(stored),
+                                value = if (storedOffered) feature.labelFor(stored) else labels.first(),
                                 options = labels,
                                 onSelect = { label ->
                                     val index = labels.indexOf(label)
                                     if (index >= 0) {
-                                        actions.setPerfFeature(feature.id, feature.values[index])
+                                        actions.setPerfFeature(
+                                            feature.id, feature.values[offered[index]])
                                     }
                                 },
                                 width = 210,

@@ -339,6 +339,10 @@ public class MainActivity extends BaseActivity implements CaramelLauncherHost.Ac
         // The instance-level flags the Advanced tab and the performance tab drive, read straight
         // from the selected version so a change made here is what the tab shows.
         s.setInstanceShaderCompat(selected != null && selected.shaderCompatEnabled);
+        // Gate the Vibrant Visuals option on what the device can actually render, so a tablet with
+        // no Vulkan or GLES 3.2 driver never sees a mode the game would silently ignore.
+        s.setDeferredRenderSupported(
+                org.chimeramc.client.core.minecraft.DeferredRenderProbe.supported(this));
         s.setInstanceIsolation(selected != null && selected.versionIsolation);
         s.setInstanceLaunchVertical(selected != null && selected.launchVertically);
         s.setInstancePackChanger(selected != null && selected.inGamePackChangerEnabled);
