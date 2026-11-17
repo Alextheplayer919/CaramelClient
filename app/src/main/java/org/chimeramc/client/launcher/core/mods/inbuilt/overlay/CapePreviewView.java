@@ -26,6 +26,7 @@ import org.chimeramc.client.core.cosmetics.PreviewAccessoryScene;
 import org.chimeramc.client.core.cosmetics.PreviewAuthoredScene;
 import org.chimeramc.client.core.cosmetics.PreviewCapeScene;
 import org.chimeramc.client.core.cosmetics.PreviewCharacterScene;
+import org.chimeramc.client.core.cosmetics.PreviewMotion;
 import org.chimeramc.client.core.cosmetics.PreviewPetScene;
 import org.chimeramc.client.core.cosmetics.PreviewQuality;
 import org.chimeramc.client.core.cosmetics.PreviewRaster;
@@ -91,6 +92,9 @@ public class CapePreviewView extends View {
     private float headLookMs;
 
     private static final float DEFAULT_PITCH = 18f;
+
+    /** The camera's resting orbit height, in model pixels; the idle float oscillates around it. */
+    private static final float CAMERA_ORBIT_Y = 18f;
 
     private final Paint pixelPaint = new Paint();
 
@@ -237,6 +241,8 @@ public class CapePreviewView extends View {
     private final android.graphics.Rect destRect = new android.graphics.Rect();
 
     private long animStartMs;
+    /** The uptime of the last drawn frame, for the ~30fps idle throttle. */
+    private long lastDrawMs;
     private boolean animating;
     private boolean attached;
     /** True once at least one frame has been rendered, so a caller can hide its placeholder. */
@@ -253,13 +259,21 @@ public class CapePreviewView extends View {
                 @Override
                 public void doFrame(long frameTimeNanos) {
                     if (!animating) return;
-                    float dt = lastFrameNanos == 0L ? 0f
-                            : (frameTimeNanos - lastFrameNanos) / 1_000_000_000f;
-                    lastFrameNanos = frameTimeNanos;
-                    // Clamp so a stall cannot fast-forward the cloth.
-                    dt = Math.min(dt, 0.1f);
-                    advance(dt);
-                    invalidate();
+                    // An interactive frame (a drag, or a flick still coasting) is drawn immediately;
+                    // the idle turntable is throttled to ~30fps, which halves the per-second software
+                    // rasterisation without a visible change to a turn this slow.
+                    long nowMs = frameTimeNanos / 1_000_000L;
+                    boolean interactive = userRotating || Math.abs(spinVelocity) > 1f;
+                    if (interactive || PreviewRenderCache.idleFrameDue(lastDrawMs, nowMs)) {
+                        float dt = lastFrameNanos == 0L ? 0f
+                                : (frameTimeNanos - lastFrameNanos) / 1_000_000_000f;
+                        lastFrameNanos = frameTimeNanos;
+                        lastDrawMs = nowMs;
+                        // Clamp so a stall cannot fast-forward the cloth.
+                        dt = Math.min(dt, 0.1f);
+                        advance(dt);
+                        invalidate();
+                    }
                     android.view.Choreographer.getInstance().postFrameCallback(this);
                 }
             };
@@ -600,12 +614,15 @@ public class CapePreviewView extends View {
         if (!DynamicAnim.areAnimationsEnabled()) return;
         markSceneDirty();
         if (!userRotating) {
-            // A flick keeps spinning for a moment, then settles back to the slow idle turn.
+            float idleSeconds = (android.os.SystemClock.uptimeMillis() - animStartMs) / 1000f;
+            // A flick keeps spinning for a moment, then settles back to the slow idle turn. The idle
+            // speed eases in and out with a slow wobble so the turn reads as cinematic rather than a
+            // motor holding one constant rate.
             if (Math.abs(spinVelocity) > 1f) {
                 yawDeg += spinVelocity * dt;
                 spinVelocity *= Math.pow(0.12f, dt);
             } else {
-                yawDeg += IDLE_SPIN_DEG_PER_SEC * dt;
+                yawDeg += IDLE_SPIN_DEG_PER_SEC * PreviewMotion.yawSpeedScale(idleSeconds) * dt;
             }
             if (yawDeg > 360f) yawDeg -= 360f;
         }
@@ -715,12 +732,21 @@ public class CapePreviewView extends View {
             if (PreviewRenderCache.shouldRasterise(renderedRevision, sceneRevision)) {
                 // Background: transparent, so the glass panel behind the preview shows through.
                 raster.prepare(internalW, internalH, 0x00000000);
+                // A cinematic idle adds a gentle pitch sway and a small vertical float on top of the
+                // resting view; a user drag (or a coasting flick) takes the camera exactly, so the
+                // user's own angle is never fought by the idle motion.
+                float idleSeconds = (android.os.SystemClock.uptimeMillis() - animStartMs) / 1000f;
+                boolean idle = !userRotating && Math.abs(spinVelocity) <= 1f;
+                float camPitch = idle ? PreviewMotion.idlePitchDeg(pitchDeg, idleSeconds) : pitchDeg;
+                float camOrbitY = idle ? PreviewMotion.idleFloatPixels(CAMERA_ORBIT_Y, idleSeconds)
+                        : CAMERA_ORBIT_Y;
                 if (camera == null) {
-                    camera = new SkinModel.Camera(yawDeg, pitchDeg, SkinModel.CAMERA_DISTANCE, 0f, 18f, 0f);
+                    camera = new SkinModel.Camera(yawDeg, camPitch, SkinModel.CAMERA_DISTANCE,
+                            0f, camOrbitY, 0f);
                 } else {
                     // Re-target rather than rebuild: the constructor recomputes six trig values and
                     // this runs every frame while the preview is animating.
-                    camera.set(yawDeg, pitchDeg, SkinModel.CAMERA_DISTANCE, 0f, 18f, 0f);
+                    camera.set(yawDeg, camPitch, SkinModel.CAMERA_DISTANCE, 0f, camOrbitY, 0f);
                 }
                 renderScene(camera, internalW, internalH);
                 target.setPixels(raster.pixels(), 0, internalW, 0, 0, internalW, internalH);
