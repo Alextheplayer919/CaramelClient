@@ -84,12 +84,19 @@ public class PreviewSceneGoldenTest {
         for (CosmeticCatalog.Accessory a : CosmeticCatalog.accessories()) {
             if (a.kind == CosmeticCatalog.AccessoryKind.TOPHAT) { hat = a; break; }
         }
-        if (hat != null) PreviewAccessoryScene.addAccessoryFront(scene, hat, 0f, 0f);
+        // Pass the hero pose, so the golden pins a hat riding the character's body lean rather than
+        // floating off the leaning head.
+        if (hat != null) {
+            PreviewAccessoryScene.addAccessoryFront(scene, hat, 0f, 0f,
+                    CharacterPose.relaxedHero());
+        }
     }
 
     /** A rotated-cube hat: the same box but with its four top corners tilted 20 degrees about Z. */
     private static void addRotatedCubeHat(PreviewScene scene, int[] atlas) {
+        CharacterPose hero = CharacterPose.relaxedHero();
         float[][] c = {{-4, 34, -4}, {4, 34, -4}, {-4, 34, 4}, {4, 34, 4}};
+        for (float[] corner : c) hero.applyBody(corner);
         float[] uv = {0, 0, 1, 0, 0, 1, 1, 1};
         PreviewScene.Face f = scene.addQuad(c, uv, atlas, 32, 32);
         if (f != null) { f.doubleSided = true; }

@@ -32,17 +32,36 @@ public final class PreviewAccessoryScene {
     /** Adds the front-facing accessory boxes (head, face, torso). */
     public static void addAccessoryFront(PreviewScene scene, CosmeticCatalog.Accessory accessory,
                                          float headPitch, float headYaw) {
+        addAccessoryFront(scene, accessory, headPitch, headYaw, null);
+    }
+
+    /**
+     * Adds the front-facing accessory boxes, riding the character's whole-body lean when {@code pose}
+     * is given.
+     *
+     * <p>The head and torso carry the lean in {@link PreviewCharacterScene}, so a worn hat must ride
+     * the same transform or it would float off the head it sits on. The thumbnail callers render the
+     * accessory alone and pass {@code null}, so the lean is a no-op there.
+     */
+    public static void addAccessoryFront(PreviewScene scene, CosmeticCatalog.Accessory accessory,
+                                         float headPitch, float headYaw, CharacterPose pose) {
         if (scene == null || accessory == null
                 || accessory.kind == CosmeticCatalog.AccessoryKind.NONE) return;
         boolean head = accessory.kind.followsHead();
         List<BoxSpec> boxes = frontBoxes(accessory);
         for (BoxSpec b : boxes) {
-            addBox(scene, b, head, headPitch, headYaw);
+            addBox(scene, b, head, headPitch, headYaw, pose);
         }
     }
 
     /** Adds the behind-the-body accessory pieces (wings, backpack, scarf tail). */
     public static void addAccessoryBehind(PreviewScene scene, CosmeticCatalog.Accessory accessory) {
+        addAccessoryBehind(scene, accessory, null);
+    }
+
+    /** Adds the behind-the-body accessory pieces, riding the character's whole-body lean. */
+    public static void addAccessoryBehind(PreviewScene scene, CosmeticCatalog.Accessory accessory,
+                                          CharacterPose pose) {
         if (scene == null || accessory == null
                 || accessory.kind == CosmeticCatalog.AccessoryKind.NONE) return;
         switch (accessory.kind) {
@@ -51,13 +70,13 @@ public final class PreviewAccessoryScene {
                 break;
             case BACKPACK:
                 addBox(scene, new BoxSpec(0f, 18f, CosmeticLayering.CAPE_Z - 0.2f, 7f, 8f, 3f,
-                        accessory.color), false, 0f, 0f);
+                        accessory.color), false, 0f, 0f, pose);
                 addBox(scene, new BoxSpec(0f, 15.6f, CosmeticLayering.CAPE_Z - 1.2f, 5f, 2.2f, 1.4f,
-                        accessory.accentColor), false, 0f, 0f);
+                        accessory.accentColor), false, 0f, 0f, pose);
                 break;
             case SCARF:
                 addBox(scene, new BoxSpec(-2.2f, 20f, CosmeticLayering.CAPE_Z + 0.5f, 1.6f, 6f, 1.2f,
-                        darker(accessory.color)), false, 0f, 0f);
+                        darker(accessory.color)), false, 0f, 0f, pose);
                 break;
             default:
                 break;
@@ -212,15 +231,18 @@ public final class PreviewAccessoryScene {
 
     /** Adds one shaded box, following the head look when {@code head} is true. */
     private static void addBox(PreviewScene scene, BoxSpec spec, boolean head,
-                               float headPitch, float headYaw) {
+                               float headPitch, float headYaw, CharacterPose pose) {
         SkinModel.Box box = SkinModel.Box.of("acc", spec.cx, spec.cy, spec.cz,
                 spec.w, spec.h, spec.d);
         float[] n = new float[3];
         float[] p = new float[3];
+        // A hat or a torso piece rides the whole-body lean, the same as the head/chest it sits on.
+        boolean torso = pose != null && CharacterPose.isTorso(head ? "head" : "body");
         for (SkinModel.Face face : SkinModel.Face.values()) {
             if (head) {
                 n[0] = face.nx; n[1] = face.ny; n[2] = face.nz;
                 HeadLookTransform.applyVector(headPitch, headYaw, n);
+                if (torso) pose.applyBodyVector(n);
                 if (!headNormalVisible(n)) continue;
             } else if (!axisNormalVisible(face)) {
                 continue;
@@ -231,11 +253,12 @@ public final class PreviewAccessoryScene {
             for (int i = 0; i < 4; i++) {
                 p[0] = c[i][0]; p[1] = c[i][1]; p[2] = c[i][2];
                 if (head) HeadLookTransform.apply(headPitch, headYaw, p);
+                if (torso) pose.applyBody(p);
                 corners[i][0] = p[0]; corners[i][1] = p[1]; corners[i][2] = p[2];
             }
             PreviewScene.Face f = scene.addFlatQuad(corners, shaded);
             if (f == null) continue;
-            f.nx = face.nx; f.ny = face.ny; f.nz = face.nz;
+            f.nx = n[0]; f.ny = n[1]; f.nz = n[2];
             // The accessory is a thin piece; drawing both sides avoids a hole where it meets the head.
             f.doubleSided = true;
         }

@@ -62,6 +62,15 @@ public final class CharacterPose {
     /** The shoulders turned a touch, so the figure is not a flat plane facing the camera. */
     public static final float BODY_TWIST_YAW = 6f;
 
+    /**
+     * The hip pivot the whole-body lean and shoulder twist turn about, in model pixels.
+     *
+     * <p>The torso leans from the hips, not the feet: turning the figure about its base would slide
+     * the feet sideways, which reads as a stumble. The hip is where a real spine meets the pelvis, so
+     * the legs stay planted and only the torso and head carry the lean.
+     */
+    public static final float BODY_PIVOT_Y = 12f;
+
     private final Limb armR;
     private final Limb armL;
     private final Limb legR;
@@ -107,6 +116,48 @@ public final class CharacterPose {
 
     public float bodyTwistYaw() {
         return bodyTwistYaw;
+    }
+
+    /** Whether a box rides the torso, so the whole-body lean and twist move it with the chest. */
+    public static boolean isTorso(String boxId) {
+        return "body".equals(boxId) || "head".equals(boxId)
+                || "arm_r".equals(boxId) || "arm_l".equals(boxId);
+    }
+
+    /**
+     * Rotates a model-space point by the whole-body lean (pitch) then shoulder twist (yaw) about the
+     * hip. Applied to the torso and everything hanging from it — the chest, head and arms — but not
+     * the legs, so the feet stay planted while the upper body carries the stance.
+     */
+    public void applyBody(float[] point) {
+        if (bodyLeanPitch == 0f && bodyTwistYaw == 0f) return;
+        point[1] -= BODY_PIVOT_Y;
+        rotateBody(point);
+        point[1] += BODY_PIVOT_Y;
+    }
+
+    /** Rotates a direction vector by the whole-body lean then twist, with no pivot translation. */
+    public void applyBodyVector(float[] v) {
+        if (bodyLeanPitch == 0f && bodyTwistYaw == 0f) return;
+        rotateBody(v);
+    }
+
+    /** The pitch-then-yaw rotation about the origin, shared by the point and vector forms. */
+    private void rotateBody(float[] v) {
+        float x = v[0];
+        float y = v[1];
+        float z = v[2];
+
+        double pitch = Math.toRadians(bodyLeanPitch);
+        double cosP = Math.cos(pitch), sinP = Math.sin(pitch);
+        float y1 = (float) (y * cosP - z * sinP);
+        float z1 = (float) (y * sinP + z * cosP);
+
+        double yaw = Math.toRadians(bodyTwistYaw);
+        double cosY = Math.cos(yaw), sinY = Math.sin(yaw);
+        v[0] = (float) (x * cosY + z1 * sinY);
+        v[1] = y1;
+        v[2] = (float) (-x * sinY + z1 * cosY);
     }
 
     /**

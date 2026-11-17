@@ -25,7 +25,23 @@ public final class PreviewAuthoredScene {
                                     int geoTexW, int geoTexH,
                                     float headPitch, float headYaw, boolean headLooked) {
         addMesh(scene, mesh, atlas, atlasW, atlasH, geoTexW, geoTexH, 0f, 0f, 0f,
-                headPitch, headYaw, headLooked, null, true);
+                headPitch, headYaw, headLooked, null, true, null);
+    }
+
+    /**
+     * Adds an authored accessory mesh that also rides the character's whole-body lean.
+     *
+     * <p>The head and chest carry the lean in {@link PreviewCharacterScene}; an authored hat is
+     * parented to the head's look only, so without this it would float off a leaning head. The
+     * accessory is transformed by the same hip-pivot lean the head uses, so the two stay welded.
+     */
+    public static void addAccessory(PreviewScene scene, List<PreviewMeshModel.Box> mesh,
+                                    int[] atlas, int atlasW, int atlasH,
+                                    int geoTexW, int geoTexH,
+                                    float headPitch, float headYaw, boolean headLooked,
+                                    CharacterPose pose) {
+        addMesh(scene, mesh, atlas, atlasW, atlasH, geoTexW, geoTexH, 0f, 0f, 0f,
+                headPitch, headYaw, headLooked, null, true, pose);
     }
 
     /** Adds an authored pet mesh at a model-space offset, animated by {@code pose}. */
@@ -34,7 +50,7 @@ public final class PreviewAuthoredScene {
                               int geoTexW, int geoTexH,
                               float offsetX, float offsetY, float offsetZ, PetPose pose) {
         addMesh(scene, mesh, atlas, atlasW, atlasH, geoTexW, geoTexH, offsetX, offsetY, offsetZ,
-                0f, 0f, false, pose, false);
+                0f, 0f, false, pose, false, null);
     }
 
     private static void addMesh(PreviewScene scene, List<PreviewMeshModel.Box> mesh,
@@ -42,7 +58,7 @@ public final class PreviewAuthoredScene {
                                 int geoTexW, int geoTexH,
                                 float offsetX, float offsetY, float offsetZ,
                                 float headPitch, float headYaw, boolean headLooked, PetPose pose,
-                                boolean doubleSided) {
+                                boolean doubleSided, CharacterPose bodyPose) {
         if (scene == null || mesh == null || mesh.isEmpty() || atlas == null) return;
         // The geometry declares the atlas its UVs are written against; the decoded bitmap can be a
         // different size (many shipped PNGs are not 64x64). UV normalisation must use the geometry's
@@ -63,6 +79,7 @@ public final class PreviewAuthoredScene {
                 }
                 if (headLooked) HeadLookTransform.applyVector(headPitch, headYaw, n);
                 CosmeticOrientation.normalToPlayerSpace(n);
+                if (bodyPose != null) bodyPose.applyBodyVector(n);
 
                 int[] indices = PreviewMeshModel.faceCornerIndices(face);
                 float[][] corners = new float[4][3];
@@ -75,6 +92,7 @@ public final class PreviewAuthoredScene {
                     p[0] = corner[0]; p[1] = corner[1]; p[2] = corner[2];
                     CosmeticOrientation.toPlayerSpace(p);
                     if (headLooked) HeadLookTransform.apply(headPitch, headYaw, p);
+                    if (bodyPose != null) bodyPose.applyBody(p);
                     corners[i][0] = p[0] + offsetX;
                     corners[i][1] = p[1] + offsetY;
                     corners[i][2] = p[2] + offsetZ;

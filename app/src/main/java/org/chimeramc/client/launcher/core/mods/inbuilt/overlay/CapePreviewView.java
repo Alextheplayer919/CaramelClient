@@ -9,6 +9,7 @@ import android.graphics.PorterDuffColorFilter;
 import android.view.MotionEvent;
 import android.view.View;
 
+import org.chimeramc.client.core.cosmetics.CharacterPose;
 import org.chimeramc.client.core.cosmetics.CapeSimulator;
 import org.chimeramc.client.core.cosmetics.GameSkinSource;
 import org.chimeramc.client.core.cosmetics.CosmeticCatalog;
@@ -931,6 +932,7 @@ public class CapePreviewView extends View {
             return;
         }
         accessoryScene = new PreviewScene();
+        CharacterPose hero = CharacterPose.relaxedHero();
         if (accessoryMesh != null) {
             Bitmap atlasBitmap = ensureAccessoryAtlas();
             int[] atlas = atlasPixels(atlasBitmap);
@@ -939,12 +941,12 @@ public class CapePreviewView extends View {
                 int ah = atlasBitmap.getHeight();
                 PreviewAuthoredScene.addAccessory(accessoryScene, accessoryMesh, atlas, aw, ah,
                         accessoryGeoTexW, accessoryGeoTexH,
-                        headPitchDeg, headYawDeg, accessory.kind.followsHead());
+                        headPitchDeg, headYawDeg, accessory.kind.followsHead(), hero);
             }
         } else {
-            PreviewAccessoryScene.addAccessoryBehind(accessoryScene, accessory);
+            PreviewAccessoryScene.addAccessoryBehind(accessoryScene, accessory, hero);
             PreviewAccessoryScene.addAccessoryFront(accessoryScene, accessory,
-                    headPitchDeg, headYawDeg);
+                    headPitchDeg, headYawDeg, hero);
         }
     }
 
