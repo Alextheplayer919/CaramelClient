@@ -26,3 +26,9 @@
   pure rule the UI reads (`false` for the engine kinds); the Mods card and the detail modal show a
   "Preview only" badge and a one-line note rather than a green "Enabled" that lies. Flip that method
   the day the host table ships; do not delete the badge while the runtime is unwired.
+- **The loader budget is not preemption.** A running native call cannot be interrupted from another
+  thread, so a mod that blocks inside `universe_tick` cannot be stopped mid-call. `universe-core`'s
+  tick budget (2 ms per frame) only *measures* the tick and counts an overrun as a fault through the
+  same tracker a panic uses, so a mod that overruns on every frame is disabled after three
+  consecutive overruns; the first overrun still costs that frame. `universe_init` is not budgeted;
+  it runs once, under the launcher's own bounded enable (`ModManager::enableLoadedMods`, Issue 4).
