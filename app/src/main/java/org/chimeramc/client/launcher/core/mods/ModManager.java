@@ -1,5 +1,6 @@
 package org.chimeramc.client.core.mods;
 
+import org.chimeramc.client.util.AppExecutors;
 import org.chimeramc.client.util.AppLog;
 
 import android.os.FileObserver;
@@ -45,9 +46,19 @@ public class ModManager {
     private static final String DEFAULT_MOD_VERSION = "1.0.0";
     private static final int COPY_BUFFER_SIZE = 8192;
 
+    /**
+     * How long the main thread waits for the native mod enable.
+     *
+     * <p>Generous enough that a slow-but-working load (several mods, cold page cache) is never cut
+     * off, short enough that a mod that blocks forever costs seconds rather than the session. On
+     * expiry the launch continues and {@link #lastEnableTimedOut()} records it.
+     */
+    public static final long ENABLE_BUDGET_MS = 15_000L;
+
     private static volatile ModManager instance;
     private static volatile boolean sweetloaderLoadAttempted;
     private static volatile boolean sweetloaderLoaded;
+    private static volatile boolean enableTimedOut;
     /** One-shot gates for the bundled BerryAPI runtime, pumped from the game's frame tick. */
     private static volatile boolean berryAttachAttempted;
     private static volatile boolean berrySeamAttempted;
@@ -187,17 +198,54 @@ public class ModManager {
      * cosmetics. Skipping the call for a user with zero enabled mods left those dark, with no mod to
      * blame. {@code ModManager::EnableLoadedMods()} is a no-op when nothing is loaded, so the call is
      * safe and the hook install still arms.
+     *
+     * <p>The call is bounded. This runs from the game activity's {@code onCreate}, on the main
+     * thread, and the native side {@code dlopen}s every enabled mod and runs its initialiser. A mod
+     * that blocks there (a spin, a lock, a slow static constructor) hung the launch with no way out,
+     * because nothing can interrupt native code once it is running. The enable therefore runs on its
+     * own thread and the main thread waits at most {@link #ENABLE_BUDGET_MS}; on a timeout the launch
+     * continues without it and the stall is recorded, so a bad mod costs its own features rather
+     * than the whole session.
      */
     public static void enableLoadedMods() {
         if (!ensureSweetLoaderLoaded()) {
             return;
         }
-
+        final java.util.concurrent.CountDownLatch done = new java.util.concurrent.CountDownLatch(1);
+        // A dedicated daemon thread rather than the shared MOD pool: the pool's caller-runs policy
+        // would run the task on this (main) thread if the pool were saturated, which is exactly the
+        // hang this guards against. A raw thread is guaranteed off the caller.
+        AppExecutors.thread("mod-enable", () -> {
+            try {
+                nativeEnableLoadedMods();
+            } catch (UnsatisfiedLinkError e) {
+                Log.e(TAG, "Failed to invoke nativeEnableLoadedMods", e);
+            } catch (Throwable t) {
+                AppLog.warnOnce(TAG, "mod-enable:throw", "Native mod enable threw", t);
+            } finally {
+                done.countDown();
+            }
+        }).start();
         try {
-            nativeEnableLoadedMods();
-        } catch (UnsatisfiedLinkError e) {
-            Log.e(TAG, "Failed to invoke nativeEnableLoadedMods", e);
+            if (!done.await(ENABLE_BUDGET_MS, java.util.concurrent.TimeUnit.MILLISECONDS)) {
+                // The native thread is still inside a mod. It cannot be interrupted, so the launch
+                // proceeds; the record names the timeout so a support report can tell it from a crash.
+                AppLog.warn(TAG, "Native mod enable did not finish within " + ENABLE_BUDGET_MS
+                        + "ms; continuing the launch without waiting for it");
+                recordEnableTimeout();
+            }
+        } catch (InterruptedException interrupted) {
+            Thread.currentThread().interrupt();
         }
+    }
+
+    /** True when the last {@link #enableLoadedMods()} hit its budget. For diagnostics and tests. */
+    public static boolean lastEnableTimedOut() {
+        return enableTimedOut;
+    }
+
+    private static void recordEnableTimeout() {
+        enableTimedOut = true;
     }
 
     /**
