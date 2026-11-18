@@ -4,6 +4,7 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import org.chimeramc.client.util.AppLog;
 
 /**
  * Resolves a player's skin texture URL from the official Minecraft Services API.
@@ -45,7 +46,12 @@ public final class MinecraftSkinFetcher {
      *                            be minted
      */
     public static String fetchProfileJson(String authorizationHeader) {
-        if (authorizationHeader == null || authorizationHeader.isEmpty()) return null;
+        if (authorizationHeader == null || authorizationHeader.isEmpty()) {
+            // A distinct, named outcome: no token could be minted, which is not a network problem and
+            // not "the account has no skin". Logged so a support report can tell the three apart.
+            AppLog.warn("MinecraftSkinFetcher", "No Minecraft Services bearer; skipping the profile fetch");
+            return null;
+        }
         java.net.HttpURLConnection connection = null;
         try {
             connection = (java.net.HttpURLConnection)
@@ -56,7 +62,12 @@ public final class MinecraftSkinFetcher {
             connection.setInstanceFollowRedirects(true);
             connection.setRequestProperty("Accept", "application/json");
             connection.setRequestProperty("Authorization", authorizationHeader);
-            if (connection.getResponseCode() != java.net.HttpURLConnection.HTTP_OK) return null;
+            int code = connection.getResponseCode();
+            if (code != java.net.HttpURLConnection.HTTP_OK) {
+                AppLog.warn("MinecraftSkinFetcher",
+                        "The profile endpoint returned HTTP " + code + "; no skin from this source");
+                return null;
+            }
             try (java.io.InputStream in = connection.getInputStream()) {
                 java.io.ByteArrayOutputStream out = new java.io.ByteArrayOutputStream();
                 byte[] buffer = new byte[8192];
@@ -64,12 +75,18 @@ public final class MinecraftSkinFetcher {
                 int read;
                 while ((read = in.read(buffer)) > 0) {
                     total += read;
-                    if (total > MAX_BYTES) return null;
+                    if (total > MAX_BYTES) {
+                        AppLog.warn("MinecraftSkinFetcher",
+                                "The profile response exceeded " + MAX_BYTES + " bytes; discarding it");
+                        return null;
+                    }
                     out.write(buffer, 0, read);
                 }
                 return out.toString(java.nio.charset.StandardCharsets.UTF_8.name());
             }
         } catch (Throwable t) {
+            AppLog.warnOnce("MinecraftSkinFetcher", "profile-fetch",
+                    "The profile fetch failed (network or decode)", t);
             return null;
         } finally {
             if (connection != null) connection.disconnect();

@@ -479,7 +479,11 @@ public final class AccountSkinService {
             connection.setInstanceFollowRedirects(true);
             connection.setRequestProperty("Accept", "*/*");
             int code = connection.getResponseCode();
-            if (code != HttpURLConnection.HTTP_OK) return null;
+            if (code != HttpURLConnection.HTTP_OK) {
+                AppLog.warn("AccountSkinService",
+                        "The skin service returned HTTP " + code + " for the lookup");
+                return null;
+            }
             try (InputStream in = connection.getInputStream()) {
                 ByteArrayOutputStream out = new ByteArrayOutputStream();
                 byte[] buffer = new byte[8192];
@@ -487,12 +491,18 @@ public final class AccountSkinService {
                 int total = 0;
                 while ((read = in.read(buffer)) >= 0) {
                     total += read;
-                    if (total > MAX_BYTES) return null;
+                    if (total > MAX_BYTES) {
+                        AppLog.warn("AccountSkinService",
+                                "The skin service response exceeded " + MAX_BYTES + " bytes");
+                        return null;
+                    }
                     out.write(buffer, 0, read);
                 }
                 return out.toByteArray();
             }
         } catch (Throwable t) {
+            AppLog.warnOnce("AccountSkinService", "http-get",
+                    "The skin service request failed (network or read)", t);
             return null;
         } finally {
             if (connection != null) {
