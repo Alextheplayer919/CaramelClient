@@ -2,7 +2,6 @@ package org.chimeramc.client.core.minecraft
 
 import org.chimeramc.client.util.AppLog
 
-import org.chimeramc.client.util.ApiLevels
 
 import android.animation.ValueAnimator
 import android.content.Intent
@@ -16,9 +15,6 @@ import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
 import android.view.View
-import android.view.WindowInsets
-import android.view.WindowInsetsController
-import android.view.WindowManager
 import android.view.ViewTreeObserver
 import android.widget.Button
 import android.widget.ProgressBar
@@ -88,16 +84,16 @@ class MinecraftLoadingActivity : BaseActivity(), MinecraftRuntimePreparer.Progre
         launchStartedMs = android.os.SystemClock.elapsedRealtime()
         lastProgressMs = launchStartedMs
         applyLaunchOrientation()
-        hideSystemUi()
+        showSystemUI()
         window.decorView.setOnSystemUiVisibilityChangeListener {
             if (!isFinishing && !isDestroyed && !returningToLauncher) {
-                window.decorView.post { hideSystemUi() }
+                window.decorView.post { showSystemUI() }
             }
         }
         binding = org.chimeramc.client.databinding.ActivityMinecraftLoadingBinding
                 .inflate(layoutInflater)
         setContentView(binding.root)
-        hideSystemUi()
+        showSystemUI()
 
         // View binding, not findViewById: the hygiene gate holds the per-file findViewById count,
         // and the binding is also type-safe, so a renamed id is a compile error rather than a null.
@@ -132,17 +128,17 @@ class MinecraftLoadingActivity : BaseActivity(), MinecraftRuntimePreparer.Progre
         startPreparingAfterFirstDraw()
     }
 
-    override fun shouldSkipNavBar(): Boolean = true
+    override fun shouldSkipNavBar(): Boolean = false
 
     override fun onResume() {
         super.onResume()
-        hideSystemUi()
+        showSystemUI()
     }
 
     override fun onWindowFocusChanged(hasFocus: Boolean) {
         super.onWindowFocusChanged(hasFocus)
         if (hasFocus) {
-            hideSystemUi()
+            showSystemUI()
         }
     }
 
@@ -157,7 +153,7 @@ class MinecraftLoadingActivity : BaseActivity(), MinecraftRuntimePreparer.Progre
                 // for a launch; the game's own first frame is not observable from here.
                 firstFrameMs = trace.elapsedMs()
                 content.post {
-                    hideSystemUi()
+                    showSystemUI()
                     startPreparingOnce("loading first frame drawn")
                 }
                 return true
@@ -168,7 +164,7 @@ class MinecraftLoadingActivity : BaseActivity(), MinecraftRuntimePreparer.Progre
         // does not reach it - a screen destroyed inside the fallback window would still fire it and
         // submit to the executor after it was shut down.
         firstFrameFallback = Runnable {
-            hideSystemUi()
+            showSystemUI()
             startPreparingOnce("loading first frame fallback")
         }
         content.postDelayed(firstFrameFallback!!, FIRST_FRAME_FALLBACK_MS)
@@ -605,36 +601,6 @@ class MinecraftLoadingActivity : BaseActivity(), MinecraftRuntimePreparer.Progre
         watchdogDialog = null
         executor.shutdownNow()
         super.onDestroy()
-    }
-
-    private fun hideSystemUi() {
-        val decorView = window.decorView
-
-        window.addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN)
-        window.statusBarColor = Color.TRANSPARENT
-        window.navigationBarColor = Color.TRANSPARENT
-
-        if (ApiLevels.atLeastQ()) {
-            window.isStatusBarContrastEnforced = false
-            window.isNavigationBarContrastEnforced = false
-        }
-
-        if (ApiLevels.atLeastR()) {
-            window.setDecorFitsSystemWindows(false)
-            decorView.windowInsetsController?.let { controller ->
-                controller.systemBarsBehavior =
-                    WindowInsetsController.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE
-                controller.hide(WindowInsets.Type.statusBars() or WindowInsets.Type.navigationBars())
-            }
-        }
-
-        decorView.systemUiVisibility =
-            View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY or
-                View.SYSTEM_UI_FLAG_FULLSCREEN or
-                View.SYSTEM_UI_FLAG_HIDE_NAVIGATION or
-                View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN or
-                View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION or
-                View.SYSTEM_UI_FLAG_LAYOUT_STABLE
     }
 
     private companion object {
