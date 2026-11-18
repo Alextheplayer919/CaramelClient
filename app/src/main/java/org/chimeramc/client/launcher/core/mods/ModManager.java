@@ -179,14 +179,16 @@ public class ModManager {
         }
     }
 
+    /**
+     * Loads and enables the instance's mods, and arms the deferred game-hook install.
+     *
+     * <p>The early return when no mod is enabled was wrong: the native side of this call also arms
+     * the deferred hook install, which is what captures the player's own skin and drives the native
+     * cosmetics. Skipping the call for a user with zero enabled mods left those dark, with no mod to
+     * blame. {@code ModManager::EnableLoadedMods()} is a no-op when nothing is loaded, so the call is
+     * safe and the hook install still arms.
+     */
     public static void enableLoadedMods() {
-        ModManager instance = getInstance();
-        boolean hasEnabledMods = instance.getMods().stream().anyMatch(Mod::isEnabled);
-        if (!hasEnabledMods) {
-            Log.i(TAG, "No enabled mods, skipping sweetloader init");
-            return;
-        }
-
         if (!ensureSweetLoaderLoaded()) {
             return;
         }
