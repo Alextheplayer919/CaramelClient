@@ -17,6 +17,7 @@ file is missing from the index.
 - [Per-instance account binding (F2)](docs/agents/per-instance-account-binding.md)
 - [Screenshot honesty (B7) and the LeviLaunchroid credit (B4/B14)](docs/agents/screenshot-honesty-and-the-levilaunchroid-credit.md)
 - [One package format name (no `.AntEgg`, `.chimerapack` or `.levipack`)](docs/agents/one-package-format-name.md)
+- [Engine packages (`.universe` / `.singularity`): import, discovery, honest availability](docs/agents/engine-packages-universe-singularity-import-discovery-honest-availability.md)
 - [JNI/native packaging (org.chimeramc only)](docs/agents/jni-native-packaging.md)
 - [Personalization / theming (org.chimeramc.client.util.PersonalizationManager + org.chimeramc.client.launcher.ui.animation.DynamicAnim)](docs/agents/personalization-theming.md)
 - [Ids for view tags](docs/agents/ids-for-view-tags.md)

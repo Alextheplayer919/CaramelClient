@@ -228,7 +228,7 @@ CaramelClient\'ın devam edebilmesi için taşımanın tamamlanması gerekiyor.<
     <string name="toast_delete_failed">Silme başarısız: %1$s</string>
     <string name="error_delete_builtin_version">Yerleşik sürüm silinemiyor</string>
     <string name="invalid_mod_file">Başarısız</string>
-    <string name="invalid_mod_file_reason">Yalnızca .so dosyalarına, .zip mod paketlerine izin verilmektedir. Seçilen dosya geçerli bir yerel mod içe aktarma paketi değil.</string>
+    <string name="invalid_mod_file_reason">Yalnızca .so dosyaları, .zip mod paketleri veya .universe/.singularity motor paketleri kabul edilir. Seçilen dosya geçerli bir mod içe aktarma paketi değil.</string>
     <string name="invalid_zip_mod_package_title">Geçersiz ZIP Mod Paketi</string>
     <string name="invalid_zip_mod_package_message">ZIP mod paketi manifest.json ve bir .so dosyası içermelidir.</string>
     <string name="error_versions">Hatalı Sürümler</string>
@@ -1548,4 +1548,6 @@ CaramelClient\'ın devam edebilmesi için taşımanın tamamlanması gerekiyor.<
     <string name="caramel_skin_signed_out_hint">Minecraft skininizi yüklemek için oturum açın.</string>
     <string name="launch_error_title_stalled">Başlatma dondu</string>
     <string name="launch_error_message_stalled">Oyun penceresi hiç kare çizmedi, bu yüzden başlatma başarısız olmak yerine takıldı. Başlatıcı donmuş oturumu kapattı ve bir modu elemek için modlarınız devre dışı olarak yeniden açıldı. Başlatmayı takılmasına neden olan modu bulmak için Modlar sekmesinde modları tek tek yeniden etkinleştirin.</string>
+    <string name="caramel_state_preview_only">Yalnızca önizleme</string>
+    <string name="caramel_state_preview_only_note">Bu paket türü listelenir ve yönetilebilir, ancak motoru henüz istemciye bağlı değildir, bu nedenle oyunda çalışmaz.</string>
 </resources>

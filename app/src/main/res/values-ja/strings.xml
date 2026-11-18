@@ -228,7 +228,7 @@ CaramelClient を続行するには移行を完了する必要があります。
     <string name="toast_delete_failed">削除に失敗しました: %1$s</string>
     <string name="error_delete_builtin_version">組み込みバージョンは削除できません</string>
     <string name="invalid_mod_file">失敗</string>
-    <string name="invalid_mod_file_reason">.so ファイル、.zip モッドパッケージのみ許可されています。</string>
+    <string name="invalid_mod_file_reason">.so ファイル、.zip Mod パッケージ、または .universe/.singularity エンジンパッケージのみ受け付けます。選択したファイルは有効な Mod インポートパッケージではありません。</string>
     <string name="invalid_zip_mod_package_title">無効な ZIP モッドパッケージ</string>
     <string name="invalid_zip_mod_package_message">ZIP モッドパッケージには manifest.json と .so ファイルが含まれている必要があります。</string>
     <string name="error_versions">エラーバージョン</string>
@@ -1518,4 +1518,6 @@ CaramelClient を続行するには移行を完了する必要があります。
     <string name="caramel_skin_signed_out_hint">Minecraftのスキンを読み込むにはサインインしてください。</string>
     <string name="launch_error_title_stalled">起動がフリーズしました</string>
     <string name="launch_error_message_stalled">ゲームウィンドウが一度もフレームを描画しなかったため、起動は失敗ではなくハングしました。ランチャーはフリーズしたセッションを閉じ、原因の切り分けのためModを無効にして再度開きました。起動をハングさせるModを見つけるには、ModタブでModを1つずつ再度有効にしてください。</string>
+    <string name="caramel_state_preview_only">プレビューのみ</string>
+    <string name="caramel_state_preview_only_note">このパッケージ種別は一覧表示と管理ができますが、実行環境はまだクライアントに接続されていないため、ゲーム内では動作しません。</string>
 </resources>

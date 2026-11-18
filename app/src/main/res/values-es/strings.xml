@@ -228,7 +228,7 @@ La migración debe completarse antes de continuar con CaramelClient.</string>
     <string name="toast_delete_failed">Fallo al eliminar: %1$s</string>
     <string name="error_delete_builtin_version">No se puede eliminar la versión integrada</string>
     <string name="invalid_mod_file">Fallo</string>
-    <string name="invalid_mod_file_reason">Solo se permiten archivos .so, paquetes de mods .zip. El archivo seleccionado no es un paquete válido de mod nativo.</string>
+    <string name="invalid_mod_file_reason">Solo se aceptan archivos .so, paquetes de mods .zip o paquetes de motor .universe/.singularity. El archivo seleccionado no es un paquete de importación de mod válido.</string>
     <string name="invalid_zip_mod_package_title">Paquete ZIP de mod no válido</string>
     <string name="invalid_zip_mod_package_message">El paquete ZIP de mod debe contener manifest.json y un archivo .so.</string>
     <string name="error_versions">Versiones con error</string>
@@ -1521,4 +1521,6 @@ La migración debe completarse antes de continuar con CaramelClient.</string>
     <string name="caramel_skin_signed_out_hint">Inicia sesión para cargar tu skin de Minecraft.</string>
     <string name="launch_error_title_stalled">El inicio se congeló</string>
     <string name="launch_error_message_stalled">La ventana del juego nunca dibujó un fotograma, así que el inicio se quedó colgado en lugar de fallar. El lanzador cerró la sesión congelada y se volvió a abrir con tus mods desactivados para descartar un mod. Vuelve a activar los mods de uno en uno en la pestaña Mods para encontrar el que cuelga el inicio.</string>
+    <string name="caramel_state_preview_only">Solo vista previa</string>
+    <string name="caramel_state_preview_only_note">Este tipo de paquete aparece y se puede gestionar, pero su motor aún no está conectado al cliente, por lo que no se ejecutará en el juego.</string>
 </resources>

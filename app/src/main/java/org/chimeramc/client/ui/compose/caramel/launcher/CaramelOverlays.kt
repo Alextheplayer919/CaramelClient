@@ -28,6 +28,7 @@ import androidx.compose.ui.unit.dp
 import org.chimeramc.client.R
 import androidx.compose.ui.window.Popup
 import androidx.compose.ui.window.PopupProperties
+import org.chimeramc.client.ui.compose.caramel.C
 import org.chimeramc.client.ui.compose.caramel.CaramelLauncherState
 import org.chimeramc.client.ui.compose.caramel.CaramelLoader
 import org.chimeramc.client.ui.compose.caramel.CaramelModInfo
@@ -111,6 +112,9 @@ fun CaramelModDetailModal(state: CaramelLauncherState, onToggle: (CaramelModInfo
                 GlassButton(null, { state.selectedMod = null }, icon = Icons.Rounded.Close, height = 32)
             }
             Text(mod.description, style = T.Body.copy(fontSize = 13.sp_))
+            if (!mod.runnable) {
+                Text(stringResource(R.string.caramel_state_preview_only_note), style = T.Body.copy(fontSize = 12.sp_, color = C.Orange))
+            }
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Text(stringResource(if (mod.enabled) R.string.caramel_state_enabled else R.string.caramel_state_disabled), style = T.Label, modifier = Modifier.weight(1f))
                 CaramelToggle(mod.enabled, { onToggle(mod, it) })

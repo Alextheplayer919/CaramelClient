@@ -228,7 +228,7 @@ CaramelClient जारी रखने से पहले माइग्र�
     <string name="toast_delete_failed">हटाना विफल: %1$s</string>
     <string name="error_delete_builtin_version">अंतर्निहित संस्करण को हटाया नहीं जा सकता</string>
     <string name="invalid_mod_file">विफल</string>
-    <string name="invalid_mod_file_reason">केवल .so फ़ाइलें, .zip मॉड पैकेज की अनुमति है। चयनित फ़ाइल एक मान्य देशी मॉड आयात पैकेज नहीं है।</string>
+    <string name="invalid_mod_file_reason">केवल .so फ़ाइलें, .zip मॉड पैकेज, या .universe/.singularity इंजन पैकेज स्वीकार किए जाते हैं। चयनित फ़ाइल एक मान्य मॉड आयात पैकेज नहीं है।</string>
     <string name="invalid_zip_mod_package_title">अमान्य ZIP मॉड पैकेज</string>
     <string name="invalid_zip_mod_package_message">ZIP मॉड पैकेज में manifest.json और एक .so फ़ाइल होनी चाहिए।</string>
     <string name="error_versions">त्रुटि वाले संस्करण</string>
@@ -1549,4 +1549,6 @@ CaramelClient जारी रखने से पहले माइग्र�
     <string name="caramel_skin_signed_out_hint">अपनी Minecraft स्किन लोड करने के लिए साइन इन करें।</string>
     <string name="launch_error_title_stalled">लॉन्च फ़्रीज़ हो गया</string>
     <string name="launch_error_message_stalled">गेम विंडो ने कभी कोई फ़्रेम नहीं बनाया, इसलिए लॉन्च विफल होने के बजाय अटक गया। लॉन्चर ने फ़्रीज़ हुए सत्र को बंद कर दिया और किसी मॉड को बाहर रखने के लिए आपके मॉड बंद करके फिर से खोला। लॉन्च को अटकाने वाले मॉड को खोजने के लिए मॉड्स टैब में मॉड्स को एक-एक करके फिर से चालू करें।</string>
+    <string name="caramel_state_preview_only">केवल पूर्वावलोकन</string>
+    <string name="caramel_state_preview_only_note">यह पैकेज प्रकार सूचीबद्ध है और प्रबंधित किया जा सकता है, लेकिन इसका रनटाइम अभी क्लाइंट से जुड़ा नहीं है, इसलिए यह गेम में नहीं चलेगा।</string>
 </resources>

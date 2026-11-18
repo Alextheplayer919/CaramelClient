@@ -211,7 +211,7 @@ Migrasi harus selesai sebelum CaramelClient dapat melanjutkan.</string>
     <string name="toast_delete_failed">Penghapusan gagal: %1$s</string>
     <string name="error_delete_builtin_version">Tidak dapat menghapus versi bawaan</string>
     <string name="invalid_mod_file">Gagal</string>
-    <string name="invalid_mod_file_reason">Hanya file .so, paket mod .zip yang diizinkan. File yang dipilih bukan paket impor mod native yang valid.</string>
+    <string name="invalid_mod_file_reason">Hanya file .so, paket mod .zip, atau paket mesin .universe/.singularity yang diterima. File yang dipilih bukan paket impor mod yang valid.</string>
     <string name="invalid_zip_mod_package_title">Paket Mod ZIP Tidak Valid</string>
     <string name="invalid_zip_mod_package_message">Paket mod ZIP harus berisi manifest.json dan file .so.</string>
     <string name="error_versions">Versi Yang Rusak</string>
@@ -1545,4 +1545,6 @@ Migrasi harus selesai sebelum CaramelClient dapat melanjutkan.</string>
     <string name="caramel_skin_signed_out_hint">Masuk untuk memuat skin Minecraft Anda.</string>
     <string name="launch_error_title_stalled">Peluncuran membeku</string>
     <string name="launch_error_message_stalled">Jendela game tidak pernah menggambar satu bingkai pun, jadi peluncuran menggantung alih-alih gagal. Peluncur menutup sesi yang membeku dan membuka kembali dengan mod Anda dinonaktifkan untuk menyingkirkan satu mod. Aktifkan kembali mod satu per satu di tab Mod untuk menemukan mod yang membuat peluncuran menggantung.</string>
+    <string name="caramel_state_preview_only">Pratinjau saja</string>
+    <string name="caramel_state_preview_only_note">Jenis paket ini terdaftar dan dapat dikelola, tetapi mesinnya belum terhubung ke klien, jadi tidak akan berjalan di game.</string>
 </resources>

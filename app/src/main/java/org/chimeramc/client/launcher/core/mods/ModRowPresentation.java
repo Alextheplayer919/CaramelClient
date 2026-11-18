@@ -29,6 +29,10 @@ public final class ModRowPresentation {
     public enum Kind {
         NATIVE("native"),
         SCRIPT("script"),
+        /** A `.universe` package for the SweetLoader Rust loader. */
+        UNIVERSE("universe"),
+        /** A `.singularity` world-gen pack for the SweetLoader Rust engine. */
+        SINGULARITY("singularity"),
         UNKNOWN("unknown");
 
         public final String label;
@@ -62,7 +66,22 @@ public final class ModRowPresentation {
         String lower = entry.toLowerCase(Locale.ROOT);
         if (lower.endsWith(".so")) return Kind.NATIVE;
         if (lower.endsWith(".lua")) return Kind.SCRIPT;
+        if (lower.endsWith(".universe")) return Kind.UNIVERSE;
+        if (lower.endsWith(".singularity")) return Kind.SINGULARITY;
         return Kind.UNKNOWN;
+    }
+
+    /**
+     * Whether a mod's runtime is actually wired into the client.
+     *
+     * <p>Discovery accepts a {@code .universe} / {@code .singularity} package so it can be listed,
+     * inspected and signed — but the SweetLoader host table those engines are handed does not exist
+     * yet, so an enabled engine package cannot run. Reporting it as a working enabled mod is the
+     * "silently no-op" failure the Mods tab exists to prevent, so the row must be able to say so.
+     * This is the single pure rule the UI reads; it flips to true the day the host table ships.
+     */
+    public static boolean isRuntimeWired(Kind kind) {
+        return kind != Kind.UNIVERSE && kind != Kind.SINGULARITY;
     }
 
     /**

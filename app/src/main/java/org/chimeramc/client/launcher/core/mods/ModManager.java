@@ -717,7 +717,9 @@ public class ModManager {
             }
 
             String type = manifest.get("type").getAsString();
-            if (!PRELOAD_NATIVE_TYPE.equals(type)) {
+            ModPackageFormat format = ModPackageFormat.fromManifestType(type);
+            boolean enginePackage = format != null && format.isEnginePackage();
+            if (!PRELOAD_NATIVE_TYPE.equals(type) && !enginePackage) {
                 return null;
             }
 
@@ -730,7 +732,21 @@ public class ModManager {
             }
 
             File entryFile = new File(modDirectory, entryPath);
-            if (!entryFile.isFile() || !entryFile.getName().endsWith(".so")) {
+            if (!entryFile.isFile()) {
+                Log.w(TAG, "Ignoring mod with missing entry file: " + entryFile.getAbsolutePath());
+                return null;
+            }
+            if (enginePackage) {
+                // An engine package's entry is the archive itself, not a library: the Rust engine
+                // validates and extracts it at run time. Discovery only checks the file is present
+                // and named for the format the manifest claims, so a `.universe` directory whose
+                // entry was renamed to `.singularity` is refused rather than listed.
+                if (!ModPackageFormat.entryMatchesFormat(format, entryFile.getName())) {
+                    Log.w(TAG, "Ignoring engine package with mismatched entry: "
+                            + entryFile.getAbsolutePath());
+                    return null;
+                }
+            } else if (!entryFile.getName().endsWith(".so")) {
                 Log.w(TAG, "Ignoring mod with missing entry file: " + entryFile.getAbsolutePath());
                 return null;
             }
