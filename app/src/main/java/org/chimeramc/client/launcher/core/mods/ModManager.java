@@ -249,6 +249,66 @@ public class ModManager {
     }
 
     /**
+     * Extracts and loads the instance's enabled {@code .universe} packages into the engine runtime.
+     *
+     * <p>This is the load half of the lifecycle the audit found missing: the Rust loader's
+     * {@code load_mods} existed and was tested but nothing called it, so an enabled engine package
+     * could be listed yet never run. It runs on its own thread and the caller waits at most
+     * {@link #ENABLE_BUDGET_MS}, for the same reason {@link #enableLoadedMods()} does — the engine
+     * {@code dlopen}s and initialises mod code, which cannot be interrupted once it starts.
+     *
+     * @param filesDir the app's files dir; each package is extracted under {@code filesDir/universe}
+     */
+    public static void enableLoadedEngineMods(File filesDir) {
+        if (!ensureSweetLoaderLoaded() || filesDir == null) {
+            return;
+        }
+        final File sandboxRoot = new File(filesDir, "universe");
+        final java.util.concurrent.CountDownLatch done = new java.util.concurrent.CountDownLatch(1);
+        AppExecutors.thread("engine-enable", () -> {
+            try {
+                org.chimeramc.client.universe.UniverseRuntime.load(sandboxRoot, getInstance().getMods());
+            } catch (UnsatisfiedLinkError e) {
+                Log.e(TAG, "The engine runtime is not available", e);
+            } catch (Throwable t) {
+                AppLog.warnOnce(TAG, "engine-enable:throw", "Engine mod load threw", t);
+            } finally {
+                done.countDown();
+            }
+        }).start();
+        try {
+            if (!done.await(ENABLE_BUDGET_MS, java.util.concurrent.TimeUnit.MILLISECONDS)) {
+                AppLog.warn(TAG, "Engine mod load did not finish within " + ENABLE_BUDGET_MS
+                        + "ms; continuing the launch without waiting for it");
+            }
+        } catch (InterruptedException interrupted) {
+            Thread.currentThread().interrupt();
+        }
+    }
+
+    /**
+     * Ticks every live engine mod once with the frame's delta time.
+     *
+     * <p>Called from the game's frame pump. The per-frame cost is a single native atomic load and a
+     * loop over the live mods once the loader is up; the loader itself refuses a re-entrant call
+     * rather than deadlocking the game thread.
+     */
+    public static void tickEngineMods(float deltaSeconds) {
+        if (!ensureSweetLoaderLoaded()) return;
+        org.chimeramc.client.universe.UniverseRuntime.tick(deltaSeconds);
+    }
+
+    /** Shuts every live engine mod down. Safe when nothing is loaded, and safe to call twice. */
+    public static void disableAndUnloadEngineMods() {
+        if (!ensureSweetLoaderLoaded()) return;
+        try {
+            org.chimeramc.client.universe.UniverseRuntime.shutdown();
+        } catch (Throwable t) {
+            AppLog.warnOnce(TAG, "engine-shutdown:throw", "Engine mod shutdown threw", t);
+        }
+    }
+
+    /**
      * Runs the deferred native hook install if the game runtime is up.
      *
      * <p>The hooks used to install from {@link #enableLoadedMods()}, which the game activity reaches

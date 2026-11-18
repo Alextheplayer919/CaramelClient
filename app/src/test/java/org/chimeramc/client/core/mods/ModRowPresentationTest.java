@@ -40,10 +40,12 @@ public class ModRowPresentationTest {
     }
 
     @Test
-    public void anEngineRuntimeIsNotWiredYetSoTheRowMustSaySo() {
-        // Discovery accepts these, but the host table the engines need does not exist, so reporting
-        // them as runnable would be the "silently no-op" lie the Mods tab exists to prevent.
-        assertFalse(ModRowPresentation.isRuntimeWired(ModRowPresentation.Kind.UNIVERSE));
+    public void anEngineRuntimeReportsHonestlyAboutBeingWired() {
+        // `.universe` is now driven end to end (UniverseRuntime load/tick/shutdown), so the row may
+        // report an enabled one as working. `.singularity` is not: nothing hooks Bedrock's world
+        // generator, so reporting it as runnable would be the "silently no-op" lie the Mods tab
+        // exists to prevent.
+        assertTrue(ModRowPresentation.isRuntimeWired(ModRowPresentation.Kind.UNIVERSE));
         assertFalse(ModRowPresentation.isRuntimeWired(ModRowPresentation.Kind.SINGULARITY));
         assertTrue(ModRowPresentation.isRuntimeWired(ModRowPresentation.Kind.NATIVE));
         assertTrue(ModRowPresentation.isRuntimeWired(ModRowPresentation.Kind.SCRIPT));

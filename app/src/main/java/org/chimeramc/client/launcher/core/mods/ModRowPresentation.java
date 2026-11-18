@@ -74,14 +74,17 @@ public final class ModRowPresentation {
     /**
      * Whether a mod's runtime is actually wired into the client.
      *
-     * <p>Discovery accepts a {@code .universe} / {@code .singularity} package so it can be listed,
-     * inspected and signed — but the SweetLoader host table those engines are handed does not exist
-     * yet, so an enabled engine package cannot run. Reporting it as a working enabled mod is the
-     * "silently no-op" failure the Mods tab exists to prevent, so the row must be able to say so.
-     * This is the single pure rule the UI reads; it flips to true the day the host table ships.
+     * <p>A {@code .universe} package is now driven end to end: the launcher extracts it into the
+     * engine sandbox and calls the Rust loader's load/tick/shutdown lifecycle
+     * ({@code org.chimeramc.client.universe.UniverseRuntime}), so an enabled one runs and reports
+     * honestly as enabled. A {@code .singularity} pack is still not wired: its engine can generate a
+     * chunk into a buffer, but nothing hooks Bedrock's world generator to consume it, so reporting it
+     * as a working enabled mod would be the "silently no-op" failure the Mods tab exists to prevent.
+     * This is the single pure rule the UI reads; it flips for {@code .singularity} the day its
+     * generator hook ships.
      */
     public static boolean isRuntimeWired(Kind kind) {
-        return kind != Kind.UNIVERSE && kind != Kind.SINGULARITY;
+        return kind != Kind.SINGULARITY;
     }
 
     /**
