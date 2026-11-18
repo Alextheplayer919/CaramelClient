@@ -77,6 +77,42 @@ public final class PlayerSkinProvider {
     private PlayerSkinProvider() {
     }
 
+    /**
+     * The last skin resolved on any thread.
+     *
+     * <p>The resolve reads the filesystem (the account cache, the applied pack, the imported file)
+     * and decodes a bitmap, which must not run on the UI thread. A view that resolves off the UI
+     * thread and then shows the result would flash the fallback for a frame, so the result is also
+     * remembered here: a view built later (or rebuilt on a rebind) paints the real skin immediately
+     * and only re-resolves in the background.
+     */
+    private static volatile SkinBitmap lastResolved;
+
+    /** The most recent resolve, or null before the first one. Never blocks. */
+    public static SkinBitmap lastResolved() {
+        return lastResolved;
+    }
+
+    /**
+     * Resolves off the UI thread and delivers the result to {@code onResolved} on the main thread.
+     *
+     * <p>The disk and decode work is the reason this exists: resolving in a view's constructor read
+     * the account cache and decoded a PNG on the UI thread, so a slow read showed as a stall. The
+     * caller paints {@link #lastResolved()} immediately and this fills it in.
+     */
+    public static void resolveAsync(Context context, java.util.function.Consumer<SkinBitmap> onResolved) {
+        if (context == null) return;
+        final Context appContext = context.getApplicationContext();
+        final Context target = appContext == null ? context : appContext;
+        org.chimeramc.client.util.AppExecutors.io(
+                        org.chimeramc.client.util.AppExecutors.Kind.DISK)
+                .execute(() -> {
+                    final SkinBitmap resolved = resolve(target);
+                    if (onResolved == null) return;
+                    org.chimeramc.client.util.MainThread.post(() -> onResolved.accept(resolved));
+                });
+    }
+
     /** Remembers a skin file the player chose in the launcher. */
     public static void setCustomSkinPath(Context context, String path) {
         prefs(context).edit().putString(KEY_CUSTOM_SKIN_PATH, path).apply();
@@ -121,8 +157,19 @@ public final class PlayerSkinProvider {
      *
      * <p>Never throws and never returns null: a decode failure degrades to the next rung, because
      * a cosmetics screen that crashes is worse than one showing a generic character.
+     *
+     * <p>Reads the filesystem and decodes a bitmap, so it must run off the UI thread; a view that
+     * needs the skin on screen uses {@link #resolveAsync} and paints {@link #lastResolved()} in the
+     * meantime.
      */
     public static SkinBitmap resolve(Context context) {
+        SkinBitmap resolved = resolveUncached(context);
+        lastResolved = resolved;
+        return resolved;
+    }
+
+    /** The resolve itself, without touching the in-memory cache. Must run off the UI thread. */
+    private static SkinBitmap resolveUncached(Context context) {
         // 1. A skin the player explicitly set in the launcher: an explicit override always wins.
         String custom = getCustomSkinPath(context);
         Bitmap imported = custom != null && !custom.isEmpty() ? decodeFile(new File(custom)) : null;
