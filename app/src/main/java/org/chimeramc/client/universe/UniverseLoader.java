@@ -165,6 +165,30 @@ public final class UniverseLoader {
         }
     }
 
+    /**
+     * Verifies a package's detached Ed25519 signature against the trusted public keys.
+     *
+     * <p>Returns an empty string when the signature verifies, or the refusal reason. It is
+     * <b>fail-closed</b>: an empty {@code trustedKeysHex} is a refusal, so an unknown key is never
+     * treated as trusted. A caller with no keys to check against therefore refuses every signed
+     * package rather than accepting it.
+     *
+     * @param packageFile     the archive the signature covers (hashed as stored)
+     * @param signatureHex    the sidecar's raw 64-byte Ed25519 signature, hex
+     * @param trustedKeysHex  comma-separated 32-byte public keys, hex; empty refuses
+     */
+    public static String verifySignature(File packageFile, String signatureHex, String trustedKeysHex) {
+        if (!ensureLoaded()) return "the .universe loader library is not available";
+        if (packageFile == null) return "no package file";
+        try {
+            return nativeVerifySignature(packageFile.getAbsolutePath(),
+                    signatureHex == null ? "" : signatureHex,
+                    trustedKeysHex == null ? "" : trustedKeysHex);
+        } catch (UnsatisfiedLinkError e) {
+            return "the .universe loader library is not available";
+        }
+    }
+
     private static native String nativeInit(long berryApiPointer, String clientVersion);
 
     private static native String nativeValidate(String filePath);
@@ -181,4 +205,7 @@ public final class UniverseLoader {
     private static native String nativeCheckVersion(String minClientVersion);
 
     private static native String nativeClientVersion();
+
+    private static native String nativeVerifySignature(String filePath, String signatureHex,
+            String trustedKeysHex);
 }

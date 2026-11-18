@@ -45,6 +45,16 @@ public final class UniverseRuntime {
     private static final String TAG = "UniverseRuntime";
     private static final String MANIFEST_FILE_NAME = "manifest.json";
     private static final int MAX_MANIFEST_BYTES = 1 << 20;
+    /** The detached Ed25519 signature sidecar's suffix, beside the archive (see the format doc). */
+    private static final String SIGNATURE_SUFFIX = ".sig";
+    /**
+     * The trusted public keys (comma-separated 32-byte hex) a package's signature is checked
+     * against. Empty by default, and the verify is fail-closed, so nothing is trusted until a key
+     * set ships or a key is pinned. This is the one place to supply the client's key set; the
+     * property override exists so a build or a test can pin a key without a code change.
+     */
+    private static final String trustedKeysHex =
+            System.getProperty("org.chimeramc.client.universe.trustedKeys", "");
 
     private static boolean sweetloaderAttempted;
     private static boolean sweetloaderLoaded;
@@ -212,15 +222,53 @@ public final class UniverseRuntime {
             AppLog.warn(TAG, "Engine package " + id + " names no extractable native library");
             return null;
         }
-        // `trusted` gates the one permission tied to trust (`write_memory`). A package is trusted
-        // only when its detached signature verified against a key set this client ships or the user
-        // pinned — and no trusted-key set is supplied yet (audit 6.7), so every package is untrusted
-        // here. That is the honest default: an unsigned mod runs (it is native code either way) but
-        // does not get the memory-write capability through the host table.
+        // `trusted` gates the one permission tied to trust (`write_memory`). It is true only when a
+        // detached signature beside the archive verifies against a key set this client ships or the
+        // user pinned. With no key set configured the verify is fail-closed and refuses, so every
+        // package is untrusted — the honest default: an unsigned (or unverifiable) mod still runs,
+        // because it is native code either way, but it does not get the memory-write capability
+        // through the host table.
+        boolean trusted = verifyPackageTrust(packageFile, id);
         return new UniverseModSpecs.Spec(id, libPath,
                 stringList(manifest, "dependencies"),
                 stringList(manifest, "permissions"),
-                false);
+                trusted);
+    }
+
+    /**
+     * Verifies the package's detached signature (a {@code <name>.sig} sidecar beside the archive),
+     * returning whether it is trusted.
+     *
+     * <p>No signature is not an error — it is simply untrusted. A signature that is present but does
+     * not verify is logged with its reason, so "the package is signed but not by a key we know" is
+     * distinguishable from "the package is unsigned" rather than both reading as "untrusted".
+     */
+    private static boolean verifyPackageTrust(File packageFile, String id) {
+        File sidecar = new File(packageFile.getParentFile(), packageFile.getName() + SIGNATURE_SUFFIX);
+        if (!sidecar.isFile()) {
+            return false;
+        }
+        String signatureHex = readTextFile(sidecar);
+        if (signatureHex == null || signatureHex.trim().isEmpty()) {
+            AppLog.warn(TAG, "Engine package " + id + " has an empty signature sidecar; treating it as untrusted");
+            return false;
+        }
+        String refusal = UniverseLoader.verifySignature(packageFile, signatureHex.trim(), trustedKeysHex);
+        if (refusal == null || refusal.isEmpty()) {
+            return true;
+        }
+        AppLog.warn(TAG, "Engine package " + id + " is signed but not trusted: " + refusal);
+        return false;
+    }
+
+    /** Reads a small UTF-8 text file, or null on any failure. */
+    private static String readTextFile(File file) {
+        try (InputStream in = new FileInputStream(file)) {
+            return readBounded(in);
+        } catch (IOException e) {
+            AppLog.warnOnce(TAG, "sidecar-read", "Could not read the signature sidecar", e);
+            return null;
+        }
     }
 
     /** The absolute path of the package's first declared native library, or null. */
