@@ -1,5 +1,6 @@
 package org.chimeramc.client.universe;
 
+import org.chimeramc.client.BuildConfig;
 import org.chimeramc.client.util.AppLog;
 
 import java.io.File;
@@ -51,17 +52,33 @@ public final class UniverseLoader {
     }
 
     /**
-     * Hands the Rust loader the BerryAPI API table pointer the C++ bridge already resolved.
+     * Hands the Rust loader the BerryAPI pointer, stamping this build's own version.
+     *
+     * <p>Convenience for the launcher's single call site: the version is read from
+     * {@link BuildConfig#VERSION_NAME}, so a caller cannot accidentally pass the crate's
+     * {@code 1.0.0}.
+     */
+    public static String init(long berryApiPointer) {
+        return init(berryApiPointer, BuildConfig.VERSION_NAME);
+    }
+
+    /**
+     * Hands the Rust loader the BerryAPI API table pointer the C++ bridge already resolved, and the
+     * running client's version.
      *
      * <p>A {@code null} pointer is not an error: the loader still runs and only the BerryAPI-backed
      * features report unavailable.
      *
+     * <p>{@code clientVersion} is the build's own release name ({@code BETA6}, {@code OV.2}), not
+     * the crate's {@code 1.0.0}. The loader checks a package's {@code min_client_version} against
+     * it, so without the real version a package built for a newer client would load and fault.
+     *
      * @return an empty string on success, or a human-readable refusal reason.
      */
-    public static String init(long berryApiPointer) {
+    public static String init(long berryApiPointer, String clientVersion) {
         if (!ensureLoaded()) return "the .universe loader library is not available";
         try {
-            return nativeInit(berryApiPointer);
+            return nativeInit(berryApiPointer, clientVersion == null ? "" : clientVersion);
         } catch (UnsatisfiedLinkError e) {
             return "the .universe loader library is not available";
         }
@@ -148,7 +165,7 @@ public final class UniverseLoader {
         }
     }
 
-    private static native String nativeInit(long berryApiPointer);
+    private static native String nativeInit(long berryApiPointer, String clientVersion);
 
     private static native String nativeValidate(String filePath);
 

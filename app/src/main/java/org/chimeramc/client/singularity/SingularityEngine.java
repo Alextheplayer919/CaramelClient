@@ -51,16 +51,30 @@ public final class SingularityEngine {
     }
 
     /**
+     * Hands the engine the BerryAPI pointer, stamping this build's own version.
+     *
+     * <p>Convenience for the launcher's call site: the version is read from
+     * {@link org.chimeramc.client.BuildConfig#VERSION_NAME}, so a caller cannot accidentally pass
+     * the crate's {@code 1.0.0}.
+     */
+    public static String init(long berryApiPointer) {
+        return init(berryApiPointer, org.chimeramc.client.BuildConfig.VERSION_NAME);
+    }
+
+    /**
      * Hands the engine the BerryAPI API table pointer so it can generate chunks against the live
      * world. A {@code null} pointer is not an error; the engine then reports the BerryAPI-backed
      * features unavailable.
      *
+     * <p>{@code clientVersion} is the build's own release name ({@code BETA6}), which a package's
+     * {@code min_client_version} is checked against.
+     *
      * @return an empty string on success, or a refusal reason.
      */
-    public static String init(long berryApiPointer) {
+    public static String init(long berryApiPointer, String clientVersion) {
         if (!ensureLoaded()) return "the .singularity engine library is not available";
         try {
-            return nativeInit(berryApiPointer);
+            return nativeInit(berryApiPointer, clientVersion == null ? "" : clientVersion);
         } catch (UnsatisfiedLinkError e) {
             return "the .singularity engine library is not available";
         }
@@ -121,7 +135,7 @@ public final class SingularityEngine {
         }
     }
 
-    private static native String nativeInit(long berryApiPointer);
+    private static native String nativeInit(long berryApiPointer, String clientVersion);
 
     private static native String nativeValidate(String filePath);
 

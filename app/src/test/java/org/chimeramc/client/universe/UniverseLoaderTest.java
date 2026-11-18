@@ -27,7 +27,7 @@ public class UniverseLoaderTest {
 
     @Test
     public void everyFallibleEntryPointReturnsAMessageNotAThrow() {
-        assertNotNull(UniverseLoader.init(0L));
+        assertNotNull(UniverseLoader.init(0L, "BETA6"));
         assertNotNull(UniverseLoader.validate(new File("/tmp/x.universe")));
         assertNotNull(UniverseLoader.extract(new File("/tmp/x.universe"), new File("/tmp/s"),
                 new File("/tmp")));
