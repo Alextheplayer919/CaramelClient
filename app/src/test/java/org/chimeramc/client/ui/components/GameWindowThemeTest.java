@@ -88,6 +88,22 @@ public class GameWindowThemeTest {
                 relativeLuminance(navy) < LUMINANCE_CEILING);
     }
 
+    @Test
+    public void theGameActivityStaysSoftwareComposited() throws IOException {
+        // hardwareAccelerated="false" is deliberate: the activity hosts the engine's EGL surface and
+        // the overlays draw through the software Canvas. Flipping it on composites a second GL
+        // context over the engine's. Pinned so a "modernise the manifest" change cannot regress it.
+        String manifest = read(resolve("app/src/main/AndroidManifest.xml"));
+        for (String activity : new String[]{".core.minecraft.MinecraftActivity",
+                ".core.minecraft.MinecraftLoadingActivity"}) {
+            int at = manifest.indexOf("android:name=\"" + activity + "\"");
+            assertTrue(activity + " is no longer declared", at >= 0);
+            String block = manifest.substring(at, Math.min(manifest.length(), at + 400));
+            assertTrue(activity + " must keep hardwareAccelerated=\"false\"",
+                    block.contains("android:hardwareAccelerated=\"false\""));
+        }
+    }
+
     private static Path stylesFile() throws IOException {
         return resolve("app/src/main/res/values/styles.xml");
     }

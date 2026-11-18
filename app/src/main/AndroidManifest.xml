@@ -385,6 +385,11 @@
             android:theme="@style/MinecraftLoadingTheme"
             tools:ignore="DiscouragedApi" />
 
+        <!-- hardwareAccelerated="false" is deliberate and must stay: the game activity hosts the
+             engine's own EGL surface (the eglSwapBuffers present hook the overlays ride), and the
+             launcher's overlay views draw through the software Canvas. Enabling framework HWUI here
+             would composite a second GL context over the engine's and can black out or tear the
+             game frame. See docs/agents/game-window-white-screen-theme.md. -->
         <activity
             android:name=".core.minecraft.MinecraftActivity"
             android:hardwareAccelerated="false"
