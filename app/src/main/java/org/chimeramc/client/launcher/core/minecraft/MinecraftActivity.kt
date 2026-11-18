@@ -184,16 +184,11 @@ class MinecraftActivity : MainActivity(), PojavControlsHost {
         try {
             initializeSweetLoaderTextInput()
             PreloaderInput.setActivity(this)
-            // The bundled BerryAPI runtime is only dlopen-ed by the sweetloader bridge; attach it
-            // here, once the game process is up, so its subsystems are live for this session.
-            // Fail-closed and never fatal: a missing library or no usable hook backend returns
-            // false and the dependent features stay greyed rather than half-installed.
-            org.chimeramc.client.preloader.BerryApi.ensureAttached()
-            // Bind the launcher's local-player seam once BerryAPI is attached, so its World
-            // module can read the local player's position and view rotation instead of failing
-            // closed. Fail-closed and never fatal: a library without the seam ABI, or a struct
-            // mismatch, leaves the world feed off and the dependent modules unavailable.
-            org.chimeramc.client.preloader.BerryApi.bindWorldSeam()
+            // The bundled BerryAPI runtime is attached and its world seam bound by the frame tick
+            // (ModManager.pumpBerryRuntime(), called from tick()), never here. Attaching in onCreate
+            // runs BERRY_Inject on the main thread while libminecraftpe.so is only partly mapped,
+            // and the attach is once-only, so a bad early attempt could not be retried and the game
+            // window froze before its first frame. The deferred pump is the single call site.
             val storageProfileId = intent.getStringExtra(MinecraftLauncher.EXTRA_STORAGE_PROFILE_ID)
             // A per-instance controller binding takes precedence over plain pad detection, so
             // an instance can bring its own controller setup into the session.
