@@ -21,11 +21,15 @@
   entry path; a `.universe` archive there would fail with a confusing "not a valid ELF". It skips
   any entry that is not a native `.so` instead.
 - **The row says "Preview only", and that is deliberate honesty.** Discovery, listing and signing of
-  an engine package work, but the SweetLoader host table those engines are handed does not exist
-  yet, so an enabled engine package cannot run. `ModRowPresentation.isRuntimeWired` is the single
-  pure rule the UI reads (`false` for the engine kinds); the Mods card and the detail modal show a
-  "Preview only" badge and a one-line note rather than a green "Enabled" that lies. Flip that method
-  the day the host table ships; do not delete the badge while the runtime is unwired.
+  an engine package work, and the host table the engines are handed now exists
+  (`pl/engine/UniverseHostTable.cpp` builds the full `universe_host_t`; the Rust `universe-core::host`
+  filter reduces it to each mod's declared permissions before `universe_init`), but the load/tick
+  lifecycle is not yet driven from the launcher: nothing calls the engine's `load_mods`/`tick_mods` on
+  the game thread, so an enabled engine package still cannot run. `ModRowPresentation.isRuntimeWired`
+  is the single pure rule the UI reads (`false` for the engine kinds); the Mods card and the detail
+  modal show a "Preview only" badge and a one-line note rather than a green "Enabled" that lies. Flip
+  that method the day the load/tick wiring ships; do not delete the badge while the runtime is
+  unwired.
 - **The loader budget is not preemption.** A running native call cannot be interrupted from another
   thread, so a mod that blocks inside `universe_tick` cannot be stopped mid-call. `universe-core`'s
   tick budget (2 ms per frame) only *measures* the tick and counts an overrun as a fault through the
