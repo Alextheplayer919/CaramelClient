@@ -47,15 +47,27 @@ public final class AccountSkinCache {
          * refreshed once rather than trusted forever.
          */
         public final long fetchedAtMs;
+        /**
+         * True when the cached skin uses the slim ("Alex") 3-px-arm model.
+         *
+         * <p>Persisted so the preview draws the right arms on a later launch, before the service is
+         * asked again; the variant cannot be recovered from the PNG alone.
+         */
+        public final boolean slim;
 
         public Entry(byte[] png, String accountKey) {
-            this(png, accountKey, 0L);
+            this(png, accountKey, 0L, false);
         }
 
         public Entry(byte[] png, String accountKey, long fetchedAtMs) {
+            this(png, accountKey, fetchedAtMs, false);
+        }
+
+        public Entry(byte[] png, String accountKey, long fetchedAtMs, boolean slim) {
             this.png = png;
             this.accountKey = accountKey == null ? "" : accountKey;
             this.fetchedAtMs = fetchedAtMs;
+            this.slim = slim;
         }
     }
 
@@ -130,6 +142,17 @@ public final class AccountSkinCache {
         } catch (java.io.IOException ignored) {
             AppLog.warnOnce("CaramelClient", "AccountSkinCache:time", "Ignored a failure writing the skin fetch time", ignored);
         }
+        // The arm model lives in its own sibling as well; absent means classic (the default).
+        File slimFile = new File(target.getParentFile(), PNG_NAME + ".slim");
+        if (entry.slim) {
+            try (java.io.FileOutputStream out = new java.io.FileOutputStream(slimFile)) {
+                out.write('1');
+            } catch (java.io.IOException ignored) {
+                AppLog.warnOnce("CaramelClient", "AccountSkinCache:slim", "Ignored a failure writing the skin arm model", ignored);
+            }
+        } else if (slimFile.exists()) {
+            slimFile.delete();
+        }
         return true;
     }
 
@@ -157,7 +180,8 @@ public final class AccountSkinCache {
                     fetchedAtMs = 0L;
                 }
             }
-            return new Entry(png, key, fetchedAtMs);
+            File slimFile = new File(target.getParentFile(), PNG_NAME + ".slim");
+            return new Entry(png, key, fetchedAtMs, slimFile.exists());
         } catch (java.io.IOException e) {
             return null;
         }
@@ -172,6 +196,8 @@ public final class AccountSkinCache {
         if (keyFile.exists()) ok &= keyFile.delete();
         File timeFile = new File(target.getParentFile(), PNG_NAME + ".time");
         if (timeFile.exists()) ok &= timeFile.delete();
+        File slimFile = new File(target.getParentFile(), PNG_NAME + ".slim");
+        if (slimFile.exists()) ok &= slimFile.delete();
         return ok;
     }
 }

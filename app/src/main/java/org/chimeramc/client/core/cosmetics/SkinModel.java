@@ -168,9 +168,31 @@ public final class SkinModel {
 
     // Standard 1.8 player layout. Regions are the well-documented ones from the skin format;
     // each is stated per face so a mistake is a single wrong number, not a systematic offset.
-    private static final List<Box> BOXES;
+    private static final List<Box> CLASSIC_BOXES = buildBoxes(false);
+    private static final List<Box> SLIM_BOXES = buildBoxes(true);
 
-    static {
+    /**
+     * The classic model: 4-px-wide arms, the default and the layout every 64x32 skin uses.
+     */
+    public static List<Box> boxes() {
+        return CLASSIC_BOXES;
+    }
+
+    /**
+     * The model for an arm type.
+     *
+     * <p>A slim ("Alex") skin carries 3-px-wide arms. Drawing it with the classic 4-px arms stretches
+     * the arm texture across a wider box and reads as a fat-armed version of the wrong character — the
+     * "Alex skins render with Steve arms" defect. The head, body and legs are identical between the
+     * two; only the arms differ, so the whole model is rebuilt rather than patched face by face.
+     *
+     * @param slim true for the 3-px-arm model
+     */
+    public static List<Box> boxes(boolean slim) {
+        return slim ? SLIM_BOXES : CLASSIC_BOXES;
+    }
+
+    private static List<Box> buildBoxes(boolean slim) {
         List<Box> boxes = new ArrayList<>();
 
         // Head, 8x8x8, sitting on the body.
@@ -207,36 +229,42 @@ public final class SkinModel {
                 .over(Face.LEFT, 28, 36, 4, 12)
                 .over(Face.BACK, 32, 36, 8, 12));
 
-        // Arms, 4x12x4, attached at the shoulders. Right is -x (the model's own right).
-        boxes.add(new Box("arm_r", -6, 18, 0, 4, 12, 4)
-                .base(Face.TOP, 44, 16, 4, 4)
-                .base(Face.BOTTOM, 48, 16, 4, 4)
-                .base(Face.RIGHT, 40, 20, 4, 12)
-                .base(Face.FRONT, 44, 20, 4, 12)
-                .base(Face.LEFT, 48, 20, 4, 12)
-                .base(Face.BACK, 52, 20, 4, 12)
-                .over(Face.TOP, 44, 32, 4, 4)
-                .over(Face.BOTTOM, 48, 32, 4, 4)
-                .over(Face.RIGHT, 40, 36, 4, 12)
-                .over(Face.FRONT, 44, 36, 4, 12)
-                .over(Face.LEFT, 48, 36, 4, 12)
-                .over(Face.BACK, 52, 36, 4, 12));
+        // Arms, attached at the shoulders, the inner face flush with the body edge. The width and the
+        // whole UV block differ between the classic (4-px) and slim (3-px) arm types; the arm stays
+        // flush against the body (inner edge at the body's +/-4) in both, so only the outer edge
+        // moves. Right is -x (the model's own right).
+        int armW = slim ? 3 : 4;
+        float armRcx = -(4f + armW / 2f);
+        float armLcx = 4f + armW / 2f;
+        boxes.add(new Box("arm_r", armRcx, 18, 0, armW, 12, 4)
+                .base(Face.TOP, 44, 16, armW, 4)
+                .base(Face.BOTTOM, 44 + armW, 16, armW, 4)
+                .base(Face.RIGHT, 40, 20, armW, 12)
+                .base(Face.FRONT, 40 + armW, 20, armW, 12)
+                .base(Face.LEFT, 40 + 2 * armW, 20, armW, 12)
+                .base(Face.BACK, 40 + 3 * armW, 20, armW, 12)
+                .over(Face.TOP, 44, 32, armW, 4)
+                .over(Face.BOTTOM, 44 + armW, 32, armW, 4)
+                .over(Face.RIGHT, 40, 36, armW, 12)
+                .over(Face.FRONT, 40 + armW, 36, armW, 12)
+                .over(Face.LEFT, 40 + 2 * armW, 36, armW, 12)
+                .over(Face.BACK, 40 + 3 * armW, 36, armW, 12));
 
-        boxes.add(new Box("arm_l", 6, 18, 0, 4, 12, 4)
-                .base(Face.TOP, 36, 48, 4, 4)
-                .base(Face.BOTTOM, 40, 48, 4, 4)
-                .base(Face.RIGHT, 32, 52, 4, 12)
-                .base(Face.FRONT, 36, 52, 4, 12)
-                .base(Face.LEFT, 40, 52, 4, 12)
-                .base(Face.BACK, 44, 52, 4, 12)
-                .over(Face.TOP, 52, 48, 4, 4)
-                .over(Face.BOTTOM, 56, 48, 4, 4)
-                .over(Face.RIGHT, 48, 52, 4, 12)
-                .over(Face.FRONT, 52, 52, 4, 12)
-                .over(Face.LEFT, 56, 52, 4, 12)
-                .over(Face.BACK, 60, 52, 4, 12));
+        boxes.add(new Box("arm_l", armLcx, 18, 0, armW, 12, 4)
+                .base(Face.TOP, 36, 48, armW, 4)
+                .base(Face.BOTTOM, 36 + armW, 48, armW, 4)
+                .base(Face.RIGHT, 32, 52, armW, 12)
+                .base(Face.FRONT, 32 + armW, 52, armW, 12)
+                .base(Face.LEFT, 32 + 2 * armW, 52, armW, 12)
+                .base(Face.BACK, 32 + 3 * armW, 52, armW, 12)
+                .over(Face.TOP, 52, 48, armW, 4)
+                .over(Face.BOTTOM, 52 + armW, 48, armW, 4)
+                .over(Face.RIGHT, 48, 52, armW, 12)
+                .over(Face.FRONT, 48 + armW, 52, armW, 12)
+                .over(Face.LEFT, 48 + 2 * armW, 52, armW, 12)
+                .over(Face.BACK, 48 + 3 * armW, 52, armW, 12));
 
-        // Legs, 4x12x4, from the feet up.
+        // Legs, 4x12x4, from the feet up. Identical for both arm types.
         boxes.add(new Box("leg_r", -2, 6, 0, 4, 12, 4)
                 .base(Face.TOP, 4, 16, 4, 4)
                 .base(Face.BOTTOM, 8, 16, 4, 4)
@@ -265,14 +293,10 @@ public final class SkinModel {
                 .over(Face.LEFT, 8, 52, 4, 12)
                 .over(Face.BACK, 12, 52, 4, 12));
 
-        BOXES = Collections.unmodifiableList(boxes);
+        return Collections.unmodifiableList(boxes);
     }
 
     private SkinModel() {
-    }
-
-    public static List<Box> boxes() {
-        return BOXES;
     }
 
     /** Total model height in pixels, from the feet to the top of the head. */

@@ -139,6 +139,45 @@ public final class MinecraftSkinFetcher {
     }
 
     /**
+     * Whether the active skin uses the slim ("Alex") model, from a profile response.
+     *
+     * <p>The profile's {@code variant} is {@code "SLIM"} for a 3-px-arm skin and {@code "CLASSIC"}
+     * (or absent) for the 4-px default. The variant is taken from the same entry {@link #activeSkinUrl}
+     * selects, so the URL and the arm model always describe one skin. Pure, so it is JVM-tested.
+     */
+    public static boolean activeSkinIsSlim(String body) {
+        if (body == null || body.trim().isEmpty()) return false;
+        try {
+            JsonElement root = JsonParser.parseString(body);
+            if (!root.isJsonObject()) return false;
+            JsonElement skinsElement = root.getAsJsonObject().get("skins");
+            if (skinsElement == null || !skinsElement.isJsonArray()) return false;
+            JsonArray skins = skinsElement.getAsJsonArray();
+            if (skins.size() == 0) return false;
+
+            boolean firstSlim = false;
+            boolean firstSeen = false;
+            for (JsonElement entry : skins) {
+                if (entry == null || !entry.isJsonObject()) continue;
+                JsonObject skin = entry.getAsJsonObject();
+                String url = stringOrNull(skin, "url");
+                if (url == null || url.isEmpty()) continue;
+                boolean slim = "SLIM".equalsIgnoreCase(stringOrNull(skin, "variant"));
+                if (!firstSeen) {
+                    firstSeen = true;
+                    firstSlim = slim;
+                }
+                if ("ACTIVE".equalsIgnoreCase(stringOrNull(skin, "state"))) {
+                    return slim;
+                }
+            }
+            return firstSlim;
+        } catch (Throwable t) {
+            return false;
+        }
+    }
+
+    /**
      * The profile's Minecraft UUID from a profile response, or null.
      *
      * <p>Used to confirm the response belongs to the account that asked, so a stale or crossed

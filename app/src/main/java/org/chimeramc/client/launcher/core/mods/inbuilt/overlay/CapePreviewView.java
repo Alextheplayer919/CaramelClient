@@ -846,7 +846,8 @@ public class CapePreviewView extends View {
         atlas.getPixels(skinAtlasPixels, 0, aw, 0, 0, aw, ah);
         scene = new PreviewScene();
         PreviewCharacterScene.addCharacter(scene, skinAtlasPixels, SkinModel.ATLAS_SIZE,
-                headPitchDeg, headYawDeg);
+                headPitchDeg, headYawDeg, null,
+                CharacterPose.relaxedHero(), skin != null && skin.slim);
     }
 
     /**

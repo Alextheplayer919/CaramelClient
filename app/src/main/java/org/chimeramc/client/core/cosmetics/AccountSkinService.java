@@ -130,19 +130,48 @@ public final class AccountSkinService {
     }
 
     /**
+     * The official lookup result: the texture URL and whether the skin is slim.
+     *
+     * <p>The variant only exists on the official profile, so it is carried with the URL from the same
+     * fetch rather than looked up separately, which could describe a different skin.
+     */
+    public static final class OfficialSkin {
+        public final String textureUrl;
+        public final boolean slim;
+
+        OfficialSkin(String textureUrl, boolean slim) {
+            this.textureUrl = textureUrl;
+            this.slim = slim;
+        }
+    }
+
+    /**
+     * The texture URL and arm model from the official profile endpoint, or null.
+     *
+     * <p>Fetches the profile once and reads both the active skin's URL and its {@code variant}, so the
+     * two always describe the same skin.
+     */
+    public static OfficialSkin resolveOfficialWithVariant(String bearer) {
+        try {
+            String body = MinecraftSkinFetcher.fetchProfileJson(bearer);
+            if (body == null) return null;
+            String url = MinecraftSkinFetcher.activeSkinUrl(body);
+            if (url == null) return null;
+            return new OfficialSkin(url, MinecraftSkinFetcher.activeSkinIsSlim(body));
+        } catch (Throwable t) {
+            return null;
+        }
+    }
+
+    /**
      * The texture URL from the official profile endpoint, or null.
      *
      * <p>Fetches the profile, parses the active skin, and verifies the profile is the account we
      * asked about before trusting it.
      */
     public static String resolveTextureUrlOfficial(String bearer) {
-        try {
-            String body = MinecraftSkinFetcher.fetchProfileJson(bearer);
-            if (body == null) return null;
-            return MinecraftSkinFetcher.activeSkinUrl(body);
-        } catch (Throwable t) {
-            return null;
-        }
+        OfficialSkin official = resolveOfficialWithVariant(bearer);
+        return official == null ? null : official.textureUrl;
     }
 
     /**
@@ -258,7 +287,10 @@ public final class AccountSkinService {
      */
     public static Bitmap fetchAndCache(android.content.Context context, String xuid) {
         try {
-            String url = resolveTextureUrl(xuid, bearerForActiveAccount(context));
+            String bearer = bearerForActiveAccount(context);
+            OfficialSkin official = resolveOfficialWithVariant(bearer);
+            String url = official != null ? official.textureUrl : resolveTextureUrlLegacy(xuid);
+            boolean slim = official != null && official.slim;
             if (url == null) {
                 // "no skin" or "no route to one": the two lookups both came back empty. Logged so a
                 // support report can tell this apart from a token or network failure below.
@@ -278,7 +310,7 @@ public final class AccountSkinService {
             }
             AccountSkinCache.write(context.getFilesDir(),
                     new AccountSkinCache.Entry(png, AccountSkinCache.accountKeyFor(xuid),
-                            System.currentTimeMillis()));
+                            System.currentTimeMillis(), slim));
             return PlayerSkinProvider.normalise(atlas);
         } catch (Throwable t) {
             AppLog.warn("AccountSkinService", "The account skin fetch threw", t);
