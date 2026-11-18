@@ -317,6 +317,21 @@ public class PreloaderRulesTest {
         assertFalse(PreloaderRules.newerThanRules("{\"rules\":[]}", null));
     }
 
+    @Test
+    public void theShippedRulesStopAtOneTwoSixFiftyNinetyNine() throws java.io.IOException {
+        // Pins the shipped ceiling so the gap is a tested fact, not an assumption. Every Bedrock
+        // build above 1.26.50.99 is uncovered: the launcher says "newer than the rules" and the
+        // byte-pattern hooks stay off (RTTI-slot seams still work). Closing the gap needs a new
+        // rule derived from the real libminecraftpe.so and a re-sign with the private key, neither
+        // of which can be produced in this repo - see docs/agents/sweetloader-signature-rules.md.
+        String content = new String(java.nio.file.Files.readAllBytes(realRulesPath()),
+                java.nio.charset.StandardCharsets.UTF_8);
+        assertEquals("1.26.50.99", PreloaderRules.highestCoveredVersion(content));
+        assertTrue(PreloaderRules.newerThanRules(content, "1.26.60.28"));
+        assertFalse(PreloaderRules.coversVersion(content, "1.26.60.28"));
+        assertFalse(PreloaderRules.coversVersion(content, "1.26.52"));
+    }
+
     private static java.nio.file.Path realRulesPath() {
         // Gradle runs unit tests with the module dir as the working directory, so the file is at
         // ../resources/sweetloader/...; fall back to a repo-relative path for other runners.
