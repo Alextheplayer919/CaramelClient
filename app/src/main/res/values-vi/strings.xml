@@ -1549,4 +1549,6 @@ Quá trình chuyển đổi phải hoàn tất trước khi CaramelClient có th
     <string name="caramel_cosmetics_signed_out_title">Đăng nhập để dùng trang phục</string>
     <string name="caramel_cosmetics_signed_out_body">Áo choàng, mũ và thú cưng gắn với tài khoản đã đăng nhập của bạn.</string>
     <string name="caramel_skin_signed_out_hint">Đăng nhập để tải skin Minecraft của bạn.</string>
+    <string name="launch_error_title_stalled">Quá trình khởi chạy bị đóng băng</string>
+    <string name="launch_error_message_stalled">Cửa sổ trò chơi không bao giờ vẽ một khung hình nào, nên quá trình khởi chạy bị treo thay vì thất bại. Trình khởi chạy đã đóng phiên bị đóng băng và mở lại với các mod của bạn bị tắt để loại trừ một mod. Hãy bật lại từng mod một trong thẻ Mod để tìm ra mod khiến quá trình khởi chạy bị treo.</string>
 </resources>

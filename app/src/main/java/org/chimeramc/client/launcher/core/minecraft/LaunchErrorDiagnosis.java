@@ -49,6 +49,12 @@ public final class LaunchErrorDiagnosis {
         MOD_FAILED,
         /** The process ran out of memory while preparing the game. */
         OUT_OF_MEMORY,
+        /**
+         * The game window never drew a frame, so the launch hung rather than failed. The launcher's
+         * watchdog recovers from this by killing the frozen process and reopening the launcher
+         * without mods; the stored report is what names the cause when it comes back.
+         */
+        LAUNCH_STALLED,
         /** Nothing recognisable in the failure. */
         UNKNOWN,
     }
@@ -63,6 +69,11 @@ public final class LaunchErrorDiagnosis {
         if (text == null) return Cause.UNKNOWN;
         String lower = text.toLowerCase(Locale.ROOT);
 
+        // The launch watchdog's own marker. It is checked first because the marker string is
+        // deliberately specific and must not be shadowed by a substring match below.
+        if (lower.contains("launch hung")) {
+            return Cause.LAUNCH_STALLED;
+        }
         // Bitness first: the message names neither a missing file nor a symbol, and a 32-bit build
         // reported as "missing a file" would send the user to re-import the same broken build.
         if (lower.contains("is 32-bit instead of 64-bit")
@@ -155,6 +166,8 @@ public final class LaunchErrorDiagnosis {
                 return R.string.launch_error_title_mod_failed;
             case OUT_OF_MEMORY:
                 return R.string.launch_error_title_out_of_memory;
+            case LAUNCH_STALLED:
+                return R.string.launch_error_title_stalled;
             default:
                 return R.string.launch_error_title_unknown;
         }
@@ -178,6 +191,8 @@ public final class LaunchErrorDiagnosis {
                 return R.string.launch_error_message_mod_failed;
             case OUT_OF_MEMORY:
                 return R.string.launch_error_message_out_of_memory;
+            case LAUNCH_STALLED:
+                return R.string.launch_error_message_stalled;
             default:
                 return R.string.launch_error_message_unknown;
         }

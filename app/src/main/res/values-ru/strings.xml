@@ -1558,4 +1558,6 @@
     <string name="caramel_cosmetics_signed_out_title">Войдите, чтобы использовать косметику</string>
     <string name="caramel_cosmetics_signed_out_body">Плащи, шляпы и питомцы применяются к вашей учётной записи.</string>
     <string name="caramel_skin_signed_out_hint">Войдите, чтобы загрузить свой скин Minecraft.</string>
+    <string name="launch_error_title_stalled">Запуск завис</string>
+    <string name="launch_error_message_stalled">Окно игры так и не отрисовало ни одного кадра, поэтому запуск завис, а не завершился ошибкой. Лаунчер закрыл зависшую сессию и открылся заново с отключёнными модами, чтобы исключить мод. Включайте моды по одному на вкладке «Моды», чтобы найти тот, из-за которого запуск зависает.</string>
 </resources>

@@ -1516,4 +1516,6 @@ CaramelClient を続行するには移行を完了する必要があります。
     <string name="caramel_cosmetics_signed_out_title">コスメを使うにはサインインしてください</string>
     <string name="caramel_cosmetics_signed_out_body">マント、帽子、ペットはサインイン中のアカウントに適用されます。</string>
     <string name="caramel_skin_signed_out_hint">Minecraftのスキンを読み込むにはサインインしてください。</string>
+    <string name="launch_error_title_stalled">起動がフリーズしました</string>
+    <string name="launch_error_message_stalled">ゲームウィンドウが一度もフレームを描画しなかったため、起動は失敗ではなくハングしました。ランチャーはフリーズしたセッションを閉じ、原因の切り分けのためModを無効にして再度開きました。起動をハングさせるModを見つけるには、ModタブでModを1つずつ再度有効にしてください。</string>
 </resources>

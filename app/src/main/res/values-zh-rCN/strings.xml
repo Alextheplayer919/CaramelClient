@@ -1540,4 +1540,6 @@
     <string name="caramel_cosmetics_signed_out_title">登录后即可使用装饰</string>
     <string name="caramel_cosmetics_signed_out_body">你的披风、帽子和宠物将应用于已登录的账户。</string>
     <string name="caramel_skin_signed_out_hint">登录以加载你的 Minecraft 皮肤。</string>
+    <string name="launch_error_title_stalled">启动已冻结</string>
+    <string name="launch_error_message_stalled">游戏窗口始终没有绘制任何一帧，因此启动是卡住了而不是失败了。启动器关闭了冻结的会话，并在禁用你的模组的情况下重新打开，以排除某个模组。请在“模组”标签页中逐个重新启用模组，找出导致启动卡住的模组。</string>
 </resources>

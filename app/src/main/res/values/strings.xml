@@ -2681,6 +2681,8 @@ CaramelClient must complete the migration before continuing.</string>
     <string name="launch_error_message_out_of_memory">The launcher ran out of memory while preparing Minecraft. Close other apps, disable a few mods, and try again. A device with 3 GB of RAM or more is recommended.</string>
     <string name="launch_error_title_unknown">Couldn\'t start Minecraft</string>
     <string name="launch_error_message_unknown">The launch failed for a reason the launcher could not identify. The exact error is below — it is what a bug report needs.</string>
+    <string name="launch_error_title_stalled">The launch froze</string>
+    <string name="launch_error_message_stalled">The game window never drew a frame, so the launch hung rather than failed. The launcher closed the frozen session and reopened with your mods disabled to rule a mod out. Re-enable mods one at a time in the Mods tab to find the one that hangs the launch.</string>
     <string name="launch_error_cause_label">Cause:</string>
 
     <!-- Cause-specific reasons for downloads, imports and file operations (UserFacingError).

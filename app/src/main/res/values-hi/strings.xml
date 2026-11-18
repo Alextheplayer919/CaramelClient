@@ -1547,4 +1547,6 @@ CaramelClient जारी रखने से पहले माइग्र�
     <string name="caramel_cosmetics_signed_out_title">कॉस्मेटिक्स उपयोग करने के लिए साइन इन करें</string>
     <string name="caramel_cosmetics_signed_out_body">आपकी केप, टोपी और पालतू आपके साइन-इन खाते पर लागू होते हैं।</string>
     <string name="caramel_skin_signed_out_hint">अपनी Minecraft स्किन लोड करने के लिए साइन इन करें।</string>
+    <string name="launch_error_title_stalled">लॉन्च फ़्रीज़ हो गया</string>
+    <string name="launch_error_message_stalled">गेम विंडो ने कभी कोई फ़्रेम नहीं बनाया, इसलिए लॉन्च विफल होने के बजाय अटक गया। लॉन्चर ने फ़्रीज़ हुए सत्र को बंद कर दिया और किसी मॉड को बाहर रखने के लिए आपके मॉड बंद करके फिर से खोला। लॉन्च को अटकाने वाले मॉड को खोजने के लिए मॉड्स टैब में मॉड्स को एक-एक करके फिर से चालू करें।</string>
 </resources>

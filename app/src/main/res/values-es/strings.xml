@@ -1519,4 +1519,6 @@ La migración debe completarse antes de continuar con CaramelClient.</string>
     <string name="caramel_cosmetics_signed_out_title">Inicia sesión para usar cosméticos</string>
     <string name="caramel_cosmetics_signed_out_body">Tus capas, sombreros y mascotas se aplican a tu cuenta.</string>
     <string name="caramel_skin_signed_out_hint">Inicia sesión para cargar tu skin de Minecraft.</string>
+    <string name="launch_error_title_stalled">El inicio se congeló</string>
+    <string name="launch_error_message_stalled">La ventana del juego nunca dibujó un fotograma, así que el inicio se quedó colgado en lugar de fallar. El lanzador cerró la sesión congelada y se volvió a abrir con tus mods desactivados para descartar un mod. Vuelve a activar los mods de uno en uno en la pestaña Mods para encontrar el que cuelga el inicio.</string>
 </resources>

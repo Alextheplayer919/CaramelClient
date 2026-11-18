@@ -30,6 +30,7 @@ import org.chimeramc.client.core.crash.CrashReporter
 import org.chimeramc.client.core.mods.ModManager
 import org.chimeramc.client.core.mods.ModSafeMode
 import org.chimeramc.client.launcher.core.minecraft.LastLaunchFailure
+import org.chimeramc.client.launcher.core.minecraft.LaunchStallWatchdog
 import org.chimeramc.client.core.backend.AndroidGameInputHost
 import org.chimeramc.client.core.backend.GameBridge
 import org.chimeramc.client.core.backend.LauncherGameBackend
@@ -130,6 +131,13 @@ class MinecraftActivity : MainActivity(), PojavControlsHost {
             finish()
             return
         }
+
+        // The game activity runs in the launcher's process, so if its main thread blocks the whole
+        // app freezes with no way out: the loading screen's watchdog is main-thread too, and the
+        // immersive nav bar is already hidden. Arm an off-main-thread watchdog here, the earliest
+        // point the freeze can begin, and let the game's first frame tick settle it. A launch that
+        // never ticks is torn down by another process and reopened without mods.
+        LaunchStallWatchdog.arm(this)
 
         try {
             val preparedRuntime = MinecraftLaunchSession.getPreparedRuntime()
@@ -807,6 +815,8 @@ class MinecraftActivity : MainActivity(), PojavControlsHost {
         previousInputFocus = null
         PreloaderInput.clearActivity()
         MinecraftActivityState.onDestroyed(this)
+        // Release the launch-stall watchdog so the next launch can arm a fresh one.
+        LaunchStallWatchdog.disarm()
         // The backend holds this activity; drop it so a destroyed session cannot be reached.
         GameBridge.unregister()
         MinecraftLaunchSession.clear()
@@ -852,6 +862,10 @@ class MinecraftActivity : MainActivity(), PojavControlsHost {
     }
 
     override fun tick() {
+        // The game loop reached a frame, so the main thread is not blocked: settle the launch-stall
+        // watchdog. Without this the watchdog would tear down a launch that is simply slow to tick
+        // once.
+        LaunchStallWatchdog.settle()
         // The native hooks install here, not in onCreate. `tick()` is the game's own frame pump, so
         // by now the graphics backend is up and libminecraftpe.so is fully mapped — the RTTI/vtable
         // resolution the hook depends on sees a complete module, and the code patch runs on the same

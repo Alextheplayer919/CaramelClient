@@ -1546,4 +1546,6 @@ CaramelClient\'ın devam edebilmesi için taşımanın tamamlanması gerekiyor.<
     <string name="caramel_cosmetics_signed_out_title">Kozmetikleri kullanmak için oturum açın</string>
     <string name="caramel_cosmetics_signed_out_body">Pelerinler, şapkalar ve evcil hayvanlar oturum açtığınız hesaba uygulanır.</string>
     <string name="caramel_skin_signed_out_hint">Minecraft skininizi yüklemek için oturum açın.</string>
+    <string name="launch_error_title_stalled">Başlatma dondu</string>
+    <string name="launch_error_message_stalled">Oyun penceresi hiç kare çizmedi, bu yüzden başlatma başarısız olmak yerine takıldı. Başlatıcı donmuş oturumu kapattı ve bir modu elemek için modlarınız devre dışı olarak yeniden açıldı. Başlatmayı takılmasına neden olan modu bulmak için Modlar sekmesinde modları tek tek yeniden etkinleştirin.</string>
 </resources>

@@ -1519,4 +1519,6 @@ La migration doit être terminée avant de continuer avec CaramelClient.</string
     <string name="caramel_cosmetics_signed_out_title">Connectez-vous pour utiliser les cosmétiques</string>
     <string name="caramel_cosmetics_signed_out_body">Vos capes, chapeaux et animaux s’appliquent à votre compte connecté.</string>
     <string name="caramel_skin_signed_out_hint">Connectez-vous pour charger votre skin Minecraft.</string>
+    <string name="launch_error_title_stalled">Le lancement s’est figé</string>
+    <string name="launch_error_message_stalled">La fenêtre du jeu n’a jamais dessiné d’image, le lancement s’est donc bloqué au lieu d’échouer. Le lanceur a fermé la session figée et s’est rouvert avec vos mods désactivés pour écarter un mod. Réactivez les mods un par un dans l’onglet Mods pour trouver celui qui bloque le lancement.</string>
 </resources>
