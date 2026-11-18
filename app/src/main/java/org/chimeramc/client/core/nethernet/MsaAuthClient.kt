@@ -25,11 +25,19 @@ data class MsaTokens(
     val scope: String,
 )
 
-/** The endpoints the MSA flow talks to. Overridable so tests point at a MockWebServer. */
+/**
+ * The endpoints the MSA flow talks to. Overridable so tests point at a MockWebServer.
+ *
+ * The defaults are the `login.live.com` (LIVE) endpoints, which are the ones that know the Bedrock
+ * Android title id this client signs in with. The `login.microsoftonline.com/consumers` endpoints
+ * used to be the default and answer `AADSTS700016: Application with identifier
+ * '0000000048183522' was not found in the directory` for a title id, so every sign-in failed before
+ * a browser opened. See `docs/agents/microsoft-sign-in-device-code-not-msal.md`.
+ */
 data class MsaEndpoints(
-    val deviceCode: String = "https://login.microsoftonline.com/consumers/oauth2/v2.0/devicecode",
-    val token: String = "https://login.microsoftonline.com/consumers/oauth2/v2.0/token",
-    val authorize: String = "https://login.microsoftonline.com/consumers/oauth2/v2.0/authorize",
+    val deviceCode: String = "https://login.live.com/oauth20_connect.srf",
+    val token: String = "https://login.live.com/oauth20_token.srf",
+    val authorize: String = "https://login.live.com/oauth20_authorize.srf",
 )
 
 /**
@@ -107,7 +115,9 @@ class MsaAuthClient(
                     "grant_type" to "urn:ietf:params:oauth:grant-type:device_code",
                     "device_code" to grant.deviceCode,
                 ),
-                timeoutMs = remaining,
+                // Bound the single call, not the whole deadline: a stalled server should fail this
+                // poll and be retried, rather than hold one call open for the rest of the budget.
+                timeoutMs = minOf(remaining, MAX_POLL_CALL_TIMEOUT_MS),
                 step = "finishing sign-in",
             )
             val json = parse(result.body, "finishing sign-in")
@@ -251,5 +261,10 @@ class MsaAuthClient(
         429 -> NetherNetError.Network(step, "rate limited")
         in 500..599 -> NetherNetError.Network(step, "server error")
         else -> NetherNetError.Unknown(step, "http ${result.status}")
+    }
+
+    private companion object {
+        /** The cap on one token poll call, so a stalled server fails that poll rather than the wait. */
+        const val MAX_POLL_CALL_TIMEOUT_MS = 30_000L
     }
 }
