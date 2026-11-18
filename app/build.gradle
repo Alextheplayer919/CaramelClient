@@ -366,9 +366,11 @@ tasks.matching { it.name == 'preBuild' }.configureEach {
 // (rust/). Like the C++ sweetloader, it must be cross-compiled for arm64-v8a and packaged into the
 // APK's lib/ directory; the JNI-bound Java classes load it with System.loadLibrary.
 //
-// The build is skipped with a warning when cargo or the NDK is absent, so a Java-only build
-// (./gradlew :app:compileDebugJavaWithJavac) still works — the loader then reports "unavailable"
-// rather than the assembler failing on a missing .so. A full APK build (assembleDebug) runs it.
+// This task is only wired to the APK jni-lib merge steps, so it never runs for a Java-only compile
+// (./gradlew :app:compileDebugJavaWithJavac). When an APK is actually being assembled the toolchain
+// is required: a missing cargo or NDK fails the build rather than warning and continuing, because a
+// silently under-packaged APK ships without the loader and every engine feature reports "unavailable"
+// on the device with nothing in the build log to explain it.
 def rustWorkspaceDir = layout.projectDirectory.dir('src/main/cpp/sweetloader/rust')
 def rustJniLibsDir = layout.projectDirectory.dir('src/main/jniLibs/arm64-v8a')
 def rustPackages = [['universe-jni', 'libcaramel_universe.so'],
@@ -388,9 +390,9 @@ def buildRustEngine = tasks.register('buildRustEngine') {
         def cargoFound = homeCargo.canExecute() ||
                 ['sh', '-c', 'command -v cargo >/dev/null 2>&1'].execute().waitFor() == 0
         if (!cargoFound) {
-            logger.warn("cargo was not found; skipping the Rust engine build " +
-                    "(the .universe/.singularity loader will report unavailable).")
-            return
+            throw new GradleException("cargo was not found; the Rust engine cannot be packaged " +
+                    "into the APK. Install the Rust toolchain (and the aarch64-linux-android " +
+                    "target) before assembling, or run a Java-only compile task instead.")
         }
         def ndkHome = System.getenv('ANDROID_NDK_HOME') ?: System.getenv('ANDROID_NDK_ROOT')
         if (ndkHome == null) {
@@ -399,8 +401,8 @@ def buildRustEngine = tasks.register('buildRustEngine') {
             if (ndks) ndkHome = ndks.last().absolutePath
         }
         if (ndkHome == null) {
-            logger.warn("the Android NDK was not found; skipping the Rust engine build.")
-            return
+            throw new GradleException("the Android NDK was not found; the Rust engine cannot be " +
+                    "cross-compiled for arm64-v8a. Set ANDROID_NDK_HOME before assembling.")
         }
         def toolchain = new File(ndkHome, 'toolchains/llvm/prebuilt').listFiles()?.find {
             it.isDirectory()

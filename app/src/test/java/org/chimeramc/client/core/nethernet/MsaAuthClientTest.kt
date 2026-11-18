@@ -207,6 +207,16 @@ class MsaAuthClientTest {
     }
 
     @Test
+    fun `the default endpoints are the ones that know the title id`() {
+        // A regression guard: the consumers endpoints answer AADSTS700016 for a title id, so the
+        // default must be login.live.com, which is what the Java sign-in path also uses.
+        val defaults = MsaEndpoints()
+        assertTrue(defaults.deviceCode.startsWith("https://login.live.com/"))
+        assertTrue(defaults.token.startsWith("https://login.live.com/"))
+        assertTrue(defaults.authorize.startsWith("https://login.live.com/"))
+    }
+
+    @Test
     fun `the real transport applies the per-call timeout`() = runTest {
         // A response delayed past the call timeout must surface as a Network failure, not a hang.
         server.enqueue(

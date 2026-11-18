@@ -155,7 +155,11 @@ fun CaramelModsScreen(
                                 }
                             }
                             Text(m.description, style = T.Body, maxLines = 3)
-                            StatusLabel(stringResource(if (m.enabled) R.string.caramel_state_enabled else R.string.caramel_state_disabled), if (m.enabled) C.Green else C.Text2)
+                            if (!m.runnable) {
+                                StatusLabel(stringResource(R.string.caramel_state_preview_only), C.Orange)
+                            } else {
+                                StatusLabel(stringResource(if (m.enabled) R.string.caramel_state_enabled else R.string.caramel_state_disabled), if (m.enabled) C.Green else C.Text2)
+                            }
                             Spacer(Modifier.weight(1f))
                             Row(verticalAlignment = Alignment.CenterVertically) {
                                 Text(stringResource(R.string.caramel_mod_version, m.version), style = T.Caption, modifier = Modifier.weight(1f))

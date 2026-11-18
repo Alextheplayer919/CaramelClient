@@ -1,13 +1,18 @@
 package org.chimeramc.client.core.nethernet
 
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.NonCancellable
 import kotlinx.coroutines.TimeoutCancellationException
+import kotlinx.coroutines.async
+import kotlinx.coroutines.currentCoroutineContext
 import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.isActive
 import kotlinx.coroutines.supervisorScope
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
+import kotlinx.coroutines.withContext
 import kotlinx.coroutines.withTimeout
 import org.chimeramc.client.util.AppLog
 
@@ -113,24 +118,44 @@ class ConnectionManager(
         }
         diagnostics.record("connecting", "join requested: ${target::class.simpleName}")
 
-        return try {
-            withTimeout(joinTimeoutMs) {
-                supervisorScope { runJoin(target) }
+        // The join runs in a job the manager owns, so `cancel` can abort a step that is stuck.
+        // `work.await()` is what surfaces the result and the failure to this caller; the child
+        // catches its own non-cancellation failures so a failed join never cancels the shared scope.
+        val work = scope.async {
+            try {
+                withTimeout(joinTimeoutMs) { supervisorScope { runJoin(target) } }
+            } catch (e: TimeoutCancellationException) {
+                // The overall budget elapsed even though every step had its own; report it as the
+                // step that was in flight rather than a bare timeout, so the copy is actionable.
+                val error = NetherNetError.Timeout(machine.state.value.name)
+                diagnostics.record(error)
+                failQuietly(error)
+                JoinOutcome.Failed(error)
+            } catch (e: CancellationException) {
+                // Cancelled by `cancel` or a timeout: let it reach the awaiting side below.
+                throw e
+            } catch (e: Exception) {
+                val error = NetherNetError.Unknown("connecting", e::class.java.simpleName)
+                diagnostics.record(error)
+                failQuietly(error)
+                JoinOutcome.Failed(error)
             }
-        } catch (e: TimeoutCancellationException) {
-            // The overall budget elapsed even though every step had its own; report it as the step
-            // that was in flight rather than as a bare timeout, so the copy is actionable.
-            val error = NetherNetError.Timeout(machine.state.value.name)
-            diagnostics.record(error)
-            failQuietly(error)
-            JoinOutcome.Failed(error)
-        } catch (e: Exception) {
-            val error = NetherNetError.Unknown("connecting", e::class.java.simpleName)
-            diagnostics.record(error)
-            failQuietly(error)
-            JoinOutcome.Failed(error)
+        }
+        activeJob = work
+        return try {
+            work.await()
+        } catch (e: CancellationException) {
+            // The caller's own coroutine was cancelled: that must propagate, not be turned into an
+            // outcome. Only a cancellation of the join's own job (from `cancel`) is reported.
+            if (!currentCoroutineContext().isActive) throw e
+            diagnostics.record("connecting", "the join was cancelled")
+            cancel()
+            JoinOutcome.Cancelled
         } finally {
-            inFlight.withLock { joining = false }
+            withContext(NonCancellable) {
+                activeJob = null
+                inFlight.withLock { joining = false }
+            }
         }
     }
 

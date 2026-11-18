@@ -4,6 +4,7 @@ import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
+import kotlinx.coroutines.awaitCancellation
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
@@ -216,6 +217,37 @@ class ConnectionManagerTest {
         // The transport was never opened, so there is nothing to close; assert we did not invent a
         // disconnect for a path that never existed.
         assertEquals(0, fakes.first.disconnects)
+    }
+
+    @Test
+    fun `cancel aborts an in-flight join instead of waiting for it`() = runTest {
+        // A joiner that never returns on its own: without a real cancel, `join` would hang until the
+        // overall budget. `cancel` must abort it and report a cancellation.
+        val entered = CompletableDeferred<Unit>()
+        val rakNet = object : RakNetJoiner {
+            override suspend fun open(host: String, port: Int): Boolean {
+                entered.complete(Unit)
+                awaitCancellation()
+            }
+
+            override suspend fun close() = Unit
+        }
+        val machine = ConnectionStateMachine(backgroundScope)
+        val transport = NetherNetTransport(
+            machine,
+            backgroundScope,
+            native = FakeTransport(),
+            pollIntervalMs = 1L,
+        )
+        val manager = ConnectionManager(machine, backgroundScope, transport, rakNet)
+        machine.armAuthComplete()
+
+        val join = async { manager.join(JoinTarget.Direct("example.com", 19132)) }
+        entered.await()
+        manager.cancel()
+        assertEquals(JoinOutcome.Cancelled, join.await())
+        // The gate must be released, or a later join would be refused forever.
+        assertFalse("a cancelled join must clear the in-flight flag", manager.isJoining)
     }
 
     @Test

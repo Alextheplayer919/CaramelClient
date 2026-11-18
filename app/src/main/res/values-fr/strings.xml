@@ -228,7 +228,7 @@ La migration doit être terminée avant de continuer avec CaramelClient.</string
     <string name="toast_delete_failed">Échec de la suppression : %1$s</string>
     <string name="error_delete_builtin_version">Impossible de supprimer la version intégrée</string>
     <string name="invalid_mod_file">Échec</string>
-    <string name="invalid_mod_file_reason">Seuls les fichiers .so, les packages de mod .zip sont autorisés. Le fichier sélectionné n\'est pas un mod natif valide.</string>
+    <string name="invalid_mod_file_reason">Seuls les fichiers .so, les packages de mod .zip ou les packages de moteur .universe/.singularity sont acceptés. Le fichier sélectionné n\'est pas un package d\'import de mod valide.</string>
     <string name="invalid_zip_mod_package_title">Package ZIP de mod invalide</string>
     <string name="invalid_zip_mod_package_message">Le package ZIP de mod doit contenir manifest.json et un fichier .so.</string>
     <string name="error_versions">Versions erronées</string>
@@ -1519,4 +1519,8 @@ La migration doit être terminée avant de continuer avec CaramelClient.</string
     <string name="caramel_cosmetics_signed_out_title">Connectez-vous pour utiliser les cosmétiques</string>
     <string name="caramel_cosmetics_signed_out_body">Vos capes, chapeaux et animaux s’appliquent à votre compte connecté.</string>
     <string name="caramel_skin_signed_out_hint">Connectez-vous pour charger votre skin Minecraft.</string>
+    <string name="launch_error_title_stalled">Le lancement s’est figé</string>
+    <string name="launch_error_message_stalled">La fenêtre du jeu n’a jamais dessiné d’image, le lancement s’est donc bloqué au lieu d’échouer. Le lanceur a fermé la session figée et s’est rouvert avec vos mods désactivés pour écarter un mod. Réactivez les mods un par un dans l’onglet Mods pour trouver celui qui bloque le lancement.</string>
+    <string name="caramel_state_preview_only">Aperçu uniquement</string>
+    <string name="caramel_state_preview_only_note">Ce type de package est répertorié et gérable, mais son moteur n\'est pas encore relié au client, il ne s\'exécutera donc pas en jeu.</string>
 </resources>

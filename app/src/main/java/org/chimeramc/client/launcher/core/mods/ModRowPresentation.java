@@ -29,6 +29,10 @@ public final class ModRowPresentation {
     public enum Kind {
         NATIVE("native"),
         SCRIPT("script"),
+        /** A `.universe` package for the SweetLoader Rust loader. */
+        UNIVERSE("universe"),
+        /** A `.singularity` world-gen pack for the SweetLoader Rust engine. */
+        SINGULARITY("singularity"),
         UNKNOWN("unknown");
 
         public final String label;
@@ -62,7 +66,25 @@ public final class ModRowPresentation {
         String lower = entry.toLowerCase(Locale.ROOT);
         if (lower.endsWith(".so")) return Kind.NATIVE;
         if (lower.endsWith(".lua")) return Kind.SCRIPT;
+        if (lower.endsWith(".universe")) return Kind.UNIVERSE;
+        if (lower.endsWith(".singularity")) return Kind.SINGULARITY;
         return Kind.UNKNOWN;
+    }
+
+    /**
+     * Whether a mod's runtime is actually wired into the client.
+     *
+     * <p>A {@code .universe} package is now driven end to end: the launcher extracts it into the
+     * engine sandbox and calls the Rust loader's load/tick/shutdown lifecycle
+     * ({@code org.chimeramc.client.universe.UniverseRuntime}), so an enabled one runs and reports
+     * honestly as enabled. A {@code .singularity} pack is still not wired: its engine can generate a
+     * chunk into a buffer, but nothing hooks Bedrock's world generator to consume it, so reporting it
+     * as a working enabled mod would be the "silently no-op" failure the Mods tab exists to prevent.
+     * This is the single pure rule the UI reads; it flips for {@code .singularity} the day its
+     * generator hook ships.
+     */
+    public static boolean isRuntimeWired(Kind kind) {
+        return kind != Kind.SINGULARITY;
     }
 
     /**

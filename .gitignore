@@ -56,3 +56,7 @@ docs/.vitepress/dist/
 
 # Host-test dependency cache (downloaded by the preloader test runner)
 app/src/main/cpp/.host-tools/
+
+# Agent scratch and per-session notes (never source; a support bundle can share them out of band)
+.agent_tmp/
+.openhands/

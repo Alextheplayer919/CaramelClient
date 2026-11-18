@@ -130,19 +130,48 @@ public final class AccountSkinService {
     }
 
     /**
+     * The official lookup result: the texture URL and whether the skin is slim.
+     *
+     * <p>The variant only exists on the official profile, so it is carried with the URL from the same
+     * fetch rather than looked up separately, which could describe a different skin.
+     */
+    public static final class OfficialSkin {
+        public final String textureUrl;
+        public final boolean slim;
+
+        OfficialSkin(String textureUrl, boolean slim) {
+            this.textureUrl = textureUrl;
+            this.slim = slim;
+        }
+    }
+
+    /**
+     * The texture URL and arm model from the official profile endpoint, or null.
+     *
+     * <p>Fetches the profile once and reads both the active skin's URL and its {@code variant}, so the
+     * two always describe the same skin.
+     */
+    public static OfficialSkin resolveOfficialWithVariant(String bearer) {
+        try {
+            String body = MinecraftSkinFetcher.fetchProfileJson(bearer);
+            if (body == null) return null;
+            String url = MinecraftSkinFetcher.activeSkinUrl(body);
+            if (url == null) return null;
+            return new OfficialSkin(url, MinecraftSkinFetcher.activeSkinIsSlim(body));
+        } catch (Throwable t) {
+            return null;
+        }
+    }
+
+    /**
      * The texture URL from the official profile endpoint, or null.
      *
      * <p>Fetches the profile, parses the active skin, and verifies the profile is the account we
      * asked about before trusting it.
      */
     public static String resolveTextureUrlOfficial(String bearer) {
-        try {
-            String body = MinecraftSkinFetcher.fetchProfileJson(bearer);
-            if (body == null) return null;
-            return MinecraftSkinFetcher.activeSkinUrl(body);
-        } catch (Throwable t) {
-            return null;
-        }
+        OfficialSkin official = resolveOfficialWithVariant(bearer);
+        return official == null ? null : official.textureUrl;
     }
 
     /**
@@ -258,17 +287,33 @@ public final class AccountSkinService {
      */
     public static Bitmap fetchAndCache(android.content.Context context, String xuid) {
         try {
-            String url = resolveTextureUrl(xuid, bearerForActiveAccount(context));
-            if (url == null) return null;
+            String bearer = bearerForActiveAccount(context);
+            OfficialSkin official = resolveOfficialWithVariant(bearer);
+            String url = official != null ? official.textureUrl : resolveTextureUrlLegacy(xuid);
+            boolean slim = official != null && official.slim;
+            if (url == null) {
+                // "no skin" or "no route to one": the two lookups both came back empty. Logged so a
+                // support report can tell this apart from a token or network failure below.
+                AppLog.warn("AccountSkinService",
+                        "The account skin lookup found no skin for the signed-in account");
+                return null;
+            }
             byte[] png = downloadSkinBytes(url);
-            if (png == null || png.length == 0) return null;
+            if (png == null || png.length == 0) {
+                AppLog.warn("AccountSkinService", "The account skin download returned no bytes");
+                return null;
+            }
             Bitmap atlas = android.graphics.BitmapFactory.decodeByteArray(png, 0, png.length);
-            if (atlas == null) return null;
+            if (atlas == null) {
+                AppLog.warn("AccountSkinService", "The account skin download could not be decoded");
+                return null;
+            }
             AccountSkinCache.write(context.getFilesDir(),
                     new AccountSkinCache.Entry(png, AccountSkinCache.accountKeyFor(xuid),
-                            System.currentTimeMillis()));
+                            System.currentTimeMillis(), slim));
             return PlayerSkinProvider.normalise(atlas);
         } catch (Throwable t) {
+            AppLog.warn("AccountSkinService", "The account skin fetch threw", t);
             return null;
         }
     }
@@ -319,6 +364,22 @@ public final class AccountSkinService {
     }
 
     /**
+     * Turns the lookup on for an install that already has a signed-in account.
+     *
+     * <p>The pref is default-off and was only flipped inside {@code saveAccountAndActivate}, i.e. on
+     * a brand-new sign-in, so every account signed in before that change (or re-imported) never got
+     * the lookup and the preview fell back to the default skin with no UI left to enable it. Called
+     * once at startup, before the first sync. It only turns the pref on when an account is actually
+     * present, so a signed-out install is left untouched and a later sign-in still does the enabling.
+     */
+    public static void ensureEnabledForExistingAccount(android.content.Context context) {
+        if (context == null) return;
+        if (isEnabled(context)) return;
+        if (activeXuid(context) == null) return;
+        setEnabled(context, true);
+    }
+
+    /**
      * Re-syncs the account skin when the cache is missing, belongs to another account, or is older
      * than {@link AccountSkinCache#MAX_AGE_MS}.
      *
@@ -351,27 +412,54 @@ public final class AccountSkinService {
     private static final SkinFetchGuard refreshGuard = new SkinFetchGuard();
 
     /**
+     * The per-account fetch backoff, keyed by XUID.
+     *
+     * <p>Without it a failing lookup looped: the fetch notified its listeners, the preview
+     * refreshed, the cache was still empty, and that counted as stale, so it fetched again - as fast
+     * as the network allowed for as long as the preview was on screen. A new account starts fresh so
+     * a first fetch is never delayed.
+     */
+    private static final java.util.Map<String, SkinFetchBackoff> fetchBackoff =
+            new java.util.concurrent.ConcurrentHashMap<>();
+
+    /**
      * Fetches the skin on a background thread and stores it in the cache.
      *
      * <p>The preview resolves on the UI thread, so the network must never run there. This mirrors the
      * pattern the signature-rules refresh uses: a single named daemon thread, and an atomic flag so
      * overlapping resolves cannot start the request twice. The result lands in
      * {@link LocalSkinCache}, which the next resolve reads; nothing is delivered back to this caller.
+     *
+     * <p>Attempts for one account are rate-limited by {@link SkinFetchBackoff}: a failing lookup
+     * backs off instead of retrying on every listener notification.
      */
     public static void refreshInBackground(android.content.Context context, String xuid) {
         if (context == null || xuid == null || xuid.isEmpty()) return;
+        SkinFetchBackoff backoff = fetchBackoff.computeIfAbsent(xuid, key -> new SkinFetchBackoff());
+        if (!backoff.shouldAttempt(System.currentTimeMillis())) return;
         // Keyed, so a fetch for the account that just signed in is not dropped by one still running
         // for the previous account. A request for the same account is still refused, so a hot loop
         // of resolves cannot start a request storm.
         if (!refreshGuard.tryStart(xuid)) return;
         final android.content.Context appContext = context.getApplicationContext();
         AppExecutors.run(AppExecutors.Kind.NETWORK, "account-skin-fetch", () -> {
+            boolean fetched = false;
             try {
-                fetchAndCache(appContext, xuid);
+                fetched = fetchAndCache(appContext, xuid) != null;
+                if (!fetched) {
+                    AppLog.warn("AccountSkinService",
+                            "The account skin lookup returned no skin; the fallback chain continues");
+                }
             } catch (Throwable error) {
                 AppLog.warn("AccountSkinService", "Account skin fetch failed", error);
             } finally {
                 refreshGuard.finish(xuid);
+                long now = System.currentTimeMillis();
+                if (fetched) {
+                    backoff.onSuccess(now);
+                } else {
+                    backoff.onFailure(now);
+                }
                 // In the finally: a caller that registered to hear the outcome must be woken whether
                 // the fetch succeeded or failed, or it waits forever for a skin that is not coming.
                 notifyListeners();
@@ -423,7 +511,11 @@ public final class AccountSkinService {
             connection.setInstanceFollowRedirects(true);
             connection.setRequestProperty("Accept", "*/*");
             int code = connection.getResponseCode();
-            if (code != HttpURLConnection.HTTP_OK) return null;
+            if (code != HttpURLConnection.HTTP_OK) {
+                AppLog.warn("AccountSkinService",
+                        "The skin service returned HTTP " + code + " for the lookup");
+                return null;
+            }
             try (InputStream in = connection.getInputStream()) {
                 ByteArrayOutputStream out = new ByteArrayOutputStream();
                 byte[] buffer = new byte[8192];
@@ -431,12 +523,18 @@ public final class AccountSkinService {
                 int total = 0;
                 while ((read = in.read(buffer)) >= 0) {
                     total += read;
-                    if (total > MAX_BYTES) return null;
+                    if (total > MAX_BYTES) {
+                        AppLog.warn("AccountSkinService",
+                                "The skin service response exceeded " + MAX_BYTES + " bytes");
+                        return null;
+                    }
                     out.write(buffer, 0, read);
                 }
                 return out.toByteArray();
             }
         } catch (Throwable t) {
+            AppLog.warnOnce("AccountSkinService", "http-get",
+                    "The skin service request failed (network or read)", t);
             return null;
         } finally {
             if (connection != null) {

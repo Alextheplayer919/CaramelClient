@@ -32,6 +32,7 @@ RES = ROOT / "app/src/main/res"
 # except the locale they belong to, and keeping them apart keeps each readable.
 BATCHES = [
     ROOT / "scripts/translations_priority.json",
+    ROOT / "scripts/translations_launch_stall.json",
     ROOT / "scripts/translations_priority_messages.json",
     ROOT / "scripts/translations_priority_launch.json",
     ROOT / "scripts/translations_priority_nav.json",

@@ -1,8 +1,12 @@
 ## Native cosmetics: one key scheme, local-player-only draw, and the in-app diagnostic
 
-- **There is exactly one registry key scheme.** The local player is always published under the fixed
-  id `"local"` (`NativeCosmeticsBridge.LOCAL_PLAYER_ID`); a peer is published under their cosmetic-sync
-  peer id. The local cape/hat/pet are *separately* keyed by role in the piece-atlas slots
+- **There is exactly one registry key scheme.** The local player is published under the signed-in
+  account's xuid when one is known, else the fixed fallback id `"local"`
+  (`NativeCosmeticsBridge.localPlayerId()`); a peer is published under their cosmetic-sync peer id.
+  Using the xuid (not the constant) keeps the local id from colliding with a peer's sync id and makes
+  the diagnostics report name a real account; a sign-in/sign-out/account switch drops the previous
+  account's entries (`dropStaleLocalEntries`) so they are not left resident under an id nothing reads.
+  The local cape/hat/pet are *separately* keyed by role in the piece-atlas slots
   (`nativeSetPieceAtlas`), which is what the renderer actually binds. An earlier version keyed the
   local cape by its catalogue id and relied on a native "first cape override" fallback, so with more
   than one override registered the local player could be drawn with a peer's cape. `publishCape(null)`
@@ -14,8 +18,8 @@
   The render hook's arguments are an unknown ABI and the hook does not identify which actor is being
   drawn (no player/actor id anywhere in `NativeRenderHook`/`NativeCosmeticRenderer`), so it draws the
   local player's published set and nothing else. A per-actor draw needs a native identity read plus
-  device verification; `NativeCosmeticsBridge.LOCAL_PLAYER_ID` carries a `TODO(device)` for it. No
-  xuid or gamertag is transmitted anywhere.
+  device verification; `NativeCosmeticsBridge.LOCAL_PLAYER_ID` carries a `TODO(device)` for it. The
+  xuid is a local registry key only — no xuid or gamertag is transmitted anywhere.
 - **The status line requires an actual draw to say "active".** `NativeCosmeticsFeed.renderState()`
   distinguishes `INACTIVE` / `HOOK_ONLY` (hook live and drawable, nothing drawn yet) / `ACTIVE`
   (at least one mesh drawn this session). `cosmetics_native_active` is shown only for `ACTIVE`;

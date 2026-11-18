@@ -294,9 +294,14 @@ public class CapePreviewView extends View {
         // solid colour stays hard-edged.
         pixelPaint.setFilterBitmap(false);
         pixelPaint.setAntiAlias(false);
-        this.skin = PlayerSkinProvider.resolve(context);
+        // Paint the last resolve immediately (it is already in memory, so this is free) and resolve
+        // off the UI thread: resolving here read the account cache and decoded a PNG on the main
+        // thread, which stalled the first frame. A null here just draws nothing until the resolve
+        // lands, which is a frame of blank instead of a stall.
+        this.skin = PlayerSkinProvider.lastResolved();
         rebuildFaceCrops();
         rebuildCharacterScene();
+        resolveSkinAsync();
     }
 
     public void setCape(CosmeticCatalog.Cape cape) {
@@ -487,7 +492,22 @@ public class CapePreviewView extends View {
      * the view.
      */
     public void refreshSkin() {
-        PlayerSkinProvider.SkinBitmap resolved = PlayerSkinProvider.resolve(getContext());
+        resolveSkinAsync();
+    }
+
+    /**
+     * Resolves the skin off the UI thread and applies it on the main thread.
+     *
+     * <p>This is the only path that reads the account cache and decodes a PNG, both of which are
+     * disk work that must not run on the main thread. Called from the constructor and from
+     * {@link #refreshSkin()}; the result is ignored if the view has since been released.
+     */
+    private void resolveSkinAsync() {
+        PlayerSkinProvider.resolveAsync(getContext(), this::applyResolvedSkin);
+    }
+
+    /** Applies a background resolve, on the main thread. */
+    private void applyResolvedSkin(PlayerSkinProvider.SkinBitmap resolved) {
         if (resolved == null || resolved.bitmap == null) return;
         this.skin = resolved;
         rebuildFaceCrops();
@@ -846,7 +866,8 @@ public class CapePreviewView extends View {
         atlas.getPixels(skinAtlasPixels, 0, aw, 0, 0, aw, ah);
         scene = new PreviewScene();
         PreviewCharacterScene.addCharacter(scene, skinAtlasPixels, SkinModel.ATLAS_SIZE,
-                headPitchDeg, headYawDeg);
+                headPitchDeg, headYawDeg, null,
+                CharacterPose.relaxedHero(), skin != null && skin.slim);
     }
 
     /**

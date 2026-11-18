@@ -1,5 +1,6 @@
 package org.chimeramc.client.core.mods;
 
+import org.chimeramc.client.util.AppExecutors;
 import org.chimeramc.client.util.AppLog;
 
 import android.os.FileObserver;
@@ -45,9 +46,19 @@ public class ModManager {
     private static final String DEFAULT_MOD_VERSION = "1.0.0";
     private static final int COPY_BUFFER_SIZE = 8192;
 
+    /**
+     * How long the main thread waits for the native mod enable.
+     *
+     * <p>Generous enough that a slow-but-working load (several mods, cold page cache) is never cut
+     * off, short enough that a mod that blocks forever costs seconds rather than the session. On
+     * expiry the launch continues and {@link #lastEnableTimedOut()} records it.
+     */
+    public static final long ENABLE_BUDGET_MS = 15_000L;
+
     private static volatile ModManager instance;
     private static volatile boolean sweetloaderLoadAttempted;
     private static volatile boolean sweetloaderLoaded;
+    private static volatile boolean enableTimedOut;
     /** One-shot gates for the bundled BerryAPI runtime, pumped from the game's frame tick. */
     private static volatile boolean berryAttachAttempted;
     private static volatile boolean berrySeamAttempted;
@@ -179,22 +190,121 @@ public class ModManager {
         }
     }
 
+    /**
+     * Loads and enables the instance's mods, and arms the deferred game-hook install.
+     *
+     * <p>The early return when no mod is enabled was wrong: the native side of this call also arms
+     * the deferred hook install, which is what captures the player's own skin and drives the native
+     * cosmetics. Skipping the call for a user with zero enabled mods left those dark, with no mod to
+     * blame. {@code ModManager::EnableLoadedMods()} is a no-op when nothing is loaded, so the call is
+     * safe and the hook install still arms.
+     *
+     * <p>The call is bounded. This runs from the game activity's {@code onCreate}, on the main
+     * thread, and the native side {@code dlopen}s every enabled mod and runs its initialiser. A mod
+     * that blocks there (a spin, a lock, a slow static constructor) hung the launch with no way out,
+     * because nothing can interrupt native code once it is running. The enable therefore runs on its
+     * own thread and the main thread waits at most {@link #ENABLE_BUDGET_MS}; on a timeout the launch
+     * continues without it and the stall is recorded, so a bad mod costs its own features rather
+     * than the whole session.
+     */
     public static void enableLoadedMods() {
-        ModManager instance = getInstance();
-        boolean hasEnabledMods = instance.getMods().stream().anyMatch(Mod::isEnabled);
-        if (!hasEnabledMods) {
-            Log.i(TAG, "No enabled mods, skipping sweetloader init");
-            return;
-        }
-
         if (!ensureSweetLoaderLoaded()) {
             return;
         }
-
+        final java.util.concurrent.CountDownLatch done = new java.util.concurrent.CountDownLatch(1);
+        // A dedicated daemon thread rather than the shared MOD pool: the pool's caller-runs policy
+        // would run the task on this (main) thread if the pool were saturated, which is exactly the
+        // hang this guards against. A raw thread is guaranteed off the caller.
+        AppExecutors.thread("mod-enable", () -> {
+            try {
+                nativeEnableLoadedMods();
+            } catch (UnsatisfiedLinkError e) {
+                Log.e(TAG, "Failed to invoke nativeEnableLoadedMods", e);
+            } catch (Throwable t) {
+                AppLog.warnOnce(TAG, "mod-enable:throw", "Native mod enable threw", t);
+            } finally {
+                done.countDown();
+            }
+        }).start();
         try {
-            nativeEnableLoadedMods();
-        } catch (UnsatisfiedLinkError e) {
-            Log.e(TAG, "Failed to invoke nativeEnableLoadedMods", e);
+            if (!done.await(ENABLE_BUDGET_MS, java.util.concurrent.TimeUnit.MILLISECONDS)) {
+                // The native thread is still inside a mod. It cannot be interrupted, so the launch
+                // proceeds; the record names the timeout so a support report can tell it from a crash.
+                AppLog.warn(TAG, "Native mod enable did not finish within " + ENABLE_BUDGET_MS
+                        + "ms; continuing the launch without waiting for it");
+                recordEnableTimeout();
+            }
+        } catch (InterruptedException interrupted) {
+            Thread.currentThread().interrupt();
+        }
+    }
+
+    /** True when the last {@link #enableLoadedMods()} hit its budget. For diagnostics and tests. */
+    public static boolean lastEnableTimedOut() {
+        return enableTimedOut;
+    }
+
+    private static void recordEnableTimeout() {
+        enableTimedOut = true;
+    }
+
+    /**
+     * Extracts and loads the instance's enabled {@code .universe} packages into the engine runtime.
+     *
+     * <p>This is the load half of the lifecycle the audit found missing: the Rust loader's
+     * {@code load_mods} existed and was tested but nothing called it, so an enabled engine package
+     * could be listed yet never run. It runs on its own thread and the caller waits at most
+     * {@link #ENABLE_BUDGET_MS}, for the same reason {@link #enableLoadedMods()} does — the engine
+     * {@code dlopen}s and initialises mod code, which cannot be interrupted once it starts.
+     *
+     * @param filesDir the app's files dir; each package is extracted under {@code filesDir/universe}
+     */
+    public static void enableLoadedEngineMods(File filesDir) {
+        if (!ensureSweetLoaderLoaded() || filesDir == null) {
+            return;
+        }
+        final File sandboxRoot = new File(filesDir, "universe");
+        final java.util.concurrent.CountDownLatch done = new java.util.concurrent.CountDownLatch(1);
+        AppExecutors.thread("engine-enable", () -> {
+            try {
+                org.chimeramc.client.universe.UniverseRuntime.load(sandboxRoot, getInstance().getMods());
+            } catch (UnsatisfiedLinkError e) {
+                Log.e(TAG, "The engine runtime is not available", e);
+            } catch (Throwable t) {
+                AppLog.warnOnce(TAG, "engine-enable:throw", "Engine mod load threw", t);
+            } finally {
+                done.countDown();
+            }
+        }).start();
+        try {
+            if (!done.await(ENABLE_BUDGET_MS, java.util.concurrent.TimeUnit.MILLISECONDS)) {
+                AppLog.warn(TAG, "Engine mod load did not finish within " + ENABLE_BUDGET_MS
+                        + "ms; continuing the launch without waiting for it");
+            }
+        } catch (InterruptedException interrupted) {
+            Thread.currentThread().interrupt();
+        }
+    }
+
+    /**
+     * Ticks every live engine mod once with the frame's delta time.
+     *
+     * <p>Called from the game's frame pump. The per-frame cost is a single native atomic load and a
+     * loop over the live mods once the loader is up; the loader itself refuses a re-entrant call
+     * rather than deadlocking the game thread.
+     */
+    public static void tickEngineMods(float deltaSeconds) {
+        if (!ensureSweetLoaderLoaded()) return;
+        org.chimeramc.client.universe.UniverseRuntime.tick(deltaSeconds);
+    }
+
+    /** Shuts every live engine mod down. Safe when nothing is loaded, and safe to call twice. */
+    public static void disableAndUnloadEngineMods() {
+        if (!ensureSweetLoaderLoaded()) return;
+        try {
+            org.chimeramc.client.universe.UniverseRuntime.shutdown();
+        } catch (Throwable t) {
+            AppLog.warnOnce(TAG, "engine-shutdown:throw", "Engine mod shutdown threw", t);
         }
     }
 
@@ -715,7 +825,9 @@ public class ModManager {
             }
 
             String type = manifest.get("type").getAsString();
-            if (!PRELOAD_NATIVE_TYPE.equals(type)) {
+            ModPackageFormat format = ModPackageFormat.fromManifestType(type);
+            boolean enginePackage = format != null && format.isEnginePackage();
+            if (!PRELOAD_NATIVE_TYPE.equals(type) && !enginePackage) {
                 return null;
             }
 
@@ -728,7 +840,21 @@ public class ModManager {
             }
 
             File entryFile = new File(modDirectory, entryPath);
-            if (!entryFile.isFile() || !entryFile.getName().endsWith(".so")) {
+            if (!entryFile.isFile()) {
+                Log.w(TAG, "Ignoring mod with missing entry file: " + entryFile.getAbsolutePath());
+                return null;
+            }
+            if (enginePackage) {
+                // An engine package's entry is the archive itself, not a library: the Rust engine
+                // validates and extracts it at run time. Discovery only checks the file is present
+                // and named for the format the manifest claims, so a `.universe` directory whose
+                // entry was renamed to `.singularity` is refused rather than listed.
+                if (!ModPackageFormat.entryMatchesFormat(format, entryFile.getName())) {
+                    Log.w(TAG, "Ignoring engine package with mismatched entry: "
+                            + entryFile.getAbsolutePath());
+                    return null;
+                }
+            } else if (!entryFile.getName().endsWith(".so")) {
                 Log.w(TAG, "Ignoring mod with missing entry file: " + entryFile.getAbsolutePath());
                 return null;
             }

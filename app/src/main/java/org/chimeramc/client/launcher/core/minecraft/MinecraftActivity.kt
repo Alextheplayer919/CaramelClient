@@ -30,6 +30,7 @@ import org.chimeramc.client.core.crash.CrashReporter
 import org.chimeramc.client.core.mods.ModManager
 import org.chimeramc.client.core.mods.ModSafeMode
 import org.chimeramc.client.launcher.core.minecraft.LastLaunchFailure
+import org.chimeramc.client.launcher.core.minecraft.LaunchStallWatchdog
 import org.chimeramc.client.core.backend.AndroidGameInputHost
 import org.chimeramc.client.core.backend.GameBridge
 import org.chimeramc.client.core.backend.LauncherGameBackend
@@ -131,6 +132,13 @@ class MinecraftActivity : MainActivity(), PojavControlsHost {
             return
         }
 
+        // The game activity runs in the launcher's process, so if its main thread blocks the whole
+        // app freezes with no way out: the loading screen's watchdog is main-thread too, and the
+        // immersive nav bar is already hidden. Arm an off-main-thread watchdog here, the earliest
+        // point the freeze can begin, and let the game's first frame tick settle it. A launch that
+        // never ticks is torn down by another process and reopened without mods.
+        LaunchStallWatchdog.arm(this)
+
         try {
             val preparedRuntime = MinecraftLaunchSession.getPreparedRuntime()
                 ?: MinecraftRuntimePreparer.prepare(applicationContext, intent)
@@ -155,6 +163,20 @@ class MinecraftActivity : MainActivity(), PojavControlsHost {
             recordModEnableFailure(throwable)
         }
         trace.mark("Native mod enable finished")
+        // The .universe engine packages are extracted and loaded here too. This is the load half of
+        // the lifecycle the audit found unwired: the Rust loader's load_mods existed but nothing
+        // called it, so an enabled .universe package could be listed yet never run. Bounded and
+        // off the main thread for the same reason as the native enable above.
+        //
+        // applicationContext.filesDir, not this activity's filesDir: the latter is redirected to the
+        // game's storage profile (often external), and a native library extracted there cannot be
+        // dlopen'd on modern Android. The sandbox must be on private internal storage.
+        try {
+            ModManager.enableLoadedEngineMods(applicationContext.filesDir)
+        } catch (throwable: Throwable) {
+            trace.error("Engine mod enable failed", formatLaunchFailure(throwable))
+        }
+        trace.mark("Engine mod enable finished")
         trace.mark("Mojang MainActivity super.onCreate starting")
         try {
             gameRuntimeStarted = true
@@ -184,16 +206,11 @@ class MinecraftActivity : MainActivity(), PojavControlsHost {
         try {
             initializeSweetLoaderTextInput()
             PreloaderInput.setActivity(this)
-            // The bundled BerryAPI runtime is only dlopen-ed by the sweetloader bridge; attach it
-            // here, once the game process is up, so its subsystems are live for this session.
-            // Fail-closed and never fatal: a missing library or no usable hook backend returns
-            // false and the dependent features stay greyed rather than half-installed.
-            org.chimeramc.client.preloader.BerryApi.ensureAttached()
-            // Bind the launcher's local-player seam once BerryAPI is attached, so its World
-            // module can read the local player's position and view rotation instead of failing
-            // closed. Fail-closed and never fatal: a library without the seam ABI, or a struct
-            // mismatch, leaves the world feed off and the dependent modules unavailable.
-            org.chimeramc.client.preloader.BerryApi.bindWorldSeam()
+            // The bundled BerryAPI runtime is attached and its world seam bound by the frame tick
+            // (ModManager.pumpBerryRuntime(), called from tick()), never here. Attaching in onCreate
+            // runs BERRY_Inject on the main thread while libminecraftpe.so is only partly mapped,
+            // and the attach is once-only, so a bad early attempt could not be retried and the game
+            // window froze before its first frame. The deferred pump is the single call site.
             val storageProfileId = intent.getStringExtra(MinecraftLauncher.EXTRA_STORAGE_PROFILE_ID)
             // A per-instance controller binding takes precedence over plain pad detection, so
             // an instance can bring its own controller setup into the session.
@@ -704,6 +721,25 @@ class MinecraftActivity : MainActivity(), PojavControlsHost {
         org.chimeramc.client.core.mods.inbuilt.overlay.LookDeltaCoalescer()
     private val lookDeltaScratch = FloatArray(2)
 
+    /** The wall-clock time of the previous frame, for the engine tick's delta. 0 until the first. */
+    private var lastFrameNanos = 0L
+
+    /**
+     * The seconds since the previous frame, clamped to a sane range.
+     *
+     * <p>A first frame (or a long stall, e.g. the app was backgrounded and resumed) would otherwise
+     * hand a mod a huge delta, which any integrator would turn into a jump. Clamping to 50 ms keeps a
+     * mod's per-frame maths well-behaved across a hitch rather than making the hitch worse.
+     */
+    private fun frameDeltaSeconds(): Float {
+        val now = System.nanoTime()
+        val previous = lastFrameNanos
+        lastFrameNanos = now
+        if (previous == 0L) return 0f
+        val seconds = (now - previous) / 1_000_000_000.0
+        return seconds.coerceIn(0.0, 0.05).toFloat()
+    }
+
     override fun pojavSendLookDelta(deltaX: Float, deltaY: Float) {
         lookDeltaCoalescer.add(deltaX, deltaY)
     }
@@ -792,6 +828,7 @@ class MinecraftActivity : MainActivity(), PojavControlsHost {
         if (shouldRestartAfterNormalExit) {
             PreloaderInput.cancelDocumentRequest("Minecraft closed")
             ModManager.disableAndUnloadLoadedMods()
+            ModManager.disableAndUnloadEngineMods()
             prepareNormalExitCleanup()
             scheduleNormalExitProcessRestart()
         }
@@ -803,6 +840,7 @@ class MinecraftActivity : MainActivity(), PojavControlsHost {
         detachControllerMonitor()
         PreloaderInput.cancelDocumentRequest("Minecraft closed")
         ModManager.disableAndUnloadLoadedMods()
+        ModManager.disableAndUnloadEngineMods()
         val shouldPrepareNormalExit = shouldRestartAfterNormalExit()
         if (shouldPrepareNormalExit) {
             prepareNormalExitCleanup()
@@ -812,6 +850,8 @@ class MinecraftActivity : MainActivity(), PojavControlsHost {
         previousInputFocus = null
         PreloaderInput.clearActivity()
         MinecraftActivityState.onDestroyed(this)
+        // Release the launch-stall watchdog so the next launch can arm a fresh one.
+        LaunchStallWatchdog.disarm()
         // The backend holds this activity; drop it so a destroyed session cannot be reached.
         GameBridge.unregister()
         MinecraftLaunchSession.clear()
@@ -857,6 +897,10 @@ class MinecraftActivity : MainActivity(), PojavControlsHost {
     }
 
     override fun tick() {
+        // The game loop reached a frame, so the main thread is not blocked: settle the launch-stall
+        // watchdog. Without this the watchdog would tear down a launch that is simply slow to tick
+        // once.
+        LaunchStallWatchdog.settle()
         // The native hooks install here, not in onCreate. `tick()` is the game's own frame pump, so
         // by now the graphics backend is up and libminecraftpe.so is fully mapped — the RTTI/vtable
         // resolution the hook depends on sees a complete module, and the code patch runs on the same
@@ -867,6 +911,11 @@ class MinecraftActivity : MainActivity(), PojavControlsHost {
         // Start the bundled BerryAPI runtime (attach + world seam) at the same deferred point, once
         // the engine is up; fail-closed, so an absent library leaves the capabilities off.
         ModManager.pumpBerryRuntime()
+        // Tick the .universe engine mods once per frame with this frame's delta. Cheap when nothing
+        // is live (a single volatile read), and the loader refuses a re-entrant call rather than
+        // deadlocking the game thread. The mod's own hook callbacks are pumped inside the loader's
+        // tick, on this thread, rather than from the hooked function's unknown ABI.
+        ModManager.tickEngineMods(frameDeltaSeconds())
         // One shaped look call per frame, from this frame's accumulated travel. Before
         // super.tick() so the game's own tick reads this frame's aim rather than the previous one's.
         flushLookDelta()

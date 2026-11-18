@@ -36,6 +36,7 @@ import org.chimeramc.client.core.minecraft.PerfFeatureCatalog;
 import org.chimeramc.client.core.minecraft.MinecraftLauncher;
 import org.chimeramc.client.core.mods.Mod;
 import org.chimeramc.client.core.mods.ModManager;
+import org.chimeramc.client.core.mods.ModRowPresentation;
 import org.chimeramc.client.core.versions.GameVersion;
 import org.chimeramc.client.core.versions.VersionManager;
 import org.chimeramc.client.settings.FeatureSettings;
@@ -442,12 +443,15 @@ public class MainActivity extends BaseActivity implements CaramelLauncherHost.Ac
         List<CaramelModInfo> out = new ArrayList<>();
         try {
             for (Mod m : ModManager.getInstance().getMods()) {
+                ModRowPresentation.Kind kind = ModRowPresentation.kindOf(m);
                 out.add(new CaramelModInfo(
                         m.getDisplayName() != null ? m.getDisplayName() : m.getFileName(),
                         m.getAuthor() != null ? m.getAuthor() : "",
                         m.getVersion() != null ? m.getVersion() : "",
                         m.getDescription() != null ? m.getDescription() : "",
-                        m.isEnabled()));
+                        m.isEnabled(),
+                        kind.label,
+                        ModRowPresentation.isRuntimeWired(kind)));
             }
         } catch (Throwable t) {
             AppLog.warnOnce(TAG, "buildMods", "Could not read the mod list", t);

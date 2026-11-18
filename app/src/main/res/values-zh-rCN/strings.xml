@@ -210,7 +210,7 @@
     <string name="toast_delete_failed">删除失败: %1$s</string>
     <string name="error_delete_builtin_version">不能删除内置版本</string>
     <string name="invalid_mod_file">失败</string>
-    <string name="invalid_mod_file_reason">仅允许导入 .so 文件、.zip 模组包。所选文件不是有效的原生模组导入包。</string>
+    <string name="invalid_mod_file_reason">仅接受 .so 文件、.zip 模组包或 .universe/.singularity 引擎包。所选文件不是有效的模组导入包。</string>
     <string name="invalid_zip_mod_package_title">非法 ZIP 模组包</string>
     <string name="invalid_zip_mod_package_message">ZIP 模组包必须包含 manifest.json 与 .so 文件。</string>
     <string name="error_versions">错误版本</string>
@@ -1540,4 +1540,8 @@
     <string name="caramel_cosmetics_signed_out_title">登录后即可使用装饰</string>
     <string name="caramel_cosmetics_signed_out_body">你的披风、帽子和宠物将应用于已登录的账户。</string>
     <string name="caramel_skin_signed_out_hint">登录以加载你的 Minecraft 皮肤。</string>
+    <string name="launch_error_title_stalled">启动已冻结</string>
+    <string name="launch_error_message_stalled">游戏窗口始终没有绘制任何一帧，因此启动是卡住了而不是失败了。启动器关闭了冻结的会话，并在禁用你的模组的情况下重新打开，以排除某个模组。请在“模组”标签页中逐个重新启用模组，找出导致启动卡住的模组。</string>
+    <string name="caramel_state_preview_only">仅预览</string>
+    <string name="caramel_state_preview_only_note">此类包会列出并可管理，但其运行时尚未接入客户端，因此不会在游戏中运行。</string>
 </resources>

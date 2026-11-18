@@ -54,16 +54,63 @@ public final class PlayerSkinProvider {
         /** True when this is the built-in Steve character rather than the player's own skin. */
         public final boolean isDefaultSteve;
         public final String sourceName;
+        /**
+         * True when the skin uses the slim ("Alex") 3-px-arm model. The preview draws the arms at
+         * this width; a slim skin rendered with the classic 4-px arms reads as a fat-armed stranger.
+         */
+        public final boolean slim;
 
         SkinBitmap(Bitmap bitmap, boolean isFallback, boolean isDefaultSteve, String sourceName) {
+            this(bitmap, isFallback, isDefaultSteve, sourceName, false);
+        }
+
+        SkinBitmap(Bitmap bitmap, boolean isFallback, boolean isDefaultSteve, String sourceName,
+                   boolean slim) {
             this.bitmap = bitmap;
             this.isFallback = isFallback;
             this.isDefaultSteve = isDefaultSteve;
             this.sourceName = sourceName;
+            this.slim = slim;
         }
     }
 
     private PlayerSkinProvider() {
+    }
+
+    /**
+     * The last skin resolved on any thread.
+     *
+     * <p>The resolve reads the filesystem (the account cache, the applied pack, the imported file)
+     * and decodes a bitmap, which must not run on the UI thread. A view that resolves off the UI
+     * thread and then shows the result would flash the fallback for a frame, so the result is also
+     * remembered here: a view built later (or rebuilt on a rebind) paints the real skin immediately
+     * and only re-resolves in the background.
+     */
+    private static volatile SkinBitmap lastResolved;
+
+    /** The most recent resolve, or null before the first one. Never blocks. */
+    public static SkinBitmap lastResolved() {
+        return lastResolved;
+    }
+
+    /**
+     * Resolves off the UI thread and delivers the result to {@code onResolved} on the main thread.
+     *
+     * <p>The disk and decode work is the reason this exists: resolving in a view's constructor read
+     * the account cache and decoded a PNG on the UI thread, so a slow read showed as a stall. The
+     * caller paints {@link #lastResolved()} immediately and this fills it in.
+     */
+    public static void resolveAsync(Context context, java.util.function.Consumer<SkinBitmap> onResolved) {
+        if (context == null) return;
+        final Context appContext = context.getApplicationContext();
+        final Context target = appContext == null ? context : appContext;
+        org.chimeramc.client.util.AppExecutors.io(
+                        org.chimeramc.client.util.AppExecutors.Kind.DISK)
+                .execute(() -> {
+                    final SkinBitmap resolved = resolve(target);
+                    if (onResolved == null) return;
+                    org.chimeramc.client.util.MainThread.post(() -> onResolved.accept(resolved));
+                });
     }
 
     /** Remembers a skin file the player chose in the launcher. */
@@ -110,8 +157,19 @@ public final class PlayerSkinProvider {
      *
      * <p>Never throws and never returns null: a decode failure degrades to the next rung, because
      * a cosmetics screen that crashes is worse than one showing a generic character.
+     *
+     * <p>Reads the filesystem and decodes a bitmap, so it must run off the UI thread; a view that
+     * needs the skin on screen uses {@link #resolveAsync} and paints {@link #lastResolved()} in the
+     * meantime.
      */
     public static SkinBitmap resolve(Context context) {
+        SkinBitmap resolved = resolveUncached(context);
+        lastResolved = resolved;
+        return resolved;
+    }
+
+    /** The resolve itself, without touching the in-memory cache. Must run off the UI thread. */
+    private static SkinBitmap resolveUncached(Context context) {
         // 1. A skin the player explicitly set in the launcher: an explicit override always wins.
         String custom = getCustomSkinPath(context);
         Bitmap imported = custom != null && !custom.isEmpty() ? decodeFile(new File(custom)) : null;
@@ -120,7 +178,8 @@ public final class PlayerSkinProvider {
         // 2. The account lookup: the signed-in player's own Bedrock skin, resolved from their XUID.
         //    On after a Microsoft sign-in (the sign-in is the consent) so a newly signed-in player
         //    sees their real skin; a failure falls through to the next rung.
-        Bitmap account = readAccountSkin(context);
+        SkinBitmap account = readAccountSkin(context);
+        Bitmap accountAtlas = account == null ? null : account.bitmap;
 
         // 3. The game's own live skin, read through an engine hook when a provider is installed,
         //    falling back to the cached last capture so the launcher (which runs before the game)
@@ -141,18 +200,19 @@ public final class PlayerSkinProvider {
         if (steve == null) steve = steveSkin();
 
         SkinIdentity.Verdict verdict =
-                SkinIdentity.compare(atlasOf(game == null ? null : game.bitmap), atlasOf(account));
+                SkinIdentity.compare(atlasOf(game == null ? null : game.bitmap), atlasOf(accountAtlas));
         SkinIdentity.Choice choice = SkinIdentity.resolve(
-                imported != null, account != null, game != null && game.bitmap != null,
+                imported != null, accountAtlas != null, game != null && game.bitmap != null,
                 verdict, applied != null, steve != null);
 
         switch (choice.source) {
             case IMPORTED:
                 return new SkinBitmap(normalise(imported), false, false, importedName);
             case ACCOUNT:
-                return new SkinBitmap(account, false, false, choice.label);
+                return new SkinBitmap(accountAtlas, false, false, choice.label,
+                        account != null && account.slim);
             case GAME:
-                return new SkinBitmap(game.bitmap, false, false, choice.label);
+                return new SkinBitmap(game.bitmap, false, false, choice.label, game.slim);
             case APPLIED_PACK:
                 return new SkinBitmap(normalise(applied), false, false, appliedFile.getName());
             case STEVE:
@@ -207,14 +267,17 @@ public final class PlayerSkinProvider {
      *
      * <p>Never blocks on the UI thread: the network path is only taken when the cache is stale, and
      * the result is delivered by a background refresh (see {@link AccountSkinService#canLookup}).
+     *
+     * <p>The cached entry also carries the arm model, so the preview draws the slim ("Alex") arms on
+     * a later launch before the service is asked again.
      */
-    private static Bitmap readAccountSkin(Context context) {
+    private static SkinBitmap readAccountSkin(Context context) {
         if (context == null) return null;
         if (!AccountSkinService.isEnabled(context)) return null;
         String xuid = AccountSkinService.activeXuid(context);
         // 1. The cached PNG from a previous fetch, which the game's own capture never writes.
         boolean stale = true;
-        Bitmap cached = null;
+        SkinBitmap cached = null;
         try {
             AccountSkinCache.Entry entry = AccountSkinCache.read(context.getFilesDir());
             // The entry must belong to the account that is signed in now. Serving a cache written for
@@ -223,7 +286,10 @@ public final class PlayerSkinProvider {
                     AccountSkinCache.MAX_AGE_MS);
             if (AccountSkinCache.isValidFor(entry, xuid)) {
                 Bitmap decoded = BitmapFactory.decodeByteArray(entry.png, 0, entry.png.length);
-                if (decoded != null) cached = normalise(decoded);
+                if (decoded != null) {
+                    cached = new SkinBitmap(normalise(decoded), false, false,
+                            "Your account skin", entry.slim);
+                }
             }
         } catch (Throwable ignored) {
             AppLog.warnOnce("CaramelClient", "PlayerSkinProvider:223", "Ignored a failure at PlayerSkinProvider:223", ignored);

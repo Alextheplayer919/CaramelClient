@@ -322,10 +322,21 @@ public class CosmeticsDiagnosticsReportTest {
     }
 
     @Test
-    public void theLocalKeyIsStableAndNamed() {
+    public void theLocalKeyFollowsTheSignedInAccount() {
         assertEquals("local", NativeCosmeticsBridge.LOCAL_PLAYER_ID);
+        // Signed out: the local id is the fallback constant, so the key is stable and named.
+        org.chimeramc.client.core.xbox.CaramelIdentity.clear();
+        assertEquals(NativeCosmeticsBridge.LOCAL_PLAYER_ID, NativeCosmeticsBridge.localPlayerId());
         assertEquals(NativeCosmeticsBridge.keyFor("local"), NativeCosmeticsBridge.localKey());
         assertTrue(NativeCosmeticsBridge.localKey() != 0L);
+        // Signed in: the local id is the account xuid, so a peer keyed by a sync id cannot collide.
+        org.chimeramc.client.core.xbox.CaramelIdentity.set("2533274812345678", "Tester");
+        assertEquals("2533274812345678", NativeCosmeticsBridge.localPlayerId());
+        assertEquals(NativeCosmeticsBridge.keyFor("2533274812345678"),
+                NativeCosmeticsBridge.localKey());
+        assertTrue(NativeCosmeticsBridge.localKey() != NativeCosmeticsBridge.keyFor("local"));
+        // Leave the shared holder as the other tests expect it.
+        org.chimeramc.client.core.xbox.CaramelIdentity.clear();
     }
 
     @Test

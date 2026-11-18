@@ -33,13 +33,14 @@ public final class PreviewCharacterScene {
      */
     public static void addCharacter(PreviewScene scene, int[] atlas, int atlasSize,
                                     float headPitch, float headYaw) {
-        addCharacter(scene, atlas, atlasSize, headPitch, headYaw, null, CharacterPose.relaxedHero());
+        addCharacter(scene, atlas, atlasSize, headPitch, headYaw, null, CharacterPose.relaxedHero(),
+                false);
     }
 
     /** Adds the character in the rest pose, for a caller that wants no articulation. */
     public static void addCharacterRest(PreviewScene scene, int[] atlas, int atlasSize,
                                         float headPitch, float headYaw) {
-        addCharacter(scene, atlas, atlasSize, headPitch, headYaw, null, CharacterPose.rest());
+        addCharacter(scene, atlas, atlasSize, headPitch, headYaw, null, CharacterPose.rest(), false);
     }
 
     /**
@@ -53,23 +54,25 @@ public final class PreviewCharacterScene {
         // The hub shows only the head, which has no limbs, so the rest pose is right there; the
         // whole figure gets the hero stance.
         addCharacter(scene, atlas, atlasSize, headPitch, headYaw, onlyHead,
-                onlyHead != null ? CharacterPose.rest() : CharacterPose.relaxedHero());
+                onlyHead != null ? CharacterPose.rest() : CharacterPose.relaxedHero(), false);
     }
 
     /**
-     * Adds the character with an explicit pose.
+     * Adds the character with an explicit pose and arm model.
      *
      * <p>A limb's faces are rotated about the limb's joint, so the shoulder or hip stays attached to
      * the body while the limb swings. The head keeps its own look rotation, applied about the neck.
+     *
+     * @param slim true for the slim ("Alex") 3-px-arm model, false for the classic 4-px arms
      */
     public static void addCharacter(PreviewScene scene, int[] atlas, int atlasSize,
                                     float headPitch, float headYaw, String onlyHead,
-                                    CharacterPose pose) {
+                                    CharacterPose pose, boolean slim) {
         if (scene == null || atlas == null || atlasSize <= 0) return;
         if (pose == null) pose = CharacterPose.rest();
         float[] p = new float[3];
         float[] n = new float[3];
-        for (SkinModel.Box box : SkinModel.boxes()) {
+        for (SkinModel.Box box : SkinModel.boxes(slim)) {
             if (onlyHead != null && !onlyHead.equals(box.id)) continue;
             boolean head = "head".equals(box.id);
             for (SkinModel.Face face : SkinModel.Face.values()) {

@@ -23,28 +23,61 @@ import org.chimeramc.client.preloader.PreloaderInput;
 public final class NativeCosmeticsBridge {
 
     /**
-     * The fixed registry id every local-player override is keyed under.
+     * The fallback registry id used when no account is signed in.
      *
-     * <p>One key scheme for everyone: the local player is always {@value}, a peer is always their
-     * sync id. Keying the local cape by its catalogue id (as an earlier version did) meant the native
-     * "first cape override" fallback could hand the local player a peer's cape, and it left no single
-     * place to clear only the local entries. The native renderer reads the role-keyed piece atlases
-     * for the local player, so this key is the identity the diagnostics report and the one a future
-     * per-actor lookup will match.
+     * <p>One key scheme for everyone: the local player is keyed by their account xuid when one is
+     * known, else this fixed id; a peer is always their sync id. Keying the local cape by its
+     * catalogue id (as an earlier version did) meant the native "first cape override" fallback could
+     * hand the local player a peer's cape, and it left no single place to clear only the local
+     * entries. The native renderer reads the role-keyed piece atlases for the local player, so this
+     * key is the identity the diagnostics report and the one a future per-actor lookup will match.
      *
-     * <p><b>TODO(device):</b> {@value} is a per-install identity, not the player's xuid. A real
-     * per-actor lookup needs a native identity read (the game's own unique id for the drawn actor),
-     * which cannot be derived without device data. Until then the native renderer draws only the
-     * local player (see AGENTS.md) and no xuid or gamertag is transmitted anywhere.
+     * <p><b>TODO(device):</b> even keyed by xuid this is not the game's own unique id for the drawn
+     * actor, so it maps our published set to the account but not yet to an actor the engine hands
+     * the render hook. A real per-actor lookup needs a native identity read (the game's own unique
+     * id for the drawn actor), which cannot be derived without device data. Until then the native
+     * renderer draws only the local player (see AGENTS.md) and no xuid or gamertag is transmitted
+     * anywhere — the xuid here is used only as a local registry key.
      */
     public static final String LOCAL_PLAYER_ID = "local";
 
     private NativeCosmeticsBridge() {
     }
 
-    /** The local player's registry key ({@link #LOCAL_PLAYER_ID} hashed). */
+    /** The registry id the local player's cosmetics are keyed under.
+     *
+     * <p>The signed-in account's xuid when one is known, so a peer's advertised cape (keyed by their
+     * own sync id) and the local player's can never collide and the diagnostics report names a real
+     * account; {@link #LOCAL_PLAYER_ID} when signed out. Never empty.
+     */
+    public static String localPlayerId() {
+        String xuid = org.chimeramc.client.core.xbox.CaramelIdentity.xuid();
+        return xuid == null || xuid.isEmpty() ? LOCAL_PLAYER_ID : xuid;
+    }
+
+    /** The local id the last publish used, so a sign-in/out can drop the previous account's entries. */
+    private static volatile String lastPublishedLocalId = LOCAL_PLAYER_ID;
+
+    /**
+     * Drops the previous account's local entries when the local id changed (sign-in, sign-out or an
+     * account switch). Without this the old account's cape/hat/pet stay in the registry under their
+     * xuid and are never read or freed; the id-keyed entries are otherwise only cleared by
+     * {@link #clearLocal()}, which uses the current id.
+     */
+    private static void dropStaleLocalEntries() {
+        String current = localPlayerId();
+        String previous = lastPublishedLocalId;
+        if (previous.equals(current)) return;
+        lastPublishedLocalId = current;
+        if (previous.isEmpty() || previous.equals(LOCAL_PLAYER_ID)) return;
+        setCapeFor(previous, null);
+        setTextureFor(previous + "/hat", null);
+        setTextureFor(previous + "/pet", null);
+    }
+
+    /** The local player's registry key ({@link #localPlayerId()} hashed). */
     public static long localKey() {
-        return keyFor(LOCAL_PLAYER_ID);
+        return keyFor(localPlayerId());
     }
 
     /**
@@ -142,6 +175,7 @@ public final class NativeCosmeticsBridge {
     public static void publishLocal(Context context, CosmeticCatalog.Cape cape,
                                     CosmeticCatalog.Accessory accessory,
                                     CosmeticCatalog.Pet pet) {
+        dropStaleLocalEntries();
         publishCape(cape);
         publishAccessory(accessory);
         publishPet(pet);
@@ -329,40 +363,40 @@ public final class NativeCosmeticsBridge {
         if (cape == null) {
             // Remove only the local player's cape entry. The old clear-all wiped every peer's cape
             // whenever the local player unequipped theirs.
-            setCapeFor(LOCAL_PLAYER_ID, null);
+            setCapeFor(localPlayerId(), null);
             PreloaderInput.setPieceAtlas(PIECE_CAPE, null, 0, 0);
             return;
         }
         byte[] png = CapeTexturePainter.paint(cape.color, cape.trimColor, cape.accentColor,
                 cape.pattern, cape.branded);
         Bitmap image = decode(png);
-        if (image != null) setCapeFor(LOCAL_PLAYER_ID, image);
+        if (image != null) setCapeFor(localPlayerId(), image);
     }
 
     /** Uploads an accessory's texture to the native registry keyed by the local player id. */
     public static void publishAccessory(CosmeticCatalog.Accessory accessory) {
         if (accessory == null) {
             PreloaderInput.setPieceAtlas(PIECE_HAT, null, 0, 0);
-            setTextureFor(LOCAL_PLAYER_ID + "/hat", null);
+            setTextureFor(localPlayerId() + "/hat", null);
             return;
         }
         byte[] png = AccessoryTexturePainter.paint(accessory.color, accessory.accentColor);
         Bitmap image = decode(png);
-        if (image != null) setTextureFor(LOCAL_PLAYER_ID + "/hat", image);
+        if (image != null) setTextureFor(localPlayerId() + "/hat", image);
     }
 
     /** Uploads a pet's texture to the native registry keyed by the local player id. */
     public static void publishPet(CosmeticCatalog.Pet pet) {
         if (pet == null) {
             PreloaderInput.setPieceAtlas(PIECE_PET, null, 0, 0);
-            setTextureFor(LOCAL_PLAYER_ID + "/pet", null);
+            setTextureFor(localPlayerId() + "/pet", null);
             return;
         }
         byte[] png = PaintedAtlas.paint(pet.color, pet.accentColor,
                 PetGeometry.TEXTURE_WIDTH, PetGeometry.TEXTURE_HEIGHT,
                 PetGeometry.UV_ACCENT_Y, pet.color ^ (pet.species.ordinal() * 131));
         Bitmap image = decode(png);
-        if (image != null) setTextureFor(LOCAL_PLAYER_ID + "/pet", image);
+        if (image != null) setTextureFor(localPlayerId() + "/pet", image);
     }
 
     /**
@@ -486,9 +520,9 @@ public final class NativeCosmeticsBridge {
      * changing their own cosmetic.
      */
     public static void clearLocal() {
-        setCapeFor(LOCAL_PLAYER_ID, null);
-        setTextureFor(LOCAL_PLAYER_ID + "/hat", null);
-        setTextureFor(LOCAL_PLAYER_ID + "/pet", null);
+        setCapeFor(localPlayerId(), null);
+        setTextureFor(localPlayerId() + "/hat", null);
+        setTextureFor(localPlayerId() + "/pet", null);
         PreloaderInput.setPieceAtlas(PIECE_CAPE, null, 0, 0);
         PreloaderInput.setPieceAtlas(PIECE_HAT, null, 0, 0);
         PreloaderInput.setPieceAtlas(PIECE_PET, null, 0, 0);

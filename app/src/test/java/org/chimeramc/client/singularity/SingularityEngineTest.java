@@ -22,7 +22,7 @@ public class SingularityEngineTest {
 
     @Test
     public void everyFallibleEntryPointReturnsAMessageNotAThrow() {
-        assertNotNull(SingularityEngine.init(0L));
+        assertNotNull(SingularityEngine.init(0L, "BETA6"));
         assertNotNull(SingularityEngine.validate(new File("/tmp/x.singularity")));
         assertNotNull(SingularityEngine.extract(new File("/tmp/x.singularity"), new File("/tmp/s"),
                 new File("/tmp")));

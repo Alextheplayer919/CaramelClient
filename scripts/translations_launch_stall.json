@@ -1,0 +1,42 @@
+{
+ "es": {
+  "launch_error_title_stalled": "El inicio se congeló",
+  "launch_error_message_stalled": "La ventana del juego nunca dibujó un fotograma, así que el inicio se quedó colgado en lugar de fallar. El lanzador cerró la sesión congelada y se volvió a abrir con tus mods desactivados para descartar un mod. Vuelve a activar los mods de uno en uno en la pestaña Mods para encontrar el que cuelga el inicio."
+ },
+ "fr": {
+  "launch_error_title_stalled": "Le lancement s’est figé",
+  "launch_error_message_stalled": "La fenêtre du jeu n’a jamais dessiné d’image, le lancement s’est donc bloqué au lieu d’échouer. Le lanceur a fermé la session figée et s’est rouvert avec vos mods désactivés pour écarter un mod. Réactivez les mods un par un dans l’onglet Mods pour trouver celui qui bloque le lancement."
+ },
+ "hi": {
+  "launch_error_title_stalled": "लॉन्च फ़्रीज़ हो गया",
+  "launch_error_message_stalled": "गेम विंडो ने कभी कोई फ़्रेम नहीं बनाया, इसलिए लॉन्च विफल होने के बजाय अटक गया। लॉन्चर ने फ़्रीज़ हुए सत्र को बंद कर दिया और किसी मॉड को बाहर रखने के लिए आपके मॉड बंद करके फिर से खोला। लॉन्च को अटकाने वाले मॉड को खोजने के लिए मॉड्स टैब में मॉड्स को एक-एक करके फिर से चालू करें।"
+ },
+ "id": {
+  "launch_error_title_stalled": "Peluncuran membeku",
+  "launch_error_message_stalled": "Jendela game tidak pernah menggambar satu bingkai pun, jadi peluncuran menggantung alih-alih gagal. Peluncur menutup sesi yang membeku dan membuka kembali dengan mod Anda dinonaktifkan untuk menyingkirkan satu mod. Aktifkan kembali mod satu per satu di tab Mod untuk menemukan mod yang membuat peluncuran menggantung."
+ },
+ "ja": {
+  "launch_error_title_stalled": "起動がフリーズしました",
+  "launch_error_message_stalled": "ゲームウィンドウが一度もフレームを描画しなかったため、起動は失敗ではなくハングしました。ランチャーはフリーズしたセッションを閉じ、原因の切り分けのためModを無効にして再度開きました。起動をハングさせるModを見つけるには、ModタブでModを1つずつ再度有効にしてください。"
+ },
+ "pt": {
+  "launch_error_title_stalled": "A inicialização congelou",
+  "launch_error_message_stalled": "A janela do jogo nunca desenhou um quadro, então a inicialização travou em vez de falhar. O launcher fechou a sessão congelada e reabriu com os seus mods desativados para descartar um mod. Reative os mods um de cada vez no separador Mods para encontrar o que trava a inicialização."
+ },
+ "ru": {
+  "launch_error_title_stalled": "Запуск завис",
+  "launch_error_message_stalled": "Окно игры так и не отрисовало ни одного кадра, поэтому запуск завис, а не завершился ошибкой. Лаунчер закрыл зависшую сессию и открылся заново с отключёнными модами, чтобы исключить мод. Включайте моды по одному на вкладке «Моды», чтобы найти тот, из-за которого запуск зависает."
+ },
+ "tr": {
+  "launch_error_title_stalled": "Başlatma dondu",
+  "launch_error_message_stalled": "Oyun penceresi hiç kare çizmedi, bu yüzden başlatma başarısız olmak yerine takıldı. Başlatıcı donmuş oturumu kapattı ve bir modu elemek için modlarınız devre dışı olarak yeniden açıldı. Başlatmayı takılmasına neden olan modu bulmak için Modlar sekmesinde modları tek tek yeniden etkinleştirin."
+ },
+ "vi": {
+  "launch_error_title_stalled": "Quá trình khởi chạy bị đóng băng",
+  "launch_error_message_stalled": "Cửa sổ trò chơi không bao giờ vẽ một khung hình nào, nên quá trình khởi chạy bị treo thay vì thất bại. Trình khởi chạy đã đóng phiên bị đóng băng và mở lại với các mod của bạn bị tắt để loại trừ một mod. Hãy bật lại từng mod một trong thẻ Mod để tìm ra mod khiến quá trình khởi chạy bị treo."
+ },
+ "zh-rCN": {
+  "launch_error_title_stalled": "启动已冻结",
+  "launch_error_message_stalled": "游戏窗口始终没有绘制任何一帧，因此启动是卡住了而不是失败了。启动器关闭了冻结的会话，并在禁用你的模组的情况下重新打开，以排除某个模组。请在“模组”标签页中逐个重新启用模组，找出导致启动卡住的模组。"
+ }
+}

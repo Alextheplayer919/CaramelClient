@@ -82,7 +82,7 @@ public final class CosmeticsDiagnosticsReport {
         public int pieceAtlasMask = -1;
         public int capeOverrides;
         public int textureOverrides;
-        public String localKeyId = NativeCosmeticsBridge.LOCAL_PLAYER_ID;
+        public String localKeyId = NativeCosmeticsBridge.localPlayerId();
         /** Whether the local-player position feed produced a reading this frame. */
         public boolean localPlayerLive;
         /** The effective hook rule's resolved fields (which slots the running build used). */

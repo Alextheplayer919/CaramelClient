@@ -39,6 +39,30 @@ public class BerryRuntimeWiringTest {
                 activity.contains("ModManager.pumpBerryRuntime()"));
     }
 
+    /**
+     * The attach must not run from {@code onCreate}.
+     *
+     * <p>Attaching there runs {@code BERRY_Inject} on the main thread while
+     * {@code libminecraftpe.so} is only partly mapped. The attach is once-only, so an early
+     * attempt both froze the game window before its first frame and could not be retried,
+     * defeating the deferred pump. This pins the single call site: the frame tick.
+     */
+    @Test
+    public void theAttachDoesNotRunFromOnCreate() throws IOException {
+        String activity = read("app/src/main/java/org/chimeramc/client/launcher/core/minecraft/"
+                + "MinecraftActivity.kt");
+        int onCreate = activity.indexOf("override fun onCreate(");
+        assertTrue("MinecraftActivity must still have an onCreate", onCreate >= 0);
+        int onCreateEnd = activity.indexOf("\n    private fun applyHighRefreshRateMode", onCreate);
+        assertTrue("could not delimit onCreate", onCreateEnd > onCreate);
+        String body = activity.substring(onCreate, onCreateEnd);
+        assertTrue("onCreate must not attach BerryAPI: attaching before the engine is up freezes "
+                        + "the main thread and cannot be retried",
+                !body.contains("BerryApi.ensureAttached()"));
+        assertTrue("onCreate must not bind the world seam",
+                !body.contains("BerryApi.bindWorldSeam()"));
+    }
+
     private static String read(String relativePath) throws IOException {
         return new String(Files.readAllBytes(root().resolve(relativePath)), StandardCharsets.UTF_8);
     }

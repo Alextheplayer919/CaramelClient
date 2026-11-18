@@ -133,6 +133,15 @@ public class FileHandler {
             List<String> invalidZipNames = new ArrayList<>();
             for (Uri uri : supportedUris) {
                 String fileName = resolveImportFileName(uri);
+                if (isEnginePackageFile(fileName)) {
+                    // A `.universe` / `.singularity` archive is also a zip, so it must be claimed by
+                    // the engine route *before* the legacy zip check: otherwise it would be validated
+                    // as a legacy package (exactly one `.so` plus a manifest) and imported down the
+                    // wrong path. Engine packages carry their own manifest and are validated by the
+                    // Rust loader, not here.
+                    packagedUris.add(uri);
+                    continue;
+                }
                 if (isZipModPackageFile(uri, fileName) && !isValidZipModPackage(uri)) {
                     invalidZipNames.add(fileName);
                     continue;
@@ -180,6 +189,12 @@ public class FileHandler {
             return true;
         }
         return false;
+    }
+
+    /** True for a SweetLoader engine package (`.universe` / `.singularity`). */
+    private boolean isEnginePackageFile(String fileName) {
+        ModPackageFormat format = ModPackageFormat.fromFileName(fileName);
+        return format != null && format.isEnginePackage();
     }
 
     private boolean isZipModPackageFile(String fileName) {
@@ -484,14 +499,129 @@ public class FileHandler {
     private PreparedImport prepareImport(
             Uri uri, String fileName,
             String overrideName, String overrideType, String overrideVersion) throws IOException {
-        String lowerName = fileName.toLowerCase(Locale.ROOT);
-        if (lowerName.endsWith(".so")) {
+        ModPackageFormat format = ModPackageFormat.fromFileName(fileName);
+        if (format == ModPackageFormat.NATIVE_SO) {
             return prepareSoImport(uri, fileName, overrideName, overrideType, overrideVersion);
+        }
+        if (format != null && format.isEnginePackage()) {
+            return prepareEngineImport(uri, fileName, format, overrideName, overrideVersion);
         }
         if (isZipModPackageFile(uri, fileName)) {
             return prepareZipImport(uri, fileName, overrideName, overrideType, overrideVersion);
         }
         throw new IOException("Unsupported mod import file: " + fileName);
+    }
+
+    /**
+     * Prepares a {@code .universe} / {@code .singularity} package for the SweetLoader Rust engines.
+     *
+     * <p>Unlike the legacy paths this does not unpack the archive itself: the engine validates and
+     * extracts its own package format, so the launcher only copies the file into a per-mod
+     * directory and writes a launcher manifest the mod list can read. Validation is fail-closed —
+     * an engine library that is absent (a build without the Rust cdylib) or a package the engine
+     * refuses stops the import with the engine's own reason rather than importing something that
+     * cannot run.
+     */
+    private PreparedImport prepareEngineImport(
+            Uri uri, String fileName, ModPackageFormat format,
+            String overrideName, String overrideVersion) throws IOException {
+        File stagingRoot = createTempDirectory("mod_import_engine");
+        File packageDir = new File(stagingRoot, "package");
+        if (!packageDir.mkdirs()) {
+            throw new IOException("Failed to prepare mod package directory");
+        }
+
+        File packageFile = new File(packageDir, fileName);
+        copyUriToFile(uri, packageFile);
+
+        String refusal = validateEnginePackage(packageFile, format);
+        if (refusal != null) {
+            throw new IOException(refusal);
+        }
+
+        JsonObject engineManifest = readEngineManifest(packageFile);
+        String displayName = (overrideName != null && !overrideName.isEmpty())
+                ? overrideName
+                : engineDisplayName(engineManifest, fileName);
+        String version = (overrideVersion != null && !overrideVersion.isEmpty())
+                ? overrideVersion
+                : engineString(engineManifest, "version", DEFAULT_MOD_VERSION);
+        String author = engineString(engineManifest, "author", DEFAULT_MOD_AUTHOR);
+        String modId = engineString(engineManifest, "id", "");
+
+        JsonObject manifest = new JsonObject();
+        manifest.addProperty("type", format.manifestType);
+        manifest.addProperty("name", displayName);
+        manifest.addProperty("author", author);
+        manifest.addProperty("version", version);
+        manifest.addProperty("entry", fileName);
+        manifest.addProperty("icon", DEFAULT_MOD_ICON);
+        if (!modId.isEmpty()) {
+            manifest.addProperty("engine_id", modId);
+        }
+        writeManifest(packageDir, manifest);
+
+        String rootName = stripExtension(fileName);
+        String targetId = buildTargetId(displayName, rootName);
+        return new PreparedImport(targetId, fileName, new HashSet<>(), new HashSet<>(),
+                packageDir, stagingRoot);
+    }
+
+    /** Validates an engine package, returning a refusal reason or null on success. */
+    private String validateEnginePackage(File packageFile, ModPackageFormat format) {
+        String result = format == ModPackageFormat.UNIVERSE
+                ? org.chimeramc.client.universe.UniverseLoader.validate(packageFile)
+                : org.chimeramc.client.singularity.SingularityEngine.validate(packageFile);
+        return (result == null || result.isEmpty()) ? null : result;
+    }
+
+    /** Reads an engine package's manifest as a JSON object; an empty object when unreadable. */
+    private JsonObject readEngineManifest(File packageFile) {
+        String json = readZipEntryText(packageFile, MANIFEST_FILE_NAME);
+        if (json == null) {
+            return new JsonObject();
+        }
+        try {
+            JsonObject parsed = GSON.fromJson(json, JsonObject.class);
+            return parsed == null ? new JsonObject() : parsed;
+        } catch (Exception e) {
+            Log.w(TAG, "Failed to parse engine manifest", e);
+            return new JsonObject();
+        }
+    }
+
+    /** Reads one entry from a zip as UTF-8 text, or null when the entry or the zip is unreadable. */
+    private String readZipEntryText(File zipFile, String entryName) {
+        try (ZipInputStream zis = new ZipInputStream(new FileInputStream(zipFile))) {
+            ZipEntry entry;
+            while ((entry = zis.getNextEntry()) != null) {
+                if (!entry.isDirectory() && entryName.equals(entry.getName())) {
+                    java.io.ByteArrayOutputStream out = new java.io.ByteArrayOutputStream();
+                    byte[] buffer = new byte[BUFFER_SIZE];
+                    int read;
+                    while ((read = zis.read(buffer)) > 0) {
+                        out.write(buffer, 0, read);
+                    }
+                    return new String(out.toByteArray(), StandardCharsets.UTF_8);
+                }
+            }
+        } catch (IOException e) {
+            Log.w(TAG, "Failed to read engine package manifest", e);
+        }
+        return null;
+    }
+
+    private String engineDisplayName(JsonObject manifest, String fileName) {
+        String name = engineString(manifest, "name", "");
+        if (!name.isEmpty()) {
+            return name;
+        }
+        return stripExtension(fileName);
+    }
+
+    private String engineString(JsonObject manifest, String key, String fallback) {
+        String value = getStringProperty(manifest, key);
+        return (value != null && !value.trim().isEmpty()) ? value.trim() : fallback;
     }
 
     private PreparedImport prepareSoImport(
@@ -1268,6 +1398,9 @@ public class FileHandler {
             return false;
         }
 
+        if (isEnginePackageFile(fileName)) {
+            return true;
+        }
         String lowerName = fileName.toLowerCase(Locale.ROOT);
         return lowerName.endsWith(".so") || isZipModPackageFile(uri, fileName);
     }
@@ -1281,7 +1414,8 @@ public class FileHandler {
 
     private String resolveImportFileName(Uri uri) {
         String fileName = resolveFileName(uri);
-        if (isZipModPackageFile(fileName) || hasSupportedPlainExtension(fileName)) {
+        if (isEnginePackageFile(fileName) || isZipModPackageFile(fileName)
+                || hasSupportedPlainExtension(fileName)) {
             return fileName;
         }
         if (isZipMimeType(uri) || hasZipHeader(uri)) {

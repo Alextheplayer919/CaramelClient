@@ -90,6 +90,14 @@ public class ModNativeLoader {
             if (!mod.isEnabled()) {
                 continue;
             }
+            if (ModPackageFormat.fromFileName(mod.getEntryPath()) != ModPackageFormat.NATIVE_SO) {
+                // A `.universe` / `.singularity` package is not a native library: the Rust engine
+                // validates and extracts it, and loading its archive with the linker would fail with
+                // a confusing "not a valid ELF" instead of being quietly skipped here.
+                Log.i(TAG, "Skipping non-native package in the native loader: "
+                        + mod.getDisplayName());
+                continue;
+            }
             currentIndex++;
             if (listener != null) {
                 listener.onModLoadStarted(mod, currentIndex, totalEnabled);

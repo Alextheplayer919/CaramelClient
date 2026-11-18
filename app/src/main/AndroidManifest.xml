@@ -248,6 +248,16 @@
                 <data android:pathPattern="/.*\\..*\\..*\\.so" />
                 <data android:pathPattern="/.*\\..*\\..*\\..*\\.so" />
                 <data android:pathPattern="/.*\\..*\\..*\\..*\\..*\\.so" />
+                <data android:pathPattern="/.*\\.universe" />
+                <data android:pathPattern="/.*\\..*\\.universe" />
+                <data android:pathPattern="/.*\\..*\\..*\\.universe" />
+                <data android:pathPattern="/.*\\..*\\..*\\..*\\.universe" />
+                <data android:pathPattern="/.*\\..*\\..*\\..*\\..*\\.universe" />
+                <data android:pathPattern="/.*\\.singularity" />
+                <data android:pathPattern="/.*\\..*\\.singularity" />
+                <data android:pathPattern="/.*\\..*\\..*\\.singularity" />
+                <data android:pathPattern="/.*\\..*\\..*\\..*\\.singularity" />
+                <data android:pathPattern="/.*\\..*\\..*\\..*\\..*\\.singularity" />
                 <data android:pathPattern="/.*\\.mcworld" />
                 <data android:pathPattern="/.*\\..*\\.mcworld" />
                 <data android:pathPattern="/.*\\..*\\..*\\.mcworld" />
@@ -271,6 +281,8 @@
                 <data android:pathSuffix=".zip" />
                 <data android:pathSuffix=".chimerabackup" />
                 <data android:pathSuffix=".so" />
+                <data android:pathSuffix=".universe" />
+                <data android:pathSuffix=".singularity" />
                 <data android:pathSuffix=".mcworld" />
                 <data android:pathSuffix=".mcpack" />
                 <data android:pathSuffix=".mcaddon" />
@@ -301,6 +313,16 @@
                 <data android:pathPattern="/.*\\..*\\..*\\.so" />
                 <data android:pathPattern="/.*\\..*\\..*\\..*\\.so" />
                 <data android:pathPattern="/.*\\..*\\..*\\..*\\..*\\.so" />
+                <data android:pathPattern="/.*\\.universe" />
+                <data android:pathPattern="/.*\\..*\\.universe" />
+                <data android:pathPattern="/.*\\..*\\..*\\.universe" />
+                <data android:pathPattern="/.*\\..*\\..*\\..*\\.universe" />
+                <data android:pathPattern="/.*\\..*\\..*\\..*\\..*\\.universe" />
+                <data android:pathPattern="/.*\\.singularity" />
+                <data android:pathPattern="/.*\\..*\\.singularity" />
+                <data android:pathPattern="/.*\\..*\\..*\\.singularity" />
+                <data android:pathPattern="/.*\\..*\\..*\\..*\\.singularity" />
+                <data android:pathPattern="/.*\\..*\\..*\\..*\\..*\\.singularity" />
                 <data android:pathPattern="/.*\\.mcworld" />
                 <data android:pathPattern="/.*\\..*\\.mcworld" />
                 <data android:pathPattern="/.*\\..*\\..*\\.mcworld" />
@@ -324,6 +346,8 @@
                 <data android:pathSuffix=".zip" />
                 <data android:pathSuffix=".chimerabackup" />
                 <data android:pathSuffix=".so" />
+                <data android:pathSuffix=".universe" />
+                <data android:pathSuffix=".singularity" />
                 <data android:pathSuffix=".mcworld" />
                 <data android:pathSuffix=".mcpack" />
                 <data android:pathSuffix=".mcaddon" />
@@ -361,6 +385,11 @@
             android:theme="@style/MinecraftLoadingTheme"
             tools:ignore="DiscouragedApi" />
 
+        <!-- hardwareAccelerated="false" is deliberate and must stay: the game activity hosts the
+             engine's own EGL surface (the eglSwapBuffers present hook the overlays ride), and the
+             launcher's overlay views draw through the software Canvas. Enabling framework HWUI here
+             would composite a second GL context over the engine's and can black out or tear the
+             game frame. See docs/agents/game-window-white-screen-theme.md. -->
         <activity
             android:name=".core.minecraft.MinecraftActivity"
             android:hardwareAccelerated="false"

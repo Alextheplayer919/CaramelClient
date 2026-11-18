@@ -2,6 +2,9 @@ package org.chimeramc.client.core.nethernet
 
 import java.io.IOException
 import java.util.concurrent.TimeUnit
+import kotlinx.coroutines.CancellationException
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import okhttp3.FormBody
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.OkHttpClient
@@ -63,9 +66,24 @@ class OkHttpTransport(private val base: OkHttpClient = OkHttpClient()) : HttpTra
         .callTimeout(timeoutMs, TimeUnit.MILLISECONDS)
         .build()
 
-    private fun execute(request: Request, timeoutMs: Long): HttpResult {
-        clientFor(timeoutMs).newCall(request).execute().use { response ->
-            return HttpResult(response.code, response.body?.string().orEmpty())
+    /**
+     * Runs one call off the caller's thread and lets a cancellation stop it.
+     *
+     * The old `execute()` ran the blocking call inline, so it blocked the caller's thread and a
+     * coroutine cancellation left the request running to completion. The call now runs on
+     * [Dispatchers.IO] and a cancellation cancels the in-flight call, so Cancel returns promptly.
+     */
+    private suspend fun execute(request: Request, timeoutMs: Long): HttpResult {
+        val call = clientFor(timeoutMs).newCall(request)
+        return try {
+            withContext(Dispatchers.IO) {
+                call.execute().use { response ->
+                    HttpResult(response.code, response.body?.string().orEmpty())
+                }
+            }
+        } catch (e: CancellationException) {
+            call.cancel()
+            throw e
         }
     }
 

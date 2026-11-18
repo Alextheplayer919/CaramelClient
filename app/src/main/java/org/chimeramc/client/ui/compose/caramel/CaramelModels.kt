@@ -68,6 +68,14 @@ data class CaramelModInfo(
     val version: String,
     val description: String,
     val enabled: Boolean,
+    /** The runtime label from [org.chimeramc.client.core.mods.ModRowPresentation.kindOf]. */
+    val kind: String = "unknown",
+    /**
+     * Whether the mod's runtime is actually wired into the client. A `.universe` / `.singularity`
+     * package is listed and toggleable but cannot run until the SweetLoader host table ships, so the
+     * row shows "preview only" rather than a green "Enabled" that lies.
+     */
+    val runnable: Boolean = true,
 )
 
 /** One saved server: what the Servers tab draws. [online] and [ping] are only set when measured. */

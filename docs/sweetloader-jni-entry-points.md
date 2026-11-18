@@ -22,7 +22,8 @@ Column meanings:
 | `org.chimeramc.client.preloader.BerryApi` | `src/pl/runtime/BerryApiJni.cpp` | 9 |
 | `org.chimeramc.client.preloader.PreloaderInput` | `src/pl/SweetLoader.cpp` | 2 |
 | `org.chimeramc.client.preloader.PreloaderMenu` | `src/pl/menu/MenuJni.cpp` | 9 |
-| `org.chimeramc.client.universe.UniverseLoader` | `rust/universe-jni/src/lib.rs` | 8 |
+| `org.chimeramc.client.universe.UniverseLoader` | `rust/universe-jni/src/lib.rs` | 9 |
+| `org.chimeramc.client.universe.UniverseRuntime` | `src/pl/SweetLoader.cpp` | 4 |
 | `org.chimeramc.client.singularity.SingularityEngine` | `rust/singularity-jni/src/lib.rs` | 6 |
 | `org.chimeramc.client.core.nethernet.NativeNetherNet` | `rust/nethernet-jni/src/lib.rs` | 14 |
 |  | `src/pl/cosmetics/animation/AnimationJni.cpp` | 1 |
@@ -31,7 +32,7 @@ Column meanings:
 |  | `src/pl/runtime/InputJni.cpp` | 22 |
 |  | `src/pl/runtime/OptifineJni.cpp` | 8 |
 
-Total: **159 exports** across **10 owner classes**.
+Total: **164 exports** across **11 owner classes**.
 
 The `rust/…-jni` rows are the native cdylibs: the `.universe` loader (`libcaramel_universe.so`), the
 `.singularity` engine (`libcaramel_singularity.so`) and the NetherNet transport

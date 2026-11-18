@@ -306,7 +306,7 @@ CaramelClient must complete the migration before continuing.</string>
     <string name="mod_import_link_confirm_title">Import this package?</string>
     <string name="mod_import_link_confirm_go">Download and import</string>
     <string name="mod_import_link_done_digest">Imported %1$s.\n%2$s</string>
-    <string name="invalid_mod_file_reason">Only .so files or .zip mod packages are accepted. The selected file is not a valid native mod import package.</string>
+    <string name="invalid_mod_file_reason">Only .so files, .zip mod packages, or .universe/.singularity engine packages are accepted. The selected file is not a valid mod import package.</string>
     <string name="invalid_zip_mod_package_title">Invalid ZIP Mod Package</string>
     <string name="invalid_zip_mod_package_message">The ZIP mod package must contain manifest.json and a .so file.</string>
     <string name="error_versions">Error Versions</string>
@@ -2681,6 +2681,8 @@ CaramelClient must complete the migration before continuing.</string>
     <string name="launch_error_message_out_of_memory">The launcher ran out of memory while preparing Minecraft. Close other apps, disable a few mods, and try again. A device with 3 GB of RAM or more is recommended.</string>
     <string name="launch_error_title_unknown">Couldn\'t start Minecraft</string>
     <string name="launch_error_message_unknown">The launch failed for a reason the launcher could not identify. The exact error is below — it is what a bug report needs.</string>
+    <string name="launch_error_title_stalled">The launch froze</string>
+    <string name="launch_error_message_stalled">The game window never drew a frame, so the launch hung rather than failed. The launcher closed the frozen session and reopened with your mods disabled to rule a mod out. Re-enable mods one at a time in the Mods tab to find the one that hangs the launch.</string>
     <string name="launch_error_cause_label">Cause:</string>
 
     <!-- Cause-specific reasons for downloads, imports and file operations (UserFacingError).
@@ -2830,6 +2832,8 @@ CaramelClient must complete the migration before continuing.</string>
     <string name="caramel_mod_version">v%1$s</string>
     <string name="caramel_state_enabled">Enabled</string>
     <string name="caramel_state_disabled">Disabled</string>
+    <string name="caramel_state_preview_only">Preview only</string>
+    <string name="caramel_state_preview_only_note">This package type is listed and can be managed, but its runtime is not wired into the client yet, so it will not run in game.</string>
     <string name="caramel_servers_sub">Featured and saved servers</string>
     <string name="caramel_join_server">Join server</string>
     <string name="caramel_join">Join</string>

@@ -28,6 +28,31 @@ public class ModRowPresentationTest {
     }
 
     @Test
+    public void anEnginePackageHasItsOwnKind() {
+        // The SweetLoader Rust engines are distinct runtimes, so the row must not report "unknown"
+        // for a package that discovered and validated as a `.universe` / `.singularity` archive.
+        assertEquals(ModRowPresentation.Kind.UNIVERSE,
+                ModRowPresentation.kindOf(mod("mod.universe", true)));
+        assertEquals(ModRowPresentation.Kind.SINGULARITY,
+                ModRowPresentation.kindOf(mod("world.singularity", true)));
+        assertEquals(ModRowPresentation.Kind.UNIVERSE,
+                ModRowPresentation.kindOf(mod("MOD.UNIVERSE", true)));
+    }
+
+    @Test
+    public void anEngineRuntimeReportsHonestlyAboutBeingWired() {
+        // `.universe` is now driven end to end (UniverseRuntime load/tick/shutdown), so the row may
+        // report an enabled one as working. `.singularity` is not: nothing hooks Bedrock's world
+        // generator, so reporting it as runnable would be the "silently no-op" lie the Mods tab
+        // exists to prevent.
+        assertTrue(ModRowPresentation.isRuntimeWired(ModRowPresentation.Kind.UNIVERSE));
+        assertFalse(ModRowPresentation.isRuntimeWired(ModRowPresentation.Kind.SINGULARITY));
+        assertTrue(ModRowPresentation.isRuntimeWired(ModRowPresentation.Kind.NATIVE));
+        assertTrue(ModRowPresentation.isRuntimeWired(ModRowPresentation.Kind.SCRIPT));
+        assertTrue(ModRowPresentation.isRuntimeWired(ModRowPresentation.Kind.UNKNOWN));
+    }
+
+    @Test
     public void aRecordedFailureOutranksTheEnabledFlag() {
         ModLoadDiagnostics.Record failure = new ModLoadDiagnostics.Record(
                 "id", "Example", "1.0", "cannot open lib", ModLoadDiagnostics.KIND_DLOPEN, 0L);

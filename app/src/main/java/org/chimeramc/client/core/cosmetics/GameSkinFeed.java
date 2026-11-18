@@ -95,7 +95,8 @@ public final class GameSkinFeed implements GameSkinSource.Provider {
             Bitmap bitmap = Bitmap.createBitmap(entry.argb, entry.width, entry.height,
                     Bitmap.Config.ARGB_8888);
             return new PlayerSkinProvider.SkinBitmap(PlayerSkinProvider.normalise(bitmap),
-                    false, false, "Your Minecraft skin (last session)");
+                    false, false, "Your Minecraft skin (last session)",
+                    entry.armModel == SkinCaptureValidator.ArmModel.SLIM);
         } catch (Throwable t) {
             return null;
         }

@@ -155,6 +155,10 @@ class LauncherApplication : Application() {
         // the trust window, re-fetch it in the background. Off the main thread because it reads the
         // cache, and off the critical path because the first frame does not need it.
         step("account_skin_sync") {
+            // Accounts signed in before the lookup existed never had it turned on, and the toggle UI
+            // is gone, so turn it on now for any install that already has an account.
+            org.chimeramc.client.core.cosmetics.AccountSkinService
+                .ensureEnabledForExistingAccount(applicationContext)
             org.chimeramc.client.core.cosmetics.AccountSkinService
                 .refreshIfStale(applicationContext)
         }
