@@ -138,9 +138,9 @@ jobs:
       - name: Setup Rust toolchain
         # The .universe/.singularity engine is a Rust Cargo workspace inside the sweetloader
         # submodule (rust/). It is cross-compiled for arm64-v8a and packaged into the APK by the
-        # buildRustEngine Gradle task, which silently skips when cargo is absent — so without this
-        # step the APK would ship with no loader and every .universe/.singularity feature would be
-        # dark. The android target is added so `cargo build --target aarch64-linux-android` works.
+        # buildRustEngine Gradle task, which fails the build when cargo or the NDK is absent — so
+        # without this step the APK cannot assemble and every .universe/.singularity feature would
+        # be dark. The android target is added so `cargo build --target aarch64-linux-android` works.
         run: |
           rustup toolchain install stable --profile minimal
           rustup target add aarch64-linux-android --toolchain stable
