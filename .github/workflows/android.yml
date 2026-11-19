@@ -240,6 +240,21 @@ jobs:
       - name: Run unit tests
         run: ./gradlew :app:testDebugUnitTest
 
+      - name: Report unit test failures as annotations
+        if: failure()
+        run: |
+          python3 - <<'PY'
+          import glob
+          import xml.etree.ElementTree as ET
+
+          for path in sorted(glob.glob('app/build/test-results/testDebugUnitTest/*.xml')):
+              root = ET.parse(path).getroot()
+              for case in root.iter('testcase'):
+                  for failure in list(case.findall('failure')) + list(case.findall('error')):
+                      detail = (failure.get('message') or (failure.text or '')).strip()
+                      print(f"::error::{case.get('classname')}.{case.get('name')}: {detail[:500]}")
+          PY
+
       - name: Check for calls newer than minSdk 28
         # J5: this class of bug shipped because CI only built an APK. The static half fails fast
         # (seconds) on a banned call; the emulator job below proves it at runtime on API 28.
