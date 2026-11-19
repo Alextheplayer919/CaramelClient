@@ -413,10 +413,16 @@ def buildRustEngine = tasks.register('buildRustEngine') {
         def api = 28 // matches minSdkVersion
         def clang = new File(toolchain, "bin/aarch64-linux-android${api}-clang")
         def project = rustWorkspaceDir.asFile
+        // Android 15+ refuses shared objects whose PT_LOAD segments are only 4 KB aligned. The
+        // C++ sweetloader already links with -Wl,-z,max-page-size=16384; the Rust engine is linked
+        // by cargo here, so it needs the same flag or NativePageAlignmentTest fails once an APK
+        // assemble copies these libraries into jniLibs.
+        def rustFlags = "${System.getenv('RUSTFLAGS') ?: ''} -C link-arg=-Wl,-z,max-page-size=16384".trim()
         rustPackages.each { pkg, _ ->
             exec {
                 workingDir project
                 environment 'ANDROID_NDK_HOME', ndkHome
+                environment 'RUSTFLAGS', rustFlags
                 environment "CARGO_TARGET_AARCH64_LINUX_ANDROID_LINKER", clang.absolutePath
                 environment 'CC_aarch64_linux_android', clang.absolutePath
                 environment 'AR_aarch64_linux_android', new File(toolchain, 'bin/llvm-ar').absolutePath
