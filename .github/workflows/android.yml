@@ -74,7 +74,19 @@ jobs:
           fi
 
           mkdir -p app
-          printf '%s' "${GOOGLE_SERVICES_JSON_BASE64}" | base64 --decode > app/google-services.json
+          # Accept either the original base64 value or the raw google-services.json text, so the
+          # secret can be pasted from a phone without first running a base64 encoder.
+          python3 - > app/google-services.json <<'PY'
+          import base64
+          import os
+          import sys
+
+          value = os.environ["GOOGLE_SERVICES_JSON_BASE64"].strip()
+          if value.startswith("{"):
+              sys.stdout.write(value)
+          else:
+              sys.stdout.write(base64.b64decode(value).decode("utf-8"))
+          PY
           python3 -m json.tool app/google-services.json > /dev/null
           python3 - <<'PY'
           import json
