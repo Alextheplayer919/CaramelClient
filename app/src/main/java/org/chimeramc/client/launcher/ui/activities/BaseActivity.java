@@ -1,7 +1,6 @@
 package org.chimeramc.client.ui.activities;
 
 import android.graphics.Color;
-import android.os.Build;
 import android.os.Bundle;
 import android.view.View;
 import android.view.WindowInsets;
@@ -17,8 +16,8 @@ import org.chimeramc.client.util.ApiLevels;
  * Minimal base for the launcher's full-screen activities.
  *
  * <p>Placeholder left after the legacy UI was removed: it keeps only the immersive-mode plumbing
- * the game-host screens ({@code MinecraftLoadingActivity}, {@code LauncherRestartActivity}) rely on.
- * The previous navigation-bar/rail injection lived here and went with the rest of the shell; a
+ * the game-host screens (MinecraftLoadingActivity, LaunchRestartActivity) rely on.
+ * The previous navigation-bar rail injection lived here and went with the rest of the shell; a
  * screen that wants chrome now provides its own.
  */
 public abstract class BaseActivity extends AppCompatActivity {
@@ -70,9 +69,7 @@ public abstract class BaseActivity extends AppCompatActivity {
         View decorView = getWindow().getDecorView();
         getWindow().clearFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
 
-        // WindowInsetsController and WindowInsets.Type require API 30. Keep the API-30 call under
-        // a literal SDK guard so Android Lint can verify it is safe on every supported device.
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+        if (ApiLevels.atLeastR()) {
             getWindow().setDecorFitsSystemWindows(true);
             WindowInsetsController controller = decorView.getWindowInsetsController();
             if (controller != null) {
@@ -96,9 +93,7 @@ public abstract class BaseActivity extends AppCompatActivity {
             getWindow().setNavigationBarContrastEnforced(false);
         }
 
-        // WindowInsetsController and WindowInsets.Type require API 30. The legacy visibility flags
-        // below remain the fallback for API 28 and 29.
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+        if (ApiLevels.atLeastR()) {
             getWindow().setDecorFitsSystemWindows(false);
             WindowInsetsController controller = decorView.getWindowInsetsController();
             if (controller != null) {
