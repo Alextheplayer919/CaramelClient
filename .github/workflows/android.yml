@@ -230,9 +230,12 @@ jobs:
         if: env.HAS_GOOGLE_SERVICES == 'true'
         run: ./gradlew assembleDebug assembleBeta assembleRelease
 
-      - name: Compile Debug Without Firebase Secrets
+      - name: Build Debug APK Without Firebase Secrets
+        # The CI-only google-services.json written above is enough for the Google Services plugin
+        # and for a full debug assemble (native + Rust + resources). Only publishing needs the real
+        # config, so a fork without Firebase secrets still gets a real APK to download.
         if: env.HAS_GOOGLE_SERVICES == 'false'
-        run: ./gradlew :app:compileDebugKotlin :app:compileDebugJavaWithJavac
+        run: ./gradlew :app:assembleDebug
 
       - name: Run unit tests
         run: ./gradlew :app:testDebugUnitTest
@@ -247,6 +250,20 @@ jobs:
         # <file>.sha256 sidecar next to every built APK; the upload steps below carry both.
         if: env.HAS_GOOGLE_SERVICES == 'true'
         run: python3 scripts/compute_checksums.py --dir app/build/outputs/apk
+
+      - name: Compute checksum for placeholder Debug APK
+        if: env.HAS_GOOGLE_SERVICES == 'false'
+        run: python3 scripts/compute_checksums.py --dir app/build/outputs/apk/debug
+
+      - name: Upload placeholder Debug APK
+        if: env.HAS_GOOGLE_SERVICES == 'false'
+        uses: actions/upload-artifact@v4.6.2
+        with:
+          name: CaramelClient-debug-apk-placeholder
+          path: |
+            app/build/outputs/apk/debug/*.apk
+            app/build/outputs/apk/debug/*.apk.sha256
+          if-no-files-found: error
 
       - name: Upload Debug APK
         if: env.HAS_GOOGLE_SERVICES == 'true'
