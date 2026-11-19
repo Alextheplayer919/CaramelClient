@@ -1,5 +1,6 @@
 package org.chimeramc.client.ui.activities;
 
+import android.annotation.SuppressLint;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.view.View;
@@ -65,6 +66,7 @@ public abstract class BaseActivity extends AppCompatActivity {
      * a hidden bar. The bars are the only reliable way out of a screen whose main thread is blocked,
      * so a screen that runs long, uninterruptible work keeps them.
      */
+    @SuppressLint("NewApi") // Lint cannot see through ApiLevels.atLeastR(); the gate has one owner.
     protected void showSystemUI() {
         View decorView = getWindow().getDecorView();
         getWindow().clearFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
