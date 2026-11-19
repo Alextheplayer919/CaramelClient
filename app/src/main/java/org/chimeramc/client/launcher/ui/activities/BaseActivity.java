@@ -1,6 +1,7 @@
 package org.chimeramc.client.ui.activities;
 
 import android.graphics.Color;
+import android.os.Build;
 import android.os.Bundle;
 import android.view.View;
 import android.view.WindowInsets;
@@ -68,7 +69,10 @@ public abstract class BaseActivity extends AppCompatActivity {
     protected void showSystemUI() {
         View decorView = getWindow().getDecorView();
         getWindow().clearFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
-        if (ApiLevels.atLeastR()) {
+
+        // WindowInsetsController and WindowInsets.Type require API 30. Keep the API-30 call under
+        // a literal SDK guard so Android Lint can verify it is safe on every supported device.
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
             getWindow().setDecorFitsSystemWindows(true);
             WindowInsetsController controller = decorView.getWindowInsetsController();
             if (controller != null) {
@@ -76,6 +80,7 @@ public abstract class BaseActivity extends AppCompatActivity {
                         | WindowInsets.Type.navigationBars());
             }
         }
+
         decorView.setSystemUiVisibility(View.SYSTEM_UI_FLAG_VISIBLE);
     }
 
@@ -90,7 +95,10 @@ public abstract class BaseActivity extends AppCompatActivity {
             getWindow().setStatusBarContrastEnforced(false);
             getWindow().setNavigationBarContrastEnforced(false);
         }
-        if (ApiLevels.atLeastR()) {
+
+        // WindowInsetsController and WindowInsets.Type require API 30. The legacy visibility flags
+        // below remain the fallback for API 28 and 29.
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
             getWindow().setDecorFitsSystemWindows(false);
             WindowInsetsController controller = decorView.getWindowInsetsController();
             if (controller != null) {
@@ -100,6 +108,7 @@ public abstract class BaseActivity extends AppCompatActivity {
                         | WindowInsets.Type.navigationBars());
             }
         }
+
         decorView.setSystemUiVisibility(
                 View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY
                         | View.SYSTEM_UI_FLAG_FULLSCREEN
