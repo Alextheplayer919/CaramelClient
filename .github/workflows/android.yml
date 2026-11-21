@@ -270,6 +270,17 @@ jobs:
         if: env.HAS_GOOGLE_SERVICES == 'false'
         run: python3 scripts/compute_checksums.py --dir app/build/outputs/apk/debug
 
+      - name: Report placeholder APK digest
+        # The artifact is a ZIP wrapper; if a phone extractor mangles it, the digest is still
+        # readable in the run's annotations and proves whether the extracted APK is intact.
+        if: env.HAS_GOOGLE_SERVICES == 'false'
+        run: |
+          set -euo pipefail
+          apk=$(ls app/build/outputs/apk/debug/*.apk | head -1)
+          digest=$(sha256sum "$apk" | cut -d' ' -f1)
+          size=$(stat -c %s "$apk")
+          echo "::notice::Debug APK | size=${size} bytes | sha256=${digest}"
+
       - name: Upload placeholder Debug APK
         if: env.HAS_GOOGLE_SERVICES == 'false'
         uses: actions/upload-artifact@v4.6.2
@@ -279,6 +290,8 @@ jobs:
             app/build/outputs/apk/debug/*.apk
             app/build/outputs/apk/debug/*.apk.sha256
           if-no-files-found: error
+          # A stored archive avoids ZArchiver-style extraction bugs on the download phone.
+          compression-level: 0
 
       - name: Upload Debug APK
         if: env.HAS_GOOGLE_SERVICES == 'true'
