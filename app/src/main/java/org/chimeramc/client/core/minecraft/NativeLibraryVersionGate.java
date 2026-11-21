@@ -51,6 +51,21 @@ public final class NativeLibraryVersionGate {
         return atLeast(versionCode, MAESDK_RELEASE, MAESDK_BETA);
     }
 
+    /**
+     * Whether the launcher should preload its generic, bundled {@code libmaesdk.so} before the game.
+     *
+     * <p>The extraction gate above still applies: a build that ships the library must have it in
+     * its instance cache, because the game opens its own version-matched copy. Preloading the
+     * launcher's copy is a different question. On 1.26.x that preload hung inside
+     * {@code System.loadLibrary} (the "Loading native library: libmaesdk.so" line with no "Loaded"
+     * after it), freezing the launch before the game activity existed. The prebuilt is version
+     * agnostic, so there is no version for which the launcher's copy is more correct than the
+     * instance's own; not preloading is fail-open and lets the game load what it shipped.
+     */
+    public static boolean shouldPreloadMaesdk(String versionCode) {
+        return false;
+    }
+
     /** Whether the build needs {@code libPlayFabMultiplayer.so}. */
     public static boolean shouldLoadPlayFab(String versionCode) {
         return atLeast(versionCode, PLAY_FAB_RELEASE, PLAY_FAB_BETA);

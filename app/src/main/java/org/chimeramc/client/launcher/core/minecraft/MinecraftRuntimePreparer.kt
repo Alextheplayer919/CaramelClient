@@ -372,6 +372,11 @@ object MinecraftRuntimePreparer {
         if (shouldLoadMaesdk(version)) {
             val excludeLibs = HashSet<String>()
             val excludeReasons = HashMap<String, String>()
+            if (!NativeLibraryVersionGate.shouldPreloadMaesdk(version.versionCode)) {
+                excludeLibs.add("maesdk")
+                excludeReasons["maesdk"] =
+                    "game loads its own version-matched copy; bundled preload can hang in JNI_OnLoad"
+            }
             if (shouldLoadHttpClient(version)) {
                 excludeLibs.add("c++_shared")
                 excludeLibs.add("HttpClient.Android")

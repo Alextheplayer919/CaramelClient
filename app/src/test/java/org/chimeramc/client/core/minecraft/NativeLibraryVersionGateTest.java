@@ -59,6 +59,17 @@ public class NativeLibraryVersionGateTest {
     }
 
     @Test
+    public void theBundledMaesdkIsNeverPreloaded() {
+        // Extraction and preloading are different gates. The instance must still carry the
+        // version-matched library (shouldLoadMaesdk above), but the launcher's generic copy must
+        // not be dlopen'd before the game: on 1.26.x that call hung with no error and no "Loaded"
+        // line, freezing the launch before MinecraftActivity existed.
+        assertFalse(NativeLibraryVersionGate.shouldPreloadMaesdk("1.26.50.4"));
+        assertFalse(NativeLibraryVersionGate.shouldPreloadMaesdk("1.21.110"));
+        assertFalse(NativeLibraryVersionGate.shouldPreloadMaesdk(null));
+    }
+
+    @Test
     public void aMissingOrUnparseableVersionIsNotAtLeastAnything() {
         // Fail-closed: a gate that decides whether a library is required must not answer "yes" for a
         // version it cannot read, or the cache would demand a library the build may not ship.
