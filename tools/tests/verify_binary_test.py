@@ -229,6 +229,16 @@ def main():
         check("anchor_present" in rd, "the render-distance anchor presence is reported")
         check(rd["anchor_present"] is False,
               "a build with no render-distance string reads as no anchor")
+        # Pack-reload seams are reported as evidence, never as a hook. A build with no matching
+        # strings or RTTI names must say so rather than invent an address.
+        pack = result["findings"]["pack_reload"]
+        check("anchors" in pack and "rtti" in pack,
+              "the pack-reload finding reports both anchors and RTTI leads")
+        check(all(entry["rodata_hits"] == 0 and entry["code_refs"] == 0
+                  for entry in pack["anchors"].values()),
+              "a synthetic build with no reload strings reads as unverified")
+        check(pack["rtti"]["ContentManager"]["typeinfo_va"] is None,
+              "absent ContentManager RTTI reads as no anchor")
         check(len(result["sha256"]) == 64, "a SHA-256 is reported")
 
     print("verify_binary_test: %d checks, %d failure(s)" % (_checks, len(_failures)))

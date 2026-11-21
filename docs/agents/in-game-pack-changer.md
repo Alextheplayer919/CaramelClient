@@ -2,6 +2,7 @@
 - Per-instance opt-in toggle in Instance Settings (`GameVersion.inGamePackChangerEnabled`,
   persisted in `VersionProfileMetadata`). When on, the in-game Mod Menu's **Packs** section lists
   the instance's resource packs with a per-pack pill toggle.
+- To derive reload leads for a new build, run `tools/verify-binary libminecraftpe.so --pack-only --version <version>`. Its `findings.pack_reload` reports the source-diagnostic anchors (`mReloadSourcesAsync->isInitTaskCompleted()`, `_doStackOperation`, `ReloadCommand.cpp`, `TextureHotReloader.cpp`, `global_resource_packs.json`, `world_resource_packs.json`), their code cross-references, and RTTI leads (`ContentManager`, `ResourcePackManager`, `ResourcePackRepositoryRefreshQueue`). Presence is a lead, never a hook: a live trigger still needs a verified ABI and on-device confirmation. Never commit the game `.so`.
 - It rewrites `minecraftpe/global_resource_packs.json`, the file the running game reads, and
   writes to **every candidate game-data root** (`LauncherStorage.getCandidateGameDataDirs`) -- the
   same defence the cape installer uses, because the game picks its storage from isolation and

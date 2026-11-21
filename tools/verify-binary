@@ -24,6 +24,10 @@ What it reports
 5. ``ClientNetworkHandler::AddPlayerPacket`` handler (the packet-read seam), by name.
 6. A generated rules entry (JSON) for the library's version, with a SHA-256 checksum of the
    library so a rule can refuse to apply to a different build.
+7. Resource-pack reload seams: the source-diagnostic strings that anchor ContentManager,
+   ResourcePackManager and the refresh queue, their code cross-references, and the RTTI names
+   that could provide a version-stable vtable anchor. A missing string reads as unverified; it
+   never guesses an address.
 
 Anything the tool could not derive is reported as ``unverified`` - it never guesses a value.
 
@@ -53,6 +57,21 @@ POINTER_SIZE = 8
 # The render diagnostic referenced by the LivePlayerRenderer render entry's body. Its presence in
 # a vtable slot's body is how the launcher finds the slot without a per-build index.
 RENDER_DIAGNOSTIC = b"variable.player_x_rotation"
+
+# Source-diagnostic strings used by the pack-reload research note. A code cross-reference from
+# .text to one of these is the starting point for deriving a per-build hook; presence alone is
+# not proof of a safe live trigger.
+PACK_RELOAD_ANCHORS = (
+    "mReloadSourcesAsync->isInitTaskCompleted()",
+    "Invalid value passed to ResourcePackManager::_doStackOperation",
+    "ReloadCommand.cpp",
+    "TextureHotReloader.cpp",
+    "MinecraftGame::_hotReloadTextureAtlases",
+    "ResourcePackRepositoryRefreshQueue.cpp",
+    "global_resource_packs.json",
+    "world_resource_packs.json",
+)
+PACK_RELOAD_RTTI = ("ContentManager", "ResourcePackManager", "ResourcePackRepositoryRefreshQueue")
 
 try:
     import numpy as _np
@@ -511,6 +530,30 @@ def analyze(path, version_override=None, rules_path=None):
         )
     f["render_distance_option"] = rd
 
+    # --- 7. Resource-pack reload seams ---
+    # The shipped in-game pack changer writes the pack lists and reports "reload on next load":
+    # no safe live trigger was found on 1.26.50.4 / 1.26.60.x. These anchors are the evidence a
+    # new per-build hook has to be derived from. Report presence and code references, not a hook.
+    pack = {"anchors": {}, "rtti": {}}
+    text_sec = elf.by_name.get(".text")
+    for anchor in PACK_RELOAD_ANCHORS:
+        hits = elf.find_in_section(".rodata", anchor.encode())
+        entry = {"rodata_hits": len(hits), "code_refs": 0, "first_refs": []}
+        if hits and text_sec is not None:
+            refs = scan_code_referencing(elf.section_text(".text"), text_sec["addr"], hits[0])
+            entry["code_refs"] = len(refs)
+            entry["first_refs"] = [_h(r) for r in refs[:8]]
+        pack["anchors"][anchor] = entry
+    for name in PACK_RELOAD_RTTI:
+        name_va, ti_va = elf.typeinfo_va(name)
+        rtti = {"typeinfo_name_va": _h(name_va), "typeinfo_va": _h(ti_va)}
+        if ti_va is not None:
+            rtti["vtable_address_point"] = _h(elf.vtable_address_point(ti_va))
+        pack["rtti"][name] = rtti
+    pack["note"] = ("anchors and RTTI are leads only; a hook needs a verified ABI and a live "
+                    "confirmation on device before the pack changer may report success")
+    f["pack_reload"] = pack
+
     # --- derived rules entry ---
     result["derived_rules"]["checksum_sha256"] = result["sha256"]
     result["derived_rules"]["min"] = result["version"]
@@ -616,6 +659,17 @@ def print_human(result):
     print("5. ClientNetworkHandler AddPlayerPacket string present: %s"
           % f["network_handler"]["name_present"])
     print()
+    pack = f["pack_reload"]
+    print("7. Resource-pack reload seams")
+    for name, entry in pack["anchors"].items():
+        print("   %-58s hits=%d code_refs=%d %s"
+              % (name, entry["rodata_hits"], entry["code_refs"],
+                 " ".join(entry["first_refs"][:4])))
+    for name, entry in pack["rtti"].items():
+        print("   RTTI %-38s typeinfo=%s vtable=%s"
+              % (name, entry.get("typeinfo_va"), entry.get("vtable_address_point")))
+    print("   NOTE: %s" % pack["note"])
+    print()
     print("Derived rules entry:")
     print(json.dumps(result["derived_rules"], indent=2))
 
@@ -627,6 +681,8 @@ def main(argv=None):
     parser.add_argument("--version", help="override the version label for the rules entry")
     parser.add_argument("--rules", help="path to the bundled preloader signature rules JSON")
     parser.add_argument("--json", action="store_true", help="emit the summary as JSON")
+    parser.add_argument("--pack-only", action="store_true",
+                        help="emit only findings.pack_reload as JSON (small enough to paste back)")
     args = parser.parse_args(argv)
 
     if not os.path.exists(args.library):
@@ -637,7 +693,9 @@ def main(argv=None):
     except ValueError as exc:
         print("cannot parse library: %s" % exc, file=sys.stderr)
         return 2
-    if args.json:
+    if args.pack_only:
+        print(json.dumps(result["findings"]["pack_reload"], indent=2))
+    elif args.json:
         print(json.dumps(result, indent=2))
     else:
         print_human(result)
