@@ -526,6 +526,13 @@ class MinecraftLoadingActivity : BaseActivity(), MinecraftRuntimePreparer.Progre
         // never opened.
         if (returningToLauncher || isFinishing || isDestroyed) return
         enteringGame = true
+        // The main-thread loading watchdog stands down once `enteringGame` is set, and the game
+        // activity's watchdog is not armed until its own onCreate runs. That leaves the whole
+        // startActivity -> game-creation window unwatched: a freeze there froze the process with
+        // no recovery at all (the reported "stuck on launching" state). Arm the off-thread
+        // watchdog here; MinecraftActivity.arm is idempotent per process, so it will not restart
+        // the clock when the activity eventually opens.
+        org.chimeramc.client.launcher.core.minecraft.LaunchStallWatchdog.arm(this)
         // Starting the game is the last step and the only one that was unguarded on this path: the
         // dialog button calls straight into here with no enclosing try, so a throw from
         // startActivity (a missing target, TransactionTooLarge, an OOM while the game activity
@@ -535,6 +542,7 @@ class MinecraftLoadingActivity : BaseActivity(), MinecraftRuntimePreparer.Progre
             startActivity(gameIntent)
         } catch (throwable: Throwable) {
             enteringGame = false
+            org.chimeramc.client.launcher.core.minecraft.LaunchStallWatchdog.disarm()
             showFailure(throwable)
             return
         }
@@ -584,6 +592,7 @@ class MinecraftLoadingActivity : BaseActivity(), MinecraftRuntimePreparer.Progre
     private fun returnToLauncher() {
         if (returningToLauncher) return
         returningToLauncher = true
+        org.chimeramc.client.launcher.core.minecraft.LaunchStallWatchdog.disarm()
 
         MinecraftLaunchSession.clear()
         MinecraftProcessRestarter.restartLauncherAfterMinecraftExit(this)

@@ -67,6 +67,13 @@ public class LaunchStallWatchdogTest {
                 activity.contains("LaunchStallWatchdog.settle()"));
         assertTrue("the watchdog must be released when the session ends",
                 activity.contains("LaunchStallWatchdog.disarm()"));
+
+        String loading = read("app/src/main/java/org/chimeramc/client/launcher/core/minecraft/"
+                + "MinecraftLoadingActivity.kt");
+        assertTrue("the off-thread watchdog must cover the startActivity handoff too: the loading "
+                        + "screen's watchdog stands down at enteringGame and the game activity has "
+                        + "not armed its own yet",
+                loading.contains("LaunchStallWatchdog.arm(this)"));
     }
 
     private static String read(String relativePath) throws IOException {
